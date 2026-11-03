@@ -1,0 +1,36 @@
+import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
+
+// https://vite.dev/config/
+export default defineConfig({
+  // EdgePanel's http profile (EdgePanel.API launchSettings.json).
+  server: { proxy: { '/api': 'http://localhost:8080' } },
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'EdgePortal',
+        short_name: 'EdgePortal',
+        description: 'Manage and reach EdgeAgent devices through EdgePanel.',
+        start_url: '/dashboard',
+        scope: '/',
+        display: 'standalone',
+        background_color: '#000000',
+        theme_color: '#101416',
+        // Launching the installed app again focuses the open window instead of opening a second one.
+        launch_handler: { client_mode: ['focus-existing', 'auto'] },
+        icons: [
+          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
+      },
+      workbox: {
+        // EdgePanel routes on the same origin must reach the server, not the SPA shell.
+        navigateFallbackDenylist: [/^\/api\//, /^\/ws\//, /^\/web\//],
+      },
+    }),
+  ],
+})

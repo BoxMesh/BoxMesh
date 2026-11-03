@@ -1,0 +1,485 @@
+/* Design.md tokens; antd components get the same values from theme.ts. */
+:root {
+  color-scheme: dark;
+  --primary: #c7f36b;
+  --on-primary: #090b0c;
+  --bg-page: #000000;
+  --bg-surface: #101416;
+  --bg-raised: #151a1d;
+  --border: #2a3135;
+  --border-hover: #3a4247;
+  --text: #f1efe7;
+  --text-secondary: #a7adb0;
+  --text-disabled: #7a8287;
+  --success-bg: #1a2210;
+  --mono: 'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-page);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+/* `body` prefix keeps these above antd's zero-specificity CSS-in-JS rules. */
+
+/* ---------- Shell ---------- */
+.app {
+  min-height: 100vh;
+}
+
+body .app-sider {
+  border-right: 1px solid var(--border);
+}
+
+body .app-sider .ant-menu {
+  border-inline-end: 0;
+  padding-bottom: 16px;
+}
+
+/* Group titles line up with the item icons (8 px margin + 12 px padding). */
+body .app-sider .ant-menu-item-group-title {
+  padding: 16px 20px 4px;
+  font-weight: 500;
+}
+
+/* No weight change on select: it would shift and clip longer labels. */
+body .app-sider .ant-menu-item-selected {
+  box-shadow: inset 0 1px 0 rgba(241, 239, 231, 0.06);
+}
+
+body .app-sider .ant-menu-item-selected .ant-menu-item-icon {
+  color: var(--primary);
+}
+
+/* ---------- Not built yet ---------- */
+body .app-sider .ant-menu-item.menu-soon:not(.ant-menu-item-selected),
+.ant-tabs-tab:not(.ant-tabs-tab-active) .tab-soon {
+  color: var(--text-disabled);
+}
+
+body .app-sider .ant-menu-item.menu-soon:not(.ant-menu-item-selected):hover {
+  color: var(--text-secondary);
+}
+
+.soon-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  color: var(--text-secondary);
+}
+
+/* Same height and bottom rule as the header, so the top band reads as one line. */
+.brand {
+  height: 56px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+body .brand,
+body .brand:hover {
+  color: var(--text);
+}
+
+.brand svg {
+  color: var(--primary);
+}
+
+body .app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  line-height: normal;
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(241, 239, 231, 0.04), 0 12px 24px -12px rgba(0, 0, 0, 0.8);
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+body .header-search {
+  width: 240px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+body .user .ant-avatar {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.app-content {
+  padding: 24px;
+  min-width: 0;
+}
+
+/* ---------- Page ---------- */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+}
+
+.page-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.grid-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 16px;
+}
+
+.muted {
+  color: var(--text-secondary);
+}
+
+.sub {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* ---------- Cards ---------- */
+body .ant-card {
+  min-width: 0;
+  box-shadow: inset 0 1px 0 rgba(241, 239, 231, 0.06), 0 24px 48px -16px rgba(0, 0, 0, 0.9);
+  transition: border-color 200ms;
+}
+
+body .ant-card:hover {
+  border-color: var(--border-hover);
+}
+
+body .ant-card-head-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+body .ant-card-head-title::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--primary);
+  box-shadow: 0 0 10px rgba(199, 243, 107, 0.6);
+}
+
+body .stat-link,
+body .stat-link:hover {
+  display: block;
+  color: inherit;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.kv-value {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+
+.meter + .meter {
+  margin-top: 18px;
+}
+
+.meter-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* ---------- Tables ---------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+body .filters .search {
+  flex: 1 1 240px;
+  max-width: 320px;
+}
+
+.bulk-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  padding: 4px 24px;
+  background: var(--success-bg);
+}
+
+body .table-card .ant-table-pagination {
+  padding: 0 24px;
+}
+
+.strong {
+  font-weight: 600;
+}
+
+.row-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms;
+}
+
+body .icon-btn {
+  color: var(--text);
+}
+
+body .icon-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+body .icon-btn[aria-disabled='true'] {
+  color: var(--text-disabled);
+  border-color: var(--border);
+  background: transparent;
+  cursor: not-allowed;
+}
+
+.page-loading {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Already open ---------- */
+.fullscreen-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.brand-mark {
+  color: var(--primary);
+}
+
+/* ---------- Device detail ---------- */
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Enroll drawer ---------- */
+body .ant-drawer-content-wrapper {
+  max-width: 100vw;
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.steps > li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.steps h3 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--on-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.code {
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  overflow-x: auto;
+  border-radius: 12px;
+  background: var(--on-primary);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.pending {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.pending-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Below antd's lg breakpoint the Sider collapses; park its open button in the header's left corner. */
+body .ant-layout-sider .ant-layout-sider-zero-width-trigger {
+  top: 8px;
+  z-index: 2;
+}
+
+@media (max-width: 991px) {
+  body .app-header {
+    padding-left: 64px;
+  }
+}
+
+@media (max-width: 575px) {
+  body .header-search {
+    display: none;
+  }
+
+  .app-content {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}
