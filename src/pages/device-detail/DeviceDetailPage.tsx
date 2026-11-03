@@ -11,15 +11,15 @@ import { ago } from '../../utils/time'
 import ConnectionCard from './ConnectionCard'
 import DeviceOverview from './DeviceOverview'
 
-const terminal = navItem('/terminal')
-const desktop = navItem('/desktop')
+const terminal = navItem('/remote-terminal')
+const desktop = navItem('/remote-desktop')
 
 // Tabs for modules that aren't built yet: muted, and their page leads back to Overview.
 const SOON_TABS = [
   { key: 'terminal', label: 'Terminal', feature: terminal },
   { key: 'desktop', label: 'Desktop', feature: desktop },
-  { key: 'files', label: 'Files', feature: navItem('/files') },
-  { key: 'web', label: 'Remote Service', feature: navItem('/web-apps') },
+  { key: 'files', label: 'Files', feature: navItem('/remote-files') },
+  { key: 'web', label: 'Remote Service', feature: navItem('/remote-services') },
 ]
 
 export default function DeviceDetailPage() {

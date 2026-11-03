@@ -1,10 +1,11 @@
 import { useQuery, useQueryErrorResetBoundary } from '@tanstack/react-query'
-import { Avatar, Badge, Breadcrumb, Input, Layout, Menu, Spin, type MenuProps } from 'antd'
+import { Avatar, Badge, Breadcrumb, Input, Layout, Menu, Spin, Tooltip, type MenuProps } from 'antd'
 import { Suspense } from 'react'
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import ErrorBoundary from '../components/ErrorBoundary'
 import { Icon } from '../components/Icon'
 import { navGroups, navItems } from '../config/nav'
+import { useThemeMode } from '../hooks/useThemeMode'
 import { devicesQuery } from '../services/queries'
 import { summarize } from '../utils/devices'
 
@@ -26,6 +27,8 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const deviceMatch = useMatch('/devices/:id')
   const { reset } = useQueryErrorResetBoundary()
+  const { mode, toggle } = useThemeMode()
+  const nextTheme = mode === 'dark' ? 'light' : 'dark'
   const { data: devices } = useQuery(devicesQuery)
   const openAlerts = devices ? summarize(devices).alerts.length : 0
   const active = navItems.find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
@@ -56,6 +59,11 @@ export default function AppLayout() {
               aria-label="Search devices"
               onPressEnter={(e) => navigate(`/devices?q=${encodeURIComponent(e.currentTarget.value.trim())}`)}
             />
+            <Tooltip title={`Switch to ${nextTheme} theme`}>
+              <button type="button" className="icon-btn" onClick={toggle} aria-label={`Switch to ${nextTheme} theme`}>
+                <Icon name={mode === 'dark' ? 'sun' : 'moon'} size={18} />
+              </button>
+            </Tooltip>
             <Link to="/dashboard#attention" className="icon-btn" aria-label={`Open alerts: ${openAlerts}`}>
               <Badge count={openAlerts} size="small">
                 <Icon name="bell" size={18} />

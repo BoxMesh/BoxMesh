@@ -4,8 +4,18 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#101416" />
+    <script>
+      // Set the theme before first paint so a light-mode visit doesn't flash black.
+      // Saved choice first, then the OS preference. ThemeProvider reads this attribute.
+      (function () {
+        var saved
+        try { saved = localStorage.getItem('edgeportal-theme') } catch (e) {}
+        var light = saved ? saved === 'light' : matchMedia('(prefers-color-scheme: light)').matches
+        document.documentElement.dataset.theme = light ? 'light' : 'dark'
+      })()
+    </script>
     <link rel="apple-touch-icon" href="/pwa-192.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

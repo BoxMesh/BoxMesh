@@ -43,6 +43,33 @@ deep shadows and a lime glow on primary actions. Built on **Ant Design 6** (dark
 
 Rules: one accent only (lime). Status is never told by hue alone — always with a word, a number or an icon.
 
+### Light theme (added in the app, not on the canvas)
+
+**How it switches**
+- The default follows the OS setting (`prefers-color-scheme`). The sun/moon button in the header overrides it, and the choice is saved in `localStorage` as `edgeportal-theme`.
+- An inline script in `index.html` sets `<html data-theme>` before the first paint, so a light visit never flashes black.
+- `src/config/theme.ts` `buildTheme(mode)` builds the antd theme; `src/styles/index.css` has the CSS variables under `:root[data-theme='light']`.
+
+**Two roles for lime**
+- **Fills keep the brand lime `#c7f36b` with `#090b0c` text** in both themes: primary buttons, the selected segment, checkboxes, the avatar and step numbers.
+- **Text and lines use a darker lime `#4d7c0f`** in light (5:1 on white), because `#c7f36b` text on white is about 1.3:1. This covers links, the active tab, pagination, focus rings, the active menu icon, the card-title dot and positive values. It is antd's `colorPrimary` in light mode.
+
+| Token | Light value |
+|---|---|
+| `bg-page` / `bg-surface` / `bg-raised` | `#f3f4f1` / `#ffffff` / `#f6f7f4` |
+| `border` / `border-hover` / `border-control` | `#e2e5e0` / `#c9cec7` / `#a9b0ac` |
+| `text` / `text-secondary` / `text-disabled` | `#15191b` / `#545c60` / `#6b7377` |
+| Success (bg / border / text) | `#eef6dc` / `#c5df94` / `#4d7c0f` |
+| Warning | `#fff4e0` / `#f0cf8f` / `#b26b00` |
+| Error | `#fdecea` / `#f2b8ae` / `#c4321f` |
+| Info | `#e8f2f8` / `#b3d3e6` / `#2b6c8f` |
+
+**Other differences in light**
+- Shadows are soft and offset, with no glows.
+- Code blocks stay dark (`#15191b`).
+- Tooltips are dark with white text.
+- Inline status colours in components use `tone.*` from `theme.ts` (CSS variables), never hex values.
+
 ---
 
 ## 2. Typography
@@ -283,10 +310,10 @@ web (globe), jobs (checklist), security (shield-check), users, audit (document),
 |---|---|---|---|---|
 | 1 | Dashboard | `/dashboard` | Statistic, Card, Progress, Table, Timeline, Alert | Viewer |
 | 2 | Devices | `/devices`, `/devices/:id` | Table + filters, Tag, Badge, Drawer (enroll), Descriptions, Tabs | Viewer reads · Operator tags/groups · Admin deletes/disables/updates agents |
-| 3 | Remote Terminal | `/devices/:id/terminal` | Segmented (PowerShell/CMD/Bash), xterm.js in Card, timeout InputNumber, cancel Button, history List | `terminal` on device |
-| 4 | Remote Desktop | `/devices/:id/desktop` | Canvas stream, resolution Select, clipboard Switch, disconnect Popconfirm, session Table | `desktop` on device |
-| 5 | Remote Files | `/devices/:id/files` | Breadcrumb, Table, Upload.Dragger, Progress, rename Modal, delete Popconfirm | Viewer browses · Operator writes |
-| 6 | Remote Service | `/web-apps`, `/web/:agent/:app/*` | App Table, register Modal, copyable URL, session Table, revoke Popconfirm | Per-app access |
+| 3 | Remote Terminal | `/remote-terminal`, per device `/devices/:id?tab=terminal` | Segmented (PowerShell/CMD/Bash), xterm.js in Card, timeout InputNumber, cancel Button, history List | `terminal` on device |
+| 4 | Remote Desktop | `/remote-desktop`, per device `/devices/:id?tab=desktop` | Canvas stream, resolution Select, clipboard Switch, disconnect Popconfirm, session Table | `desktop` on device |
+| 5 | Remote Files | `/remote-files`, per device `/devices/:id?tab=files` | Breadcrumb, Table, Upload.Dragger, Progress, rename Modal, delete Popconfirm | Viewer browses · Operator writes |
+| 6 | Remote Service | `/remote-services`, per device `/devices/:id?tab=web`; EdgePanel proxy `/web/:agent/:app/*` | App Table, register Modal, copyable URL, session Table, revoke Popconfirm | Per-app access |
 | 7 | Metrics | `/devices/:id?tab=metrics` | Card + charts, time-range Segmented, threshold InputNumber | Viewer |
 | 8 | Command & Jobs | `/jobs`, `/jobs/:id` | Table, status Badge, Form, agent/group Select, DatePicker + cron, Progress | Operator |
 | 9 | Agent tunnel | `/devices/:id?tab=connection` | Latency/session Descriptions, connection history Table | Viewer |

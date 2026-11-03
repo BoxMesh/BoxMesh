@@ -1,10 +1,10 @@
 import { Badge } from 'antd'
-import { palette } from '../config/theme'
+import { tone } from '../config/theme'
 
 export default function Status({ online }: { online: boolean }) {
   return online ? (
-    <Badge color={palette.primary} text="Online" />
+    <Badge color={tone.positive} text="Online" />
   ) : (
-    <Badge color={palette.textDisabled} text={<span className="muted">Offline</span>} />
+    <Badge color={tone.disabled} text={<span className="muted">Offline</span>} />
   )
 }

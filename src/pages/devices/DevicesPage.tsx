@@ -31,9 +31,9 @@ const MORE_ACTIONS: MenuProps['items'] = [
   { key: 'Deleting devices', label: 'Delete', danger: true },
 ]
 const REMOTE_ACTIONS = [
-  { path: '/terminal', verb: 'Open a terminal' },
-  { path: '/desktop', verb: 'Open remote desktop' },
-  { path: '/files', verb: 'Browse files' },
+  { path: '/remote-terminal', verb: 'Open a terminal' },
+  { path: '/remote-desktop', verb: 'Open remote desktop' },
+  { path: '/remote-files', verb: 'Browse files' },
 ]
 
 const columns: TableProps<Device>['columns'] = [

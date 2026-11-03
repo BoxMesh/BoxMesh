@@ -27,3 +27,6 @@ dist-ssr
 .impeccable/hook.cache.json
 .impeccable/live/sessions/
 .impeccable/live/annotations/
+
+# Vercel CLI project link / pulled settings
+.vercel

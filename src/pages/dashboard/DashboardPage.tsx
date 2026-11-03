@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState, useTransition } from 'react'
 import { Link, useLocation } from 'react-router'
 import { Icon } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
-import { palette } from '../../config/theme'
+import { tone } from '../../config/theme'
 import { devicesQuery, recentActivityQuery, remoteSessionsQuery, resourceUsageQuery } from '../../services/queries'
 import type { TimeRange } from '../../types/dashboard'
 import type { Device, Issue } from '../../types/device'
@@ -95,17 +95,17 @@ export default function DashboardPage() {
           to="/devices?status=online"
           title="Agents online"
           value={s.online}
-          color={palette.primary}
+          color={tone.positive}
           note={`${s.total ? Math.round((s.online / s.total) * 1000) / 10 : 0}% of all agents`}
         />
         <StatCard
           to="/devices?status=offline"
           title="Agents offline"
           value={s.offline}
-          color={palette.textSecondary}
+          color={tone.muted}
           note={`${s.staleOffline} without heartbeat for over 10 min`}
         />
-        <StatCard to="#attention" title="Open alerts" value={s.alerts.length} color={palette.error} note={alertNote || 'No alerts'} />
+        <StatCard to="#attention" title="Open alerts" value={s.alerts.length} color={tone.error} note={alertNote || 'No alerts'} />
       </div>
 
       <div className="grid-2">
@@ -125,7 +125,7 @@ export default function DashboardPage() {
                   percent={value}
                   showInfo={false}
                   size={['100%', 8]}
-                  strokeColor={high ? palette.warning : palette.primary}
+                  strokeColor={high ? tone.warning : tone.positive}
                   aria-label={label}
                 />
               </div>
@@ -173,7 +173,7 @@ export default function DashboardPage() {
         <Card title="Recent activity">
           <Timeline
             items={activity.map((a) => ({
-              color: a.failed ? palette.error : palette.primary,
+              color: a.failed ? tone.error : tone.positive,
               content: (
                 <>
                   <div>{a.text}</div>

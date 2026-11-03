@@ -1,6 +1,6 @@
 # EdgePortal
 
-[![Docker image](https://github.com/EdgeDock/EdgePortal/actions/workflows/docker.yml/badge.svg)](https://github.com/EdgeDock/EdgePortal/actions/workflows/docker.yml)
+[![CI/CD](https://github.com/EdgeDock/EdgePortal/actions/workflows/ci.yml/badge.svg)](https://github.com/EdgeDock/EdgePortal/actions/workflows/ci.yml)
 
 **EdgePortal** is the web console of EdgeTunnel, used by a company's IT team to monitor and remotely operate its Windows and Linux machines.
 
@@ -25,7 +25,7 @@ EdgePanel does not serve the API yet, so the app runs on **mock data** by defaul
 ## Tech stack
 
 - React 19 + TypeScript, built with Vite
-- Ant Design 6 (dark theme)
+- Ant Design 6, with dark and light themes (follows the OS setting; switch in the header)
 - React Router
 - axios + TanStack Query
 - vite-plugin-pwa (installable; one window at a time)
@@ -127,16 +127,19 @@ What nginx does:
 
 ## CI/CD
 
-Every push to `main` runs [`.github/workflows/docker.yml`](.github/workflows/docker.yml):
+Every push to `main` runs [`.github/workflows/ci.yml`](.github/workflows/ci.yml). It has three jobs:
 
-1. Install dependencies, then run lint and tests. A failure stops the run.
-2. Build the image and push it to GitHub Container Registry:
-   - `ghcr.io/edgedock/edgeportal:latest`
-   - `ghcr.io/edgedock/edgeportal:sha-<short commit>`
+| Job | What it does |
+|---|---|
+| `check` | Install dependencies, then lint and test. The other two jobs run only if this one passes. |
+| `docker` | Build the image and push it to GitHub Container Registry as `ghcr.io/edgedock/edgeportal:latest` and `:sha-<short commit>`. |
+| `vercel` | Build and deploy to Vercel production. |
 
-To start a run by hand, use **Actions → Docker image → Run workflow**.
+To start a run by hand, use **Actions → CI/CD → Run workflow**.
 
-The workflow builds with mock data until told otherwise. Change this in **Settings → Secrets and variables → Actions → Variables**:
+### Docker image
+
+The image builds with mock data until told otherwise. Change this in **Settings → Secrets and variables → Actions → Variables**:
 
 | Variable | Workflow default |
 |---|---|
@@ -150,6 +153,33 @@ docker pull ghcr.io/edgedock/edgeportal:latest
 ```
 
 The first push creates the package as **private**. To make it public, change its visibility in the package settings on GitHub.
+
+### Vercel
+
+The deploy uses the Vercel CLI (`vercel pull` → `vercel build` → `vercel deploy --prebuilt --prod`). [`vercel.json`](vercel.json) sends every app route to `index.html` and keeps the service worker uncached.
+
+It also sets `git.deploymentEnabled: false`, so Vercel's own Git integration never deploys a second time; only this workflow deploys.
+
+One-time setup:
+
+1. **Create the project.** Create a Vercel project for this repo (import it in the dashboard, or run `npx vercel link` locally).
+2. **Find the IDs.** Note the **Project ID** (Project → Settings → General) and the **Team ID** (Team → Settings → General). For a personal account, use your user ID. After `vercel link`, both IDs are also in `.vercel/project.json` as `projectId` and `orgId`.
+3. **Create a token.** Create one under **Account Settings → Tokens**.
+4. **Add the secrets.** In GitHub **Settings → Secrets and variables → Actions → Secrets**, add:
+
+   | Secret | Value |
+   |---|---|
+   | `VERCEL_TOKEN` | the token |
+   | `VERCEL_ORG_ID` | the Team ID or user ID |
+   | `VERCEL_PROJECT_ID` | the Project ID |
+
+Until those secrets exist, the `vercel` job fails with a message naming them; the Docker job is unaffected.
+
+Build-time variables (`VITE_USE_MOCK`, `VITE_API_URL`) come from the Vercel project's **Environment Variables**. Without them, the deploy runs on mock data.
+
+To use the real API from Vercel:
+- Set `VITE_API_URL` to EdgePanel's public URL, for example `https://panel.example.com/api`.
+- Allow the Vercel domain in EdgePanel's CORS policy, because the portal and the API are then on different origins.
 
 ## License
 
