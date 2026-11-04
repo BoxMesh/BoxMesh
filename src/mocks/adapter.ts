@@ -21,6 +21,11 @@ const routes: Route[] = [
   ['get', /^\/metrics\/summary$/, (_, config) => ok(resourceHistory[config.params?.range as TimeRange] ?? resourceHistory['24h'])],
   ['get', /^\/sessions\/summary$/, () => ok(remoteSessions)],
   ['get', /^\/audit$/, (_, config) => ok(activity.slice(0, config.params?.limit ?? activity.length))],
+  // Any non-empty email and password signs in.
+  ['post', /^\/auth\/login$/, (_, config) => {
+    const { email, password } = JSON.parse(config.data ?? '{}')
+    return email && password ? ok({ email, name: email.split('@')[0] }) : [401, { error: 'Enter your email and password.' }]
+  }],
 ]
 
 const LATENCY_MS = 300 // so loading states show up while developing

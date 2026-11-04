@@ -1,0 +1,780 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" role="img" aria-label="EdgePortal background: network topology mesh" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTo3MTZiNzNkOS0wYzc5LTQ2NWItYTYxYS1mZGE5MTJiM2Y3NTEAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaDwAP3MKTSS9YRggpHoQLVgAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDo3Y2E5Njc5OC0xM2FiLTQ3ZWUtOGE1OS02OWUyY2FhMzU3M2NscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNo0dGx0R6f+Cu1S/1AsiqDhwAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggoFPE+KjGfa3sStW8TjkW+kiH//nn/I3q+NDenlNdim+kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaOQmvKIn+9Tw4FyyVSJ3PUcAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYICHCvaCRzgQCUZ2ml1uV12bVTqxHDYk+dVFXOyxVcGZzZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GQEoZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjcxNmI3M2Q5LTBjNzktNDY1Yi1hNjFhLWZkYTkxMmIzZjc1MS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjEwZWNiNzBkLTAzYTUtNGI1My1iM2E1LTVhNjhmNDU5OWJmMHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCCgU8T4qMZ9rexK1bxOORb6SIf/+ef8jer40N6eU12Kb6JjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggvpqb6/FOw3SBeUvBfhEAs/3RWgE/AA5BzOJ4a5YNaIeiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggKOwqBdjpg4B3qWr6JtinC64z/L63QklGICOyk2PiWeJ0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQB9sIUrd6z991RGp3nLMEV5kgShwb6o2QG8gvPdx68aosGF8fBwhAHD+sYyaTEMWat+6Pnquf34xSVum8QRmsKg=</c2pa:manifest></metadata>
+  <defs>
+    <radialGradient id="hubGlow" cx="960" cy="540" r="560" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#c7f36b" stop-opacity="0.13"/>
+      <stop offset="0.5" stop-color="#c7f36b" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#c7f36b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="center" cx="960" cy="540" r="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000000" stop-opacity="0.92"/>
+      <stop offset="0.55" stop-color="#000000" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.5" r="0.75">
+      <stop offset="0.62" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.8"/>
+    </radialGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  <rect width="1920" height="1080" fill="#000000"/>
+  <!-- topology mesh -->
+  <g stroke="#2a3135" stroke-width="1" stroke-opacity="0.85">
+<line x1="-133" y1="-147" x2="-27" y2="-149"/>
+<line x1="-133" y1="-147" x2="-109" y2="-32"/>
+<line x1="-133" y1="-147" x2="-15" y2="24"/>
+<line x1="-109" y1="-32" x2="-15" y2="24"/>
+<line x1="-109" y1="-32" x2="-117" y2="110"/>
+<line x1="-117" y1="110" x2="-24" y2="126"/>
+<line x1="-117" y1="110" x2="-154" y2="241"/>
+<line x1="-154" y1="241" x2="11" y2="230"/>
+<line x1="-154" y1="241" x2="-155" y2="355"/>
+<line x1="-155" y1="355" x2="4" y2="327"/>
+<line x1="-155" y1="355" x2="-153" y2="449"/>
+<line x1="-155" y1="355" x2="-33" y2="458"/>
+<line x1="-153" y1="449" x2="-33" y2="458"/>
+<line x1="-153" y1="449" x2="-126" y2="625"/>
+<line x1="-126" y1="625" x2="14" y2="594"/>
+<line x1="-126" y1="625" x2="-149" y2="699"/>
+<line x1="-126" y1="625" x2="-14" y2="727"/>
+<line x1="-149" y1="699" x2="-14" y2="727"/>
+<line x1="-149" y1="699" x2="-110" y2="874"/>
+<line x1="-149" y1="699" x2="14" y2="594"/>
+<line x1="-110" y1="874" x2="-4" y2="825"/>
+<line x1="-110" y1="874" x2="-114" y2="952"/>
+<line x1="-110" y1="874" x2="22" y2="975"/>
+<line x1="-114" y1="952" x2="22" y2="975"/>
+<line x1="-114" y1="952" x2="-84" y2="1046"/>
+<line x1="-114" y1="952" x2="-4" y2="825"/>
+<line x1="-84" y1="1046" x2="-19" y2="1086"/>
+<line x1="-84" y1="1046" x2="-93" y2="1184"/>
+<line x1="-84" y1="1046" x2="2" y2="1229"/>
+<line x1="-93" y1="1184" x2="2" y2="1229"/>
+<line x1="-93" y1="1184" x2="-19" y2="1086"/>
+<line x1="-27" y1="-149" x2="137" y2="-136"/>
+<line x1="-27" y1="-149" x2="-15" y2="24"/>
+<line x1="-15" y1="24" x2="156" y2="-29"/>
+<line x1="-15" y1="24" x2="-24" y2="126"/>
+<line x1="-15" y1="24" x2="114" y2="140"/>
+<line x1="-24" y1="126" x2="114" y2="140"/>
+<line x1="-24" y1="126" x2="11" y2="230"/>
+<line x1="11" y1="230" x2="94" y2="239"/>
+<line x1="11" y1="230" x2="4" y2="327"/>
+<line x1="11" y1="230" x2="85" y2="373"/>
+<line x1="4" y1="327" x2="85" y2="373"/>
+<line x1="4" y1="327" x2="-33" y2="458"/>
+<line x1="4" y1="327" x2="94" y2="239"/>
+<line x1="-33" y1="458" x2="140" y2="486"/>
+<line x1="-33" y1="458" x2="14" y2="594"/>
+<line x1="-33" y1="458" x2="149" y2="586"/>
+<line x1="14" y1="594" x2="149" y2="586"/>
+<line x1="14" y1="594" x2="-14" y2="727"/>
+<line x1="14" y1="594" x2="140" y2="486"/>
+<line x1="-14" y1="727" x2="135" y2="727"/>
+<line x1="-14" y1="727" x2="-4" y2="825"/>
+<line x1="-14" y1="727" x2="126" y2="837"/>
+<line x1="-4" y1="825" x2="126" y2="837"/>
+<line x1="-4" y1="825" x2="22" y2="975"/>
+<line x1="-4" y1="825" x2="135" y2="727"/>
+<line x1="22" y1="975" x2="146" y2="994"/>
+<line x1="22" y1="975" x2="-19" y2="1086"/>
+<line x1="-19" y1="1086" x2="118" y2="1092"/>
+<line x1="-19" y1="1086" x2="2" y2="1229"/>
+<line x1="-19" y1="1086" x2="146" y2="994"/>
+<line x1="2" y1="1229" x2="87" y2="1215"/>
+<line x1="137" y1="-136" x2="251" y2="-83"/>
+<line x1="137" y1="-136" x2="156" y2="-29"/>
+<line x1="137" y1="-136" x2="264" y2="-16"/>
+<line x1="156" y1="-29" x2="264" y2="-16"/>
+<line x1="156" y1="-29" x2="114" y2="140"/>
+<line x1="156" y1="-29" x2="251" y2="-83"/>
+<line x1="114" y1="140" x2="231" y2="133"/>
+<line x1="114" y1="140" x2="94" y2="239"/>
+<line x1="114" y1="140" x2="204" y2="237"/>
+<line x1="94" y1="239" x2="204" y2="237"/>
+<line x1="94" y1="239" x2="85" y2="373"/>
+<line x1="94" y1="239" x2="231" y2="133"/>
+<line x1="85" y1="373" x2="215" y2="331"/>
+<line x1="85" y1="373" x2="140" y2="486"/>
+<line x1="85" y1="373" x2="206" y2="500"/>
+<line x1="140" y1="486" x2="206" y2="500"/>
+<line x1="140" y1="486" x2="149" y2="586"/>
+<line x1="140" y1="486" x2="215" y2="331"/>
+<line x1="149" y1="586" x2="212" y2="581"/>
+<line x1="149" y1="586" x2="135" y2="727"/>
+<line x1="149" y1="586" x2="232" y2="748"/>
+<line x1="135" y1="727" x2="232" y2="748"/>
+<line x1="135" y1="727" x2="126" y2="837"/>
+<line x1="135" y1="727" x2="212" y2="581"/>
+<line x1="126" y1="837" x2="208" y2="836"/>
+<line x1="126" y1="837" x2="146" y2="994"/>
+<line x1="126" y1="837" x2="244" y2="989"/>
+<line x1="146" y1="994" x2="244" y2="989"/>
+<line x1="146" y1="994" x2="118" y2="1092"/>
+<line x1="146" y1="994" x2="208" y2="836"/>
+<line x1="118" y1="1092" x2="264" y2="1108"/>
+<line x1="118" y1="1092" x2="87" y2="1215"/>
+<line x1="118" y1="1092" x2="223" y2="1194"/>
+<line x1="87" y1="1215" x2="223" y2="1194"/>
+<line x1="251" y1="-83" x2="349" y2="-91"/>
+<line x1="251" y1="-83" x2="264" y2="-16"/>
+<line x1="264" y1="-16" x2="395" y2="-27"/>
+<line x1="264" y1="-16" x2="231" y2="133"/>
+<line x1="264" y1="-16" x2="335" y2="100"/>
+<line x1="231" y1="133" x2="335" y2="100"/>
+<line x1="231" y1="133" x2="204" y2="237"/>
+<line x1="231" y1="133" x2="395" y2="-27"/>
+<line x1="204" y1="237" x2="340" y2="239"/>
+<line x1="204" y1="237" x2="215" y2="331"/>
+<line x1="204" y1="237" x2="367" y2="342"/>
+<line x1="215" y1="331" x2="367" y2="342"/>
+<line x1="215" y1="331" x2="206" y2="500"/>
+<line x1="215" y1="331" x2="340" y2="239"/>
+<line x1="206" y1="500" x2="322" y2="474"/>
+<line x1="206" y1="500" x2="212" y2="581"/>
+<line x1="212" y1="581" x2="350" y2="605"/>
+<line x1="212" y1="581" x2="232" y2="748"/>
+<line x1="212" y1="581" x2="322" y2="474"/>
+<line x1="232" y1="748" x2="394" y2="734"/>
+<line x1="232" y1="748" x2="208" y2="836"/>
+<line x1="232" y1="748" x2="361" y2="849"/>
+<line x1="208" y1="836" x2="361" y2="849"/>
+<line x1="208" y1="836" x2="244" y2="989"/>
+<line x1="208" y1="836" x2="394" y2="734"/>
+<line x1="244" y1="989" x2="373" y2="926"/>
+<line x1="244" y1="989" x2="264" y2="1108"/>
+<line x1="244" y1="989" x2="390" y2="1101"/>
+<line x1="264" y1="1108" x2="390" y2="1101"/>
+<line x1="264" y1="1108" x2="223" y2="1194"/>
+<line x1="264" y1="1108" x2="373" y2="926"/>
+<line x1="223" y1="1194" x2="388" y2="1223"/>
+<line x1="349" y1="-91" x2="472" y2="-128"/>
+<line x1="349" y1="-91" x2="395" y2="-27"/>
+<line x1="349" y1="-91" x2="450" y2="10"/>
+<line x1="395" y1="-27" x2="450" y2="10"/>
+<line x1="395" y1="-27" x2="335" y2="100"/>
+<line x1="395" y1="-27" x2="472" y2="-128"/>
+<line x1="335" y1="100" x2="447" y2="87"/>
+<line x1="335" y1="100" x2="340" y2="239"/>
+<line x1="335" y1="100" x2="458" y2="214"/>
+<line x1="340" y1="239" x2="458" y2="214"/>
+<line x1="340" y1="239" x2="367" y2="342"/>
+<line x1="340" y1="239" x2="447" y2="87"/>
+<line x1="367" y1="342" x2="468" y2="326"/>
+<line x1="367" y1="342" x2="322" y2="474"/>
+<line x1="367" y1="342" x2="442" y2="453"/>
+<line x1="322" y1="474" x2="442" y2="453"/>
+<line x1="322" y1="474" x2="350" y2="605"/>
+<line x1="322" y1="474" x2="468" y2="326"/>
+<line x1="350" y1="605" x2="450" y2="590"/>
+<line x1="350" y1="605" x2="394" y2="734"/>
+<line x1="350" y1="605" x2="444" y2="748"/>
+<line x1="394" y1="734" x2="444" y2="748"/>
+<line x1="394" y1="734" x2="361" y2="849"/>
+<line x1="394" y1="734" x2="450" y2="590"/>
+<line x1="361" y1="849" x2="489" y2="813"/>
+<line x1="361" y1="849" x2="373" y2="926"/>
+<line x1="361" y1="849" x2="461" y2="948"/>
+<line x1="373" y1="926" x2="461" y2="948"/>
+<line x1="373" y1="926" x2="390" y2="1101"/>
+<line x1="373" y1="926" x2="489" y2="813"/>
+<line x1="390" y1="1101" x2="470" y2="1051"/>
+<line x1="390" y1="1101" x2="388" y2="1223"/>
+<line x1="390" y1="1101" x2="507" y2="1237"/>
+<line x1="388" y1="1223" x2="507" y2="1237"/>
+<line x1="388" y1="1223" x2="470" y2="1051"/>
+<line x1="472" y1="-128" x2="597" y2="-121"/>
+<line x1="472" y1="-128" x2="450" y2="10"/>
+<line x1="450" y1="10" x2="569" y2="-30"/>
+<line x1="450" y1="10" x2="447" y2="87"/>
+<line x1="450" y1="10" x2="588" y2="102"/>
+<line x1="447" y1="87" x2="588" y2="102"/>
+<line x1="447" y1="87" x2="458" y2="214"/>
+<line x1="447" y1="87" x2="569" y2="-30"/>
+<line x1="458" y1="214" x2="625" y2="214"/>
+<line x1="458" y1="214" x2="468" y2="326"/>
+<line x1="468" y1="326" x2="564" y2="394"/>
+<line x1="468" y1="326" x2="442" y2="453"/>
+<line x1="468" y1="326" x2="625" y2="214"/>
+<line x1="442" y1="453" x2="602" y2="453"/>
+<line x1="442" y1="453" x2="450" y2="590"/>
+<line x1="450" y1="590" x2="603" y2="564"/>
+<line x1="450" y1="590" x2="444" y2="748"/>
+<line x1="444" y1="748" x2="602" y2="756"/>
+<line x1="444" y1="748" x2="489" y2="813"/>
+<line x1="444" y1="748" x2="628" y2="855"/>
+<line x1="489" y1="813" x2="628" y2="855"/>
+<line x1="489" y1="813" x2="461" y2="948"/>
+<line x1="489" y1="813" x2="602" y2="756"/>
+<line x1="461" y1="948" x2="582" y2="950"/>
+<line x1="461" y1="948" x2="470" y2="1051"/>
+<line x1="470" y1="1051" x2="575" y2="1101"/>
+<line x1="470" y1="1051" x2="507" y2="1237"/>
+<line x1="507" y1="1237" x2="602" y2="1221"/>
+<line x1="597" y1="-121" x2="707" y2="-141"/>
+<line x1="597" y1="-121" x2="569" y2="-30"/>
+<line x1="597" y1="-121" x2="744" y2="37"/>
+<line x1="569" y1="-30" x2="744" y2="37"/>
+<line x1="569" y1="-30" x2="588" y2="102"/>
+<line x1="569" y1="-30" x2="707" y2="-141"/>
+<line x1="588" y1="102" x2="747" y2="143"/>
+<line x1="588" y1="102" x2="625" y2="214"/>
+<line x1="588" y1="102" x2="744" y2="258"/>
+<line x1="625" y1="214" x2="744" y2="258"/>
+<line x1="625" y1="214" x2="564" y2="394"/>
+<line x1="564" y1="394" x2="699" y2="361"/>
+<line x1="564" y1="394" x2="602" y2="453"/>
+<line x1="564" y1="394" x2="709" y2="444"/>
+<line x1="602" y1="453" x2="709" y2="444"/>
+<line x1="602" y1="453" x2="603" y2="564"/>
+<line x1="602" y1="453" x2="699" y2="361"/>
+<line x1="603" y1="564" x2="684" y2="583"/>
+<line x1="603" y1="564" x2="602" y2="756"/>
+<line x1="603" y1="564" x2="702" y2="735"/>
+<line x1="602" y1="756" x2="702" y2="735"/>
+<line x1="602" y1="756" x2="628" y2="855"/>
+<line x1="602" y1="756" x2="684" y2="583"/>
+<line x1="628" y1="855" x2="755" y2="836"/>
+<line x1="628" y1="855" x2="582" y2="950"/>
+<line x1="582" y1="950" x2="753" y2="997"/>
+<line x1="582" y1="950" x2="575" y2="1101"/>
+<line x1="582" y1="950" x2="755" y2="836"/>
+<line x1="575" y1="1101" x2="755" y2="1070"/>
+<line x1="575" y1="1101" x2="602" y2="1221"/>
+<line x1="602" y1="1221" x2="699" y2="1179"/>
+<line x1="602" y1="1221" x2="755" y2="1070"/>
+<line x1="707" y1="-141" x2="817" y2="-142"/>
+<line x1="707" y1="-141" x2="744" y2="37"/>
+<line x1="744" y1="37" x2="849" y2="30"/>
+<line x1="744" y1="37" x2="747" y2="143"/>
+<line x1="747" y1="143" x2="866" y2="118"/>
+<line x1="747" y1="143" x2="744" y2="258"/>
+<line x1="747" y1="143" x2="849" y2="30"/>
+<line x1="744" y1="258" x2="852" y2="263"/>
+<line x1="744" y1="258" x2="699" y2="361"/>
+<line x1="744" y1="258" x2="808" y2="372"/>
+<line x1="699" y1="361" x2="808" y2="372"/>
+<line x1="699" y1="361" x2="709" y2="444"/>
+<line x1="709" y1="444" x2="871" y2="501"/>
+<line x1="709" y1="444" x2="684" y2="583"/>
+<line x1="709" y1="444" x2="859" y2="598"/>
+<line x1="684" y1="583" x2="859" y2="598"/>
+<line x1="684" y1="583" x2="702" y2="735"/>
+<line x1="684" y1="583" x2="871" y2="501"/>
+<line x1="702" y1="735" x2="816" y2="742"/>
+<line x1="702" y1="735" x2="755" y2="836"/>
+<line x1="702" y1="735" x2="827" y2="863"/>
+<line x1="755" y1="836" x2="827" y2="863"/>
+<line x1="755" y1="836" x2="753" y2="997"/>
+<line x1="755" y1="836" x2="816" y2="742"/>
+<line x1="753" y1="997" x2="876" y2="952"/>
+<line x1="753" y1="997" x2="755" y2="1070"/>
+<line x1="753" y1="997" x2="833" y2="1114"/>
+<line x1="755" y1="1070" x2="833" y2="1114"/>
+<line x1="755" y1="1070" x2="699" y2="1179"/>
+<line x1="755" y1="1070" x2="876" y2="952"/>
+<line x1="699" y1="1179" x2="857" y2="1175"/>
+<line x1="817" y1="-142" x2="932" y2="-147"/>
+<line x1="817" y1="-142" x2="849" y2="30"/>
+<line x1="817" y1="-142" x2="991" y2="23"/>
+<line x1="849" y1="30" x2="991" y2="23"/>
+<line x1="849" y1="30" x2="866" y2="118"/>
+<line x1="849" y1="30" x2="932" y2="-147"/>
+<line x1="866" y1="118" x2="933" y2="145"/>
+<line x1="866" y1="118" x2="852" y2="263"/>
+<line x1="866" y1="118" x2="997" y2="252"/>
+<line x1="852" y1="263" x2="997" y2="252"/>
+<line x1="852" y1="263" x2="808" y2="372"/>
+<line x1="808" y1="372" x2="949" y2="364"/>
+<line x1="808" y1="372" x2="871" y2="501"/>
+<line x1="808" y1="372" x2="932" y2="443"/>
+<line x1="871" y1="501" x2="932" y2="443"/>
+<line x1="871" y1="501" x2="859" y2="598"/>
+<line x1="859" y1="598" x2="996" y2="611"/>
+<line x1="859" y1="598" x2="816" y2="742"/>
+<line x1="816" y1="742" x2="962" y2="753"/>
+<line x1="816" y1="742" x2="827" y2="863"/>
+<line x1="816" y1="742" x2="996" y2="611"/>
+<line x1="827" y1="863" x2="955" y2="868"/>
+<line x1="827" y1="863" x2="876" y2="952"/>
+<line x1="876" y1="952" x2="985" y2="938"/>
+<line x1="876" y1="952" x2="833" y2="1114"/>
+<line x1="876" y1="952" x2="955" y2="868"/>
+<line x1="833" y1="1114" x2="941" y2="1064"/>
+<line x1="833" y1="1114" x2="857" y2="1175"/>
+<line x1="857" y1="1175" x2="940" y2="1207"/>
+<line x1="857" y1="1175" x2="941" y2="1064"/>
+<line x1="932" y1="-147" x2="1062" y2="-126"/>
+<line x1="932" y1="-147" x2="991" y2="23"/>
+<line x1="991" y1="23" x2="1052" y2="31"/>
+<line x1="991" y1="23" x2="933" y2="145"/>
+<line x1="991" y1="23" x2="1069" y2="117"/>
+<line x1="933" y1="145" x2="1069" y2="117"/>
+<line x1="933" y1="145" x2="997" y2="252"/>
+<line x1="933" y1="145" x2="1052" y2="31"/>
+<line x1="997" y1="252" x2="1086" y2="271"/>
+<line x1="997" y1="252" x2="949" y2="364"/>
+<line x1="949" y1="364" x2="1074" y2="392"/>
+<line x1="949" y1="364" x2="932" y2="443"/>
+<line x1="949" y1="364" x2="1086" y2="271"/>
+<line x1="932" y1="443" x2="1080" y2="482"/>
+<line x1="932" y1="443" x2="996" y2="611"/>
+<line x1="932" y1="443" x2="1082" y2="563"/>
+<line x1="996" y1="611" x2="1082" y2="563"/>
+<line x1="996" y1="611" x2="962" y2="753"/>
+<line x1="996" y1="611" x2="1080" y2="482"/>
+<line x1="962" y1="753" x2="1075" y2="696"/>
+<line x1="962" y1="753" x2="955" y2="868"/>
+<line x1="962" y1="753" x2="1042" y2="863"/>
+<line x1="955" y1="868" x2="1042" y2="863"/>
+<line x1="955" y1="868" x2="985" y2="938"/>
+<line x1="955" y1="868" x2="1075" y2="696"/>
+<line x1="985" y1="938" x2="1055" y2="958"/>
+<line x1="985" y1="938" x2="941" y2="1064"/>
+<line x1="985" y1="938" x2="1097" y2="1084"/>
+<line x1="941" y1="1064" x2="1097" y2="1084"/>
+<line x1="941" y1="1064" x2="940" y2="1207"/>
+<line x1="940" y1="1207" x2="1067" y2="1201"/>
+<line x1="1062" y1="-126" x2="1204" y2="-98"/>
+<line x1="1062" y1="-126" x2="1052" y2="31"/>
+<line x1="1062" y1="-126" x2="1170" y2="5"/>
+<line x1="1052" y1="31" x2="1170" y2="5"/>
+<line x1="1052" y1="31" x2="1069" y2="117"/>
+<line x1="1069" y1="117" x2="1181" y2="103"/>
+<line x1="1069" y1="117" x2="1086" y2="271"/>
+<line x1="1069" y1="117" x2="1221" y2="241"/>
+<line x1="1086" y1="271" x2="1221" y2="241"/>
+<line x1="1086" y1="271" x2="1074" y2="392"/>
+<line x1="1086" y1="271" x2="1181" y2="103"/>
+<line x1="1074" y1="392" x2="1205" y2="380"/>
+<line x1="1074" y1="392" x2="1080" y2="482"/>
+<line x1="1074" y1="392" x2="1231" y2="476"/>
+<line x1="1080" y1="482" x2="1231" y2="476"/>
+<line x1="1080" y1="482" x2="1082" y2="563"/>
+<line x1="1080" y1="482" x2="1205" y2="380"/>
+<line x1="1082" y1="563" x2="1209" y2="600"/>
+<line x1="1082" y1="563" x2="1075" y2="696"/>
+<line x1="1082" y1="563" x2="1201" y2="735"/>
+<line x1="1075" y1="696" x2="1201" y2="735"/>
+<line x1="1075" y1="696" x2="1042" y2="863"/>
+<line x1="1042" y1="863" x2="1196" y2="843"/>
+<line x1="1042" y1="863" x2="1055" y2="958"/>
+<line x1="1055" y1="958" x2="1198" y2="994"/>
+<line x1="1055" y1="958" x2="1097" y2="1084"/>
+<line x1="1097" y1="1084" x2="1215" y2="1109"/>
+<line x1="1097" y1="1084" x2="1067" y2="1201"/>
+<line x1="1097" y1="1084" x2="1234" y2="1182"/>
+<line x1="1067" y1="1201" x2="1234" y2="1182"/>
+<line x1="1204" y1="-98" x2="1325" y2="-86"/>
+<line x1="1204" y1="-98" x2="1170" y2="5"/>
+<line x1="1170" y1="5" x2="1346" y2="-28"/>
+<line x1="1170" y1="5" x2="1181" y2="103"/>
+<line x1="1181" y1="103" x2="1291" y2="116"/>
+<line x1="1181" y1="103" x2="1221" y2="241"/>
+<line x1="1181" y1="103" x2="1346" y2="-28"/>
+<line x1="1221" y1="241" x2="1288" y2="220"/>
+<line x1="1221" y1="241" x2="1205" y2="380"/>
+<line x1="1221" y1="241" x2="1288" y2="373"/>
+<line x1="1205" y1="380" x2="1288" y2="373"/>
+<line x1="1205" y1="380" x2="1231" y2="476"/>
+<line x1="1205" y1="380" x2="1288" y2="220"/>
+<line x1="1231" y1="476" x2="1342" y2="510"/>
+<line x1="1231" y1="476" x2="1209" y2="600"/>
+<line x1="1231" y1="476" x2="1294" y2="616"/>
+<line x1="1209" y1="600" x2="1294" y2="616"/>
+<line x1="1209" y1="600" x2="1201" y2="735"/>
+<line x1="1209" y1="600" x2="1342" y2="510"/>
+<line x1="1201" y1="735" x2="1332" y2="693"/>
+<line x1="1201" y1="735" x2="1196" y2="843"/>
+<line x1="1196" y1="843" x2="1349" y2="876"/>
+<line x1="1196" y1="843" x2="1198" y2="994"/>
+<line x1="1196" y1="843" x2="1332" y2="693"/>
+<line x1="1198" y1="994" x2="1299" y2="994"/>
+<line x1="1198" y1="994" x2="1215" y2="1109"/>
+<line x1="1198" y1="994" x2="1312" y2="1079"/>
+<line x1="1215" y1="1109" x2="1312" y2="1079"/>
+<line x1="1215" y1="1109" x2="1234" y2="1182"/>
+<line x1="1215" y1="1109" x2="1299" y2="994"/>
+<line x1="1234" y1="1182" x2="1357" y2="1225"/>
+<line x1="1325" y1="-86" x2="1414" y2="-125"/>
+<line x1="1325" y1="-86" x2="1346" y2="-28"/>
+<line x1="1346" y1="-28" x2="1441" y2="-12"/>
+<line x1="1346" y1="-28" x2="1291" y2="116"/>
+<line x1="1346" y1="-28" x2="1414" y2="-125"/>
+<line x1="1291" y1="116" x2="1417" y2="106"/>
+<line x1="1291" y1="116" x2="1288" y2="220"/>
+<line x1="1291" y1="116" x2="1457" y2="203"/>
+<line x1="1288" y1="220" x2="1457" y2="203"/>
+<line x1="1288" y1="220" x2="1288" y2="373"/>
+<line x1="1288" y1="220" x2="1417" y2="106"/>
+<line x1="1288" y1="373" x2="1444" y2="355"/>
+<line x1="1288" y1="373" x2="1342" y2="510"/>
+<line x1="1288" y1="373" x2="1403" y2="467"/>
+<line x1="1342" y1="510" x2="1403" y2="467"/>
+<line x1="1342" y1="510" x2="1294" y2="616"/>
+<line x1="1342" y1="510" x2="1444" y2="355"/>
+<line x1="1294" y1="616" x2="1449" y2="601"/>
+<line x1="1294" y1="616" x2="1332" y2="693"/>
+<line x1="1332" y1="693" x2="1407" y2="757"/>
+<line x1="1332" y1="693" x2="1349" y2="876"/>
+<line x1="1332" y1="693" x2="1449" y2="601"/>
+<line x1="1349" y1="876" x2="1462" y2="876"/>
+<line x1="1349" y1="876" x2="1299" y2="994"/>
+<line x1="1349" y1="876" x2="1410" y2="942"/>
+<line x1="1299" y1="994" x2="1410" y2="942"/>
+<line x1="1299" y1="994" x2="1312" y2="1079"/>
+<line x1="1299" y1="994" x2="1462" y2="876"/>
+<line x1="1312" y1="1079" x2="1405" y2="1101"/>
+<line x1="1312" y1="1079" x2="1357" y2="1225"/>
+<line x1="1312" y1="1079" x2="1423" y2="1172"/>
+<line x1="1357" y1="1225" x2="1423" y2="1172"/>
+<line x1="1357" y1="1225" x2="1405" y2="1101"/>
+<line x1="1414" y1="-125" x2="1554" y2="-89"/>
+<line x1="1414" y1="-125" x2="1441" y2="-12"/>
+<line x1="1441" y1="-12" x2="1584" y2="-18"/>
+<line x1="1441" y1="-12" x2="1417" y2="106"/>
+<line x1="1441" y1="-12" x2="1533" y2="152"/>
+<line x1="1417" y1="106" x2="1533" y2="152"/>
+<line x1="1417" y1="106" x2="1457" y2="203"/>
+<line x1="1417" y1="106" x2="1584" y2="-18"/>
+<line x1="1457" y1="203" x2="1565" y2="255"/>
+<line x1="1457" y1="203" x2="1444" y2="355"/>
+<line x1="1457" y1="203" x2="1529" y2="326"/>
+<line x1="1444" y1="355" x2="1529" y2="326"/>
+<line x1="1444" y1="355" x2="1403" y2="467"/>
+<line x1="1403" y1="467" x2="1574" y2="474"/>
+<line x1="1403" y1="467" x2="1449" y2="601"/>
+<line x1="1403" y1="467" x2="1528" y2="633"/>
+<line x1="1449" y1="601" x2="1528" y2="633"/>
+<line x1="1449" y1="601" x2="1407" y2="757"/>
+<line x1="1449" y1="601" x2="1574" y2="474"/>
+<line x1="1407" y1="757" x2="1570" y2="743"/>
+<line x1="1407" y1="757" x2="1462" y2="876"/>
+<line x1="1462" y1="876" x2="1528" y2="867"/>
+<line x1="1462" y1="876" x2="1410" y2="942"/>
+<line x1="1410" y1="942" x2="1527" y2="988"/>
+<line x1="1410" y1="942" x2="1405" y2="1101"/>
+<line x1="1410" y1="942" x2="1556" y2="1068"/>
+<line x1="1405" y1="1101" x2="1556" y2="1068"/>
+<line x1="1405" y1="1101" x2="1423" y2="1172"/>
+<line x1="1405" y1="1101" x2="1527" y2="988"/>
+<line x1="1423" y1="1172" x2="1564" y2="1232"/>
+<line x1="1554" y1="-89" x2="1662" y2="-148"/>
+<line x1="1554" y1="-89" x2="1584" y2="-18"/>
+<line x1="1554" y1="-89" x2="1682" y2="-20"/>
+<line x1="1584" y1="-18" x2="1682" y2="-20"/>
+<line x1="1584" y1="-18" x2="1533" y2="152"/>
+<line x1="1584" y1="-18" x2="1662" y2="-148"/>
+<line x1="1533" y1="152" x2="1650" y2="94"/>
+<line x1="1533" y1="152" x2="1565" y2="255"/>
+<line x1="1533" y1="152" x2="1646" y2="217"/>
+<line x1="1565" y1="255" x2="1646" y2="217"/>
+<line x1="1565" y1="255" x2="1529" y2="326"/>
+<line x1="1565" y1="255" x2="1650" y2="94"/>
+<line x1="1529" y1="326" x2="1666" y2="345"/>
+<line x1="1529" y1="326" x2="1574" y2="474"/>
+<line x1="1529" y1="326" x2="1700" y2="464"/>
+<line x1="1574" y1="474" x2="1700" y2="464"/>
+<line x1="1574" y1="474" x2="1528" y2="633"/>
+<line x1="1574" y1="474" x2="1666" y2="345"/>
+<line x1="1528" y1="633" x2="1680" y2="576"/>
+<line x1="1528" y1="633" x2="1570" y2="743"/>
+<line x1="1528" y1="633" x2="1668" y2="683"/>
+<line x1="1570" y1="743" x2="1668" y2="683"/>
+<line x1="1570" y1="743" x2="1528" y2="867"/>
+<line x1="1528" y1="867" x2="1661" y2="803"/>
+<line x1="1528" y1="867" x2="1527" y2="988"/>
+<line x1="1528" y1="867" x2="1698" y2="964"/>
+<line x1="1527" y1="988" x2="1698" y2="964"/>
+<line x1="1527" y1="988" x2="1556" y2="1068"/>
+<line x1="1527" y1="988" x2="1661" y2="803"/>
+<line x1="1556" y1="1068" x2="1656" y2="1078"/>
+<line x1="1556" y1="1068" x2="1564" y2="1232"/>
+<line x1="1556" y1="1068" x2="1713" y2="1170"/>
+<line x1="1564" y1="1232" x2="1713" y2="1170"/>
+<line x1="1564" y1="1232" x2="1656" y2="1078"/>
+<line x1="1662" y1="-148" x2="1824" y2="-125"/>
+<line x1="1662" y1="-148" x2="1682" y2="-20"/>
+<line x1="1682" y1="-20" x2="1800" y2="25"/>
+<line x1="1682" y1="-20" x2="1650" y2="94"/>
+<line x1="1682" y1="-20" x2="1792" y2="121"/>
+<line x1="1650" y1="94" x2="1792" y2="121"/>
+<line x1="1650" y1="94" x2="1646" y2="217"/>
+<line x1="1650" y1="94" x2="1800" y2="25"/>
+<line x1="1646" y1="217" x2="1814" y2="277"/>
+<line x1="1646" y1="217" x2="1666" y2="345"/>
+<line x1="1646" y1="217" x2="1788" y2="385"/>
+<line x1="1666" y1="345" x2="1788" y2="385"/>
+<line x1="1666" y1="345" x2="1700" y2="464"/>
+<line x1="1666" y1="345" x2="1814" y2="277"/>
+<line x1="1700" y1="464" x2="1816" y2="490"/>
+<line x1="1700" y1="464" x2="1680" y2="576"/>
+<line x1="1680" y1="576" x2="1793" y2="588"/>
+<line x1="1680" y1="576" x2="1668" y2="683"/>
+<line x1="1680" y1="576" x2="1816" y2="490"/>
+<line x1="1668" y1="683" x2="1766" y2="692"/>
+<line x1="1668" y1="683" x2="1661" y2="803"/>
+<line x1="1668" y1="683" x2="1767" y2="858"/>
+<line x1="1661" y1="803" x2="1767" y2="858"/>
+<line x1="1661" y1="803" x2="1698" y2="964"/>
+<line x1="1661" y1="803" x2="1766" y2="692"/>
+<line x1="1698" y1="964" x2="1781" y2="934"/>
+<line x1="1698" y1="964" x2="1656" y2="1078"/>
+<line x1="1656" y1="1078" x2="1768" y2="1106"/>
+<line x1="1656" y1="1078" x2="1713" y2="1170"/>
+<line x1="1656" y1="1078" x2="1781" y2="934"/>
+<line x1="1713" y1="1170" x2="1828" y2="1213"/>
+<line x1="1824" y1="-125" x2="1903" y2="-140"/>
+<line x1="1824" y1="-125" x2="1800" y2="25"/>
+<line x1="1824" y1="-125" x2="1904" y2="-3"/>
+<line x1="1800" y1="25" x2="1904" y2="-3"/>
+<line x1="1800" y1="25" x2="1792" y2="121"/>
+<line x1="1800" y1="25" x2="1903" y2="-140"/>
+<line x1="1792" y1="121" x2="1894" y2="116"/>
+<line x1="1792" y1="121" x2="1814" y2="277"/>
+<line x1="1792" y1="121" x2="1902" y2="275"/>
+<line x1="1814" y1="277" x2="1902" y2="275"/>
+<line x1="1814" y1="277" x2="1788" y2="385"/>
+<line x1="1814" y1="277" x2="1894" y2="116"/>
+<line x1="1788" y1="385" x2="1956" y2="364"/>
+<line x1="1788" y1="385" x2="1816" y2="490"/>
+<line x1="1816" y1="490" x2="1901" y2="515"/>
+<line x1="1816" y1="490" x2="1793" y2="588"/>
+<line x1="1793" y1="588" x2="1906" y2="589"/>
+<line x1="1793" y1="588" x2="1766" y2="692"/>
+<line x1="1766" y1="692" x2="1882" y2="711"/>
+<line x1="1766" y1="692" x2="1767" y2="858"/>
+<line x1="1766" y1="692" x2="1906" y2="589"/>
+<line x1="1767" y1="858" x2="1918" y2="840"/>
+<line x1="1767" y1="858" x2="1781" y2="934"/>
+<line x1="1767" y1="858" x2="1897" y2="960"/>
+<line x1="1781" y1="934" x2="1897" y2="960"/>
+<line x1="1781" y1="934" x2="1768" y2="1106"/>
+<line x1="1781" y1="934" x2="1918" y2="840"/>
+<line x1="1768" y1="1106" x2="1882" y2="1062"/>
+<line x1="1768" y1="1106" x2="1828" y2="1213"/>
+<line x1="1828" y1="1213" x2="1889" y2="1192"/>
+<line x1="1828" y1="1213" x2="1882" y2="1062"/>
+<line x1="1903" y1="-140" x2="2005" y2="-156"/>
+<line x1="1903" y1="-140" x2="1904" y2="-3"/>
+<line x1="1904" y1="-3" x2="2025" y2="-20"/>
+<line x1="1904" y1="-3" x2="1894" y2="116"/>
+<line x1="1904" y1="-3" x2="2047" y2="122"/>
+<line x1="1894" y1="116" x2="2047" y2="122"/>
+<line x1="1894" y1="116" x2="1902" y2="275"/>
+<line x1="1894" y1="116" x2="2025" y2="-20"/>
+<line x1="1902" y1="275" x2="2059" y2="252"/>
+<line x1="1902" y1="275" x2="1956" y2="364"/>
+<line x1="1902" y1="275" x2="2056" y2="389"/>
+<line x1="1956" y1="364" x2="2056" y2="389"/>
+<line x1="1956" y1="364" x2="1901" y2="515"/>
+<line x1="1901" y1="515" x2="2032" y2="467"/>
+<line x1="1901" y1="515" x2="1906" y2="589"/>
+<line x1="1906" y1="589" x2="2077" y2="573"/>
+<line x1="1906" y1="589" x2="1882" y2="711"/>
+<line x1="1882" y1="711" x2="2057" y2="731"/>
+<line x1="1882" y1="711" x2="1918" y2="840"/>
+<line x1="1918" y1="840" x2="2005" y2="865"/>
+<line x1="1918" y1="840" x2="1897" y2="960"/>
+<line x1="1918" y1="840" x2="2057" y2="731"/>
+<line x1="1897" y1="960" x2="2070" y2="970"/>
+<line x1="1897" y1="960" x2="1882" y2="1062"/>
+<line x1="1897" y1="960" x2="2058" y2="1104"/>
+<line x1="1882" y1="1062" x2="2058" y2="1104"/>
+<line x1="1882" y1="1062" x2="1889" y2="1192"/>
+<line x1="1882" y1="1062" x2="2070" y2="970"/>
+<line x1="1889" y1="1192" x2="2013" y2="1202"/>
+<line x1="2005" y1="-156" x2="2025" y2="-20"/>
+<line x1="2025" y1="-20" x2="2047" y2="122"/>
+<line x1="2047" y1="122" x2="2059" y2="252"/>
+<line x1="2059" y1="252" x2="2056" y2="389"/>
+<line x1="2056" y1="389" x2="2032" y2="467"/>
+<line x1="2032" y1="467" x2="2077" y2="573"/>
+<line x1="2077" y1="573" x2="2057" y2="731"/>
+<line x1="2057" y1="731" x2="2005" y2="865"/>
+<line x1="2005" y1="865" x2="2070" y2="970"/>
+<line x1="2070" y1="970" x2="2058" y2="1104"/>
+<line x1="2058" y1="1104" x2="2013" y2="1202"/>
+  </g>
+  <g fill="#3a4247">
+<circle cx="11" cy="230" r="1.8"/>
+<circle cx="4" cy="327" r="1.8"/>
+<circle cx="14" cy="594" r="1.8"/>
+<circle cx="-4" cy="825" r="1.8"/>
+<circle cx="22" cy="975" r="1.8"/>
+<circle cx="114" cy="140" r="1.8"/>
+<circle cx="94" cy="239" r="1.8"/>
+<circle cx="85" cy="373" r="1.8"/>
+<circle cx="149" cy="586" r="1.8"/>
+<circle cx="135" cy="727" r="1.8"/>
+<circle cx="126" cy="837" r="1.8"/>
+<circle cx="146" cy="994" r="1.8"/>
+<circle cx="231" cy="133" r="1.8"/>
+<circle cx="215" cy="331" r="1.8"/>
+<circle cx="206" cy="500" r="1.8"/>
+<circle cx="212" cy="581" r="1.8"/>
+<circle cx="244" cy="989" r="1.8"/>
+<circle cx="335" cy="100" r="1.8"/>
+<circle cx="340" cy="239" r="1.8"/>
+<circle cx="367" cy="342" r="1.8"/>
+<circle cx="322" cy="474" r="1.8"/>
+<circle cx="394" cy="734" r="1.8"/>
+<circle cx="361" cy="849" r="1.8"/>
+<circle cx="373" cy="926" r="1.8"/>
+<circle cx="450" cy="10" r="1.8"/>
+<circle cx="447" cy="87" r="1.8"/>
+<circle cx="458" cy="214" r="1.8"/>
+<circle cx="468" cy="326" r="1.8"/>
+<circle cx="442" cy="453" r="1.8"/>
+<circle cx="450" cy="590" r="1.8"/>
+<circle cx="444" cy="748" r="1.8"/>
+<circle cx="489" cy="813" r="1.8"/>
+<circle cx="470" cy="1051" r="1.8"/>
+<circle cx="588" cy="102" r="1.8"/>
+<circle cx="625" cy="214" r="1.8"/>
+<circle cx="564" cy="394" r="1.8"/>
+<circle cx="602" cy="453" r="1.8"/>
+<circle cx="603" cy="564" r="1.8"/>
+<circle cx="602" cy="756" r="1.8"/>
+<circle cx="582" cy="950" r="1.8"/>
+<circle cx="744" cy="37" r="1.8"/>
+<circle cx="747" cy="143" r="1.8"/>
+<circle cx="744" cy="258" r="1.8"/>
+<circle cx="699" cy="361" r="1.8"/>
+<circle cx="709" cy="444" r="1.8"/>
+<circle cx="684" cy="583" r="1.8"/>
+<circle cx="702" cy="735" r="1.8"/>
+<circle cx="755" cy="836" r="1.8"/>
+<circle cx="753" cy="997" r="1.8"/>
+<circle cx="755" cy="1070" r="1.8"/>
+<circle cx="849" cy="30" r="1.8"/>
+<circle cx="866" cy="118" r="1.8"/>
+<circle cx="852" cy="263" r="1.8"/>
+<circle cx="808" cy="372" r="1.8"/>
+<circle cx="871" cy="501" r="1.8"/>
+<circle cx="859" cy="598" r="1.8"/>
+<circle cx="816" cy="742" r="1.8"/>
+<circle cx="827" cy="863" r="1.8"/>
+<circle cx="876" cy="952" r="1.8"/>
+<circle cx="991" cy="23" r="1.8"/>
+<circle cx="933" cy="145" r="1.8"/>
+<circle cx="997" cy="252" r="1.8"/>
+<circle cx="949" cy="364" r="1.8"/>
+<circle cx="932" cy="443" r="1.8"/>
+<circle cx="996" cy="611" r="1.8"/>
+<circle cx="962" cy="753" r="1.8"/>
+<circle cx="941" cy="1064" r="1.8"/>
+<circle cx="1052" cy="31" r="1.8"/>
+<circle cx="1069" cy="117" r="1.8"/>
+<circle cx="1086" cy="271" r="1.8"/>
+<circle cx="1074" cy="392" r="1.8"/>
+<circle cx="1080" cy="482" r="1.8"/>
+<circle cx="1082" cy="563" r="1.8"/>
+<circle cx="1075" cy="696" r="1.8"/>
+<circle cx="1042" cy="863" r="1.8"/>
+<circle cx="1055" cy="958" r="1.8"/>
+<circle cx="1170" cy="5" r="1.8"/>
+<circle cx="1181" cy="103" r="1.8"/>
+<circle cx="1221" cy="241" r="1.8"/>
+<circle cx="1205" cy="380" r="1.8"/>
+<circle cx="1231" cy="476" r="1.8"/>
+<circle cx="1201" cy="735" r="1.8"/>
+<circle cx="1196" cy="843" r="1.8"/>
+<circle cx="1198" cy="994" r="1.8"/>
+<circle cx="1288" cy="220" r="1.8"/>
+<circle cx="1288" cy="373" r="1.8"/>
+<circle cx="1342" cy="510" r="1.8"/>
+<circle cx="1294" cy="616" r="1.8"/>
+<circle cx="1332" cy="693" r="1.8"/>
+<circle cx="1349" cy="876" r="1.8"/>
+<circle cx="1312" cy="1079" r="1.8"/>
+<circle cx="1417" cy="106" r="1.8"/>
+<circle cx="1457" cy="203" r="1.8"/>
+<circle cx="1444" cy="355" r="1.8"/>
+<circle cx="1403" cy="467" r="1.8"/>
+<circle cx="1449" cy="601" r="1.8"/>
+<circle cx="1462" cy="876" r="1.8"/>
+<circle cx="1410" cy="942" r="1.8"/>
+<circle cx="1533" cy="152" r="1.8"/>
+<circle cx="1528" cy="633" r="1.8"/>
+<circle cx="1570" cy="743" r="1.8"/>
+<circle cx="1528" cy="867" r="1.8"/>
+<circle cx="1527" cy="988" r="1.8"/>
+<circle cx="1556" cy="1068" r="1.8"/>
+<circle cx="1650" cy="94" r="1.8"/>
+<circle cx="1646" cy="217" r="1.8"/>
+<circle cx="1666" cy="345" r="1.8"/>
+<circle cx="1700" cy="464" r="1.8"/>
+<circle cx="1680" cy="576" r="1.8"/>
+<circle cx="1668" cy="683" r="1.8"/>
+<circle cx="1661" cy="803" r="1.8"/>
+<circle cx="1656" cy="1078" r="1.8"/>
+<circle cx="1800" cy="25" r="1.8"/>
+<circle cx="1792" cy="121" r="1.8"/>
+<circle cx="1814" cy="277" r="1.8"/>
+<circle cx="1816" cy="490" r="1.8"/>
+<circle cx="1793" cy="588" r="1.8"/>
+<circle cx="1766" cy="692" r="1.8"/>
+<circle cx="1767" cy="858" r="1.8"/>
+<circle cx="1781" cy="934" r="1.8"/>
+<circle cx="1904" cy="-3" r="1.8"/>
+<circle cx="1894" cy="116" r="1.8"/>
+<circle cx="1902" cy="275" r="1.8"/>
+<circle cx="1901" cy="515" r="1.8"/>
+<circle cx="1906" cy="589" r="1.8"/>
+<circle cx="1882" cy="711" r="1.8"/>
+<circle cx="1918" cy="840" r="1.8"/>
+<circle cx="1897" cy="960" r="1.8"/>
+<circle cx="1882" cy="1062" r="1.8"/>
+  </g>
+  <g fill="#c7f36b" opacity="0.5" filter="url(#glow)">
+<circle cx="140" cy="486" r="3"/>
+<circle cx="204" cy="237" r="3"/>
+<circle cx="232" cy="748" r="3"/>
+<circle cx="208" cy="836" r="3"/>
+<circle cx="350" cy="605" r="3"/>
+<circle cx="461" cy="948" r="3"/>
+<circle cx="628" cy="855" r="3"/>
+<circle cx="955" cy="868" r="3"/>
+<circle cx="985" cy="938" r="3"/>
+<circle cx="1097" cy="1084" r="3"/>
+<circle cx="1209" cy="600" r="3"/>
+<circle cx="1291" cy="116" r="3"/>
+<circle cx="1299" cy="994" r="3"/>
+<circle cx="1407" cy="757" r="3"/>
+<circle cx="1565" cy="255" r="3"/>
+<circle cx="1529" cy="326" r="3"/>
+<circle cx="1574" cy="474" r="3"/>
+<circle cx="1698" cy="964" r="3"/>
+<circle cx="1788" cy="385" r="3"/>
+  </g>
+  <g fill="#c7f36b">
+<circle cx="140" cy="486" r="3"/>
+<circle cx="204" cy="237" r="3"/>
+<circle cx="232" cy="748" r="3"/>
+<circle cx="208" cy="836" r="3"/>
+<circle cx="350" cy="605" r="3"/>
+<circle cx="461" cy="948" r="3"/>
+<circle cx="628" cy="855" r="3"/>
+<circle cx="955" cy="868" r="3"/>
+<circle cx="985" cy="938" r="3"/>
+<circle cx="1097" cy="1084" r="3"/>
+<circle cx="1209" cy="600" r="3"/>
+<circle cx="1291" cy="116" r="3"/>
+<circle cx="1299" cy="994" r="3"/>
+<circle cx="1407" cy="757" r="3"/>
+<circle cx="1565" cy="255" r="3"/>
+<circle cx="1529" cy="326" r="3"/>
+<circle cx="1574" cy="474" r="3"/>
+<circle cx="1698" cy="964" r="3"/>
+<circle cx="1788" cy="385" r="3"/>
+  </g>
+  <rect width="1920" height="1080" fill="url(#hubGlow)"/>
+  <!-- orbit rings around the sign-in card / control plane -->
+  <g fill="none" stroke="#3a4247">
+    <ellipse cx="960" cy="540" rx="420" ry="300" stroke-dasharray="2 8"/>
+    <ellipse cx="960" cy="540" rx="700" ry="380" stroke-opacity="0.55"/>
+  </g>
+  <!-- quiet zone for the card -->
+  <rect width="1920" height="1080" fill="url(#center)"/>
+  <rect width="1920" height="1080" fill="url(#vignette)"/>
+</svg>

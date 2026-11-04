@@ -14,6 +14,7 @@ Browser ── EdgePortal ──HTTPS / WebSocket──► EdgePanel (VPS) ◄�
 
 | Module | State |
 |---|---|
+| Sign in (`/login`) | Built; until EdgePanel has sign-in, the mock accepts any email and password |
 | Dashboard | Built |
 | Devices (list, detail, enrollment drawer) | Built |
 | Remote Terminal, Remote Desktop, Remote Files, Remote Service | Planned; the UI shows "isn't available yet" |
@@ -96,6 +97,7 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
+| POST | `/api/auth/login` (`{ email, password }` → `{ email, name }`) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
 | GET | `/api/devices/{host}/connections` |

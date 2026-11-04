@@ -48,6 +48,8 @@ Rules: one accent only (lime). Status is never told by hue alone — always with
 **How it switches**
 - The default follows the OS setting (`prefers-color-scheme`). The sun/moon button in the header overrides it, and the choice is saved in `localStorage` as `edgeportal-theme`.
 - An inline script in `index.html` sets `<html data-theme>` before the first paint, so a light visit never flashes black.
+- Switching animates: the new theme spreads as a circle from the toggle's centre (View Transitions API, 550 ms,
+  `cubic-bezier(0.2, 0, 0, 1)`). Browsers without the API, and reduced-motion users, switch instantly.
 - `src/config/theme.ts` `buildTheme(mode)` builds the antd theme; `src/styles/index.css` has the CSS variables under `:root[data-theme='light']`.
 
 **Two roles for lime**
@@ -278,6 +280,21 @@ Entry points to unbuilt modules stay visible but muted. There is no "Soon" badge
   - Shows the module's own icon in a 72 px raised circle, the title "<Module> isn't available yet", and the module's one-line summary from `src/config/nav.ts`.
   - Its primary button is "Go to Devices"; inside a device tab it is "Back to overview" instead.
 - **Stubbed actions:** they toast "<Doing something> isn't available yet." and never fake success.
+
+### Sign-in page (added in the app, not on the canvas)
+`/login` is public; every other route sends a signed-out visitor there and returns them to the page they asked for.
+- Layout: the theme pill ("Light mode / Dark mode") top-right; centred, slightly above centre: the logo mark
+  (56 px tile, lime border, glow, pulsing ring) with "EdgePortal" under it, then the form card.
+- Background: `src/assets/edgeportal.svg` (the owner's artwork), inlined full-window by
+  `src/pages/login/LoginBackground.tsx`: a topology mesh with lime nodes, two orbit rings, a lime glow and a darkened
+  quiet zone behind the card, and a vignette. No agent icons, tunnels or packets. The artwork is drawn in the dark
+  palette; `.login-bg` rules in `index.css` re-map each of its colours (#000000, #2a3135, #3a4247, #c7f36b) to theme
+  tokens, so light mode needs no second file. Keep new artwork colours inside that list, or add a rule.
+- Card: `bg-surface`, radius 24, padding 36. h1 "Welcome back" 32/40/600, subtitle, large (40 px) fields,
+  "Remember me", full-width primary button with an arrow.
+- Windows under 800 px tall get a tighter card; below 576 px the page padding drops to 16.
+- "Remember me" keeps the session in `localStorage`; otherwise it's in `sessionStorage`. Signing out from the avatar menu
+  clears it and the query cache.
 
 ### Icons
 Inline stroke icons: 24 viewBox, stroke 2, round caps and joins, `currentColor`. No emoji.

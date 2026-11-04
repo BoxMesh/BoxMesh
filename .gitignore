@@ -30,3 +30,4 @@ dist-ssr
 
 # Vercel CLI project link / pulled settings
 .vercel
+.impeccable/mocks/

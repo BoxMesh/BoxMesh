@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "geist",
+        "createdAt": "2026-11-04T01:18:32.570Z",
+        "reason": "Brief-pinned: the owner's design canvas sets Geist as the UI font (Design.md §2 Typography)"
+      }
+    ]
+  }
+}

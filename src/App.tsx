@@ -1,16 +1,25 @@
 import { Result } from 'antd'
-import { Navigate, Route, Routes } from 'react-router'
+import { Navigate, Route, Routes, useLocation } from 'react-router'
 import NotSupported from './components/NotSupported'
 import { navItems } from './config/nav'
 import AppLayout from './layouts/AppLayout'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import DeviceDetailPage from './pages/device-detail/DeviceDetailPage'
 import DevicesPage from './pages/devices/DevicesPage'
+import LoginPage from './pages/login/LoginPage'
+import { getSession } from './services/authService'
+
+// Signed-out visitors go to /login, which sends them back here after signing in.
+function RequireAuth() {
+  const location = useLocation()
+  return getSession() ? <AppLayout /> : <Navigate to="/login" state={{ from: location }} replace />
+}
 
 export default function App() {
   return (
     <Routes>
-      <Route element={<AppLayout />}>
+      <Route path="login" element={<LoginPage />} />
+      <Route element={<RequireAuth />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="devices" element={<DevicesPage />} />

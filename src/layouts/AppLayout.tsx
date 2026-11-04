@@ -1,11 +1,12 @@
-import { useQuery, useQueryErrorResetBoundary } from '@tanstack/react-query'
-import { Avatar, Badge, Breadcrumb, Input, Layout, Menu, Spin, Tooltip, type MenuProps } from 'antd'
+import { useQuery, useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { Avatar, Badge, Breadcrumb, Dropdown, Input, Layout, Menu, Spin, type MenuProps } from 'antd'
 import { Suspense } from 'react'
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import ErrorBoundary from '../components/ErrorBoundary'
 import { Icon } from '../components/Icon'
+import ThemeToggle from '../components/ThemeToggle'
 import { navGroups, navItems } from '../config/nav'
-import { useThemeMode } from '../hooks/useThemeMode'
+import { getSession, signOut } from '../services/authService'
 import { devicesQuery } from '../services/queries'
 import { summarize } from '../utils/devices'
 
@@ -27,11 +28,21 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const deviceMatch = useMatch('/devices/:id')
   const { reset } = useQueryErrorResetBoundary()
-  const { mode, toggle } = useThemeMode()
-  const nextTheme = mode === 'dark' ? 'light' : 'dark'
   const { data: devices } = useQuery(devicesQuery)
   const openAlerts = devices ? summarize(devices).alerts.length : 0
   const active = navItems.find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
+  const queryClient = useQueryClient()
+  const user = getSession()
+
+  const accountMenu: MenuProps = {
+    items: [{ type: 'group', key: 'account', label: user?.email, children: [{ key: 'sign-out', label: 'Sign out' }] }],
+    onClick: () => {
+      signOut()
+      // Drop cached fleet data so the next person to sign in never sees it.
+      queryClient.clear()
+      navigate('/login', { replace: true })
+    },
+  }
 
   const crumbs = [
     { title: 'EdgePortal' },
@@ -59,20 +70,18 @@ export default function AppLayout() {
               aria-label="Search devices"
               onPressEnter={(e) => navigate(`/devices?q=${encodeURIComponent(e.currentTarget.value.trim())}`)}
             />
-            <Tooltip title={`Switch to ${nextTheme} theme`}>
-              <button type="button" className="icon-btn" onClick={toggle} aria-label={`Switch to ${nextTheme} theme`}>
-                <Icon name={mode === 'dark' ? 'sun' : 'moon'} size={18} />
-              </button>
-            </Tooltip>
+            <ThemeToggle />
             <Link to="/dashboard#attention" className="icon-btn" aria-label={`Open alerts: ${openAlerts}`}>
               <Badge count={openAlerts} size="small">
                 <Icon name="bell" size={18} />
               </Badge>
             </Link>
-            <span className="user">
-              <Avatar size={28}>A</Avatar>
-              admin
-            </span>
+            <Dropdown menu={accountMenu} trigger={['click']} placement="bottomRight">
+              <button type="button" className="user" aria-label={`Account: ${user?.email}`}>
+                <Avatar size={28}>{user?.name.charAt(0).toUpperCase()}</Avatar>
+                <span className="user-name">{user?.name}</span>
+              </button>
+            </Dropdown>
           </div>
         </Layout.Header>
         <Layout.Content className="app-content">

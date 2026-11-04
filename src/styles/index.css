@@ -55,6 +55,16 @@
 body {
   margin: 0;
   background: var(--bg-page);
+  color: var(--text);
+  /* Same stack as theme.ts, for text outside antd components. */
+  font-family: Geist, 'Geist Fallback', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+/* Theme switch: ThemeProvider clips the new snapshot open as a circle, so drop the default cross-fade. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
 }
 
 :focus-visible {
@@ -178,7 +188,27 @@ body .header-search {
   display: flex;
   align-items: center;
   gap: 8px;
+  height: 36px;
+  padding: 0 10px 0 4px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
   color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.user:hover,
+.user[aria-expanded='true'] {
+  background: var(--bg-raised);
+}
+
+.user-name {
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 body .user .ant-avatar {
@@ -401,6 +431,223 @@ body .icon-btn[aria-disabled='true'] {
   color: var(--accent);
 }
 
+/* ---------- Sign in ---------- */
+/* Centred logo and card over a full-window network background (LoginBackground); theme toggle top-right. */
+.login {
+  position: relative;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  padding: 24px 32px;
+  overflow: hidden;
+}
+
+.login-top {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.login-main {
+  position: relative;
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  /* Sit slightly above centre, where the eye lands. */
+  padding: 16px 0 56px;
+}
+
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Logo mark above the card. */
+.login-hub {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--accent);
+  border-radius: 16px;
+  background: var(--bg-surface);
+  color: var(--accent);
+  box-shadow: 0 0 32px -4px color-mix(in srgb, var(--brand) 45%, transparent);
+}
+
+/* Starts invisible, so with motion off (the global reduced-motion rule) no ring is drawn. */
+.login-hub::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border: 1.5px solid var(--accent);
+  border-radius: 16px;
+  opacity: 0;
+  animation: login-hub-pulse 2.4s cubic-bezier(0.2, 0, 0, 1) infinite;
+}
+
+@keyframes login-hub-pulse {
+  from {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+
+.theme-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--border-hover);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms;
+}
+
+.theme-pill:hover {
+  background: var(--bg-raised);
+}
+
+.login-card {
+  box-sizing: border-box;
+  padding: 36px 36px 24px;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.login-card h1 {
+  margin: 0 0 6px;
+  font-size: 32px;
+  line-height: 40px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.login-subtitle {
+  margin: 0 0 28px;
+  color: var(--text-secondary);
+}
+
+.login-error {
+  margin-bottom: 20px;
+}
+
+
+/* Laptop-height windows (e.g. 1366×657): tighter card so the form fits without scrolling. */
+@media (max-height: 800px) {
+  .login {
+    padding-block: 16px;
+  }
+
+  .login-main {
+    gap: 16px;
+    padding-bottom: 24px;
+  }
+
+  .login-card {
+    padding: 28px 32px 20px;
+  }
+
+  .login-card h1 {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .login-subtitle {
+    margin-bottom: 20px;
+  }
+
+  .login-card .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+}
+
+@media (max-width: 575px) {
+  .login {
+    padding: 16px;
+  }
+
+  .login-card {
+    padding: 28px 20px 20px;
+  }
+}
+
+/* Background: edgeportal.svg, inlined by LoginBackground.tsx. The artwork is drawn in the dark palette;
+   these rules re-map each of its colours to a theme token (CSS beats SVG presentation attributes), so it follows
+   light mode without editing the file. A colour added to the artwork outside this list stays as drawn. */
+.login-bg {
+  position: absolute;
+  inset: 0;
+  --lbg-mesh: var(--border);
+  --lbg-line: var(--border-hover);
+}
+
+:root[data-theme='light'] .login-bg {
+  --lbg-mesh: #dde2da;
+  --lbg-line: #c3c9c1;
+}
+
+.login-bg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.login-bg [fill='#000000'] {
+  fill: var(--bg-page);
+}
+
+.login-bg [stop-color='#000000'] {
+  stop-color: var(--bg-page);
+}
+
+.login-bg [stroke='#2a3135'] {
+  stroke: var(--lbg-mesh);
+}
+
+.login-bg [fill='#3a4247'] {
+  fill: var(--lbg-line);
+}
+
+.login-bg [stroke='#3a4247'] {
+  stroke: var(--lbg-line);
+}
+
+/* Lime: the glow keeps the brand fill; the mesh dots take the accent, which darkens in light mode. */
+.login-bg [stop-color='#c7f36b'] {
+  stop-color: var(--brand);
+}
+
+.login-bg [fill='#c7f36b'] {
+  fill: var(--accent);
+}
+
 /* ---------- Device detail ---------- */
 .title-row {
   display: flex;
@@ -504,8 +751,13 @@ body .ant-layout-sider .ant-layout-sider-zero-width-trigger {
 }
 
 @media (max-width: 575px) {
-  body .header-search {
+  body .header-search,
+  .user-name {
     display: none;
+  }
+
+  .user {
+    padding: 4px;
   }
 
   .app-content {
