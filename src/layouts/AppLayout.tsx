@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
-import { Avatar, Badge, Breadcrumb, Dropdown, Input, Layout, Menu, Spin, type MenuProps } from 'antd'
+import { Avatar, Badge, Breadcrumb, Dropdown, Input, Layout, Menu, Spin, Tag, Tooltip, type MenuProps } from 'antd'
 import { Suspense } from 'react'
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import ErrorBoundary from '../components/ErrorBoundary'
@@ -7,17 +7,16 @@ import { Icon } from '../components/Icon'
 import ThemeToggle from '../components/ThemeToggle'
 import { navGroups, navItems } from '../config/nav'
 import { getSession, signOut } from '../services/authService'
+import { isDemo } from '../services/demo'
 import { devicesQuery } from '../services/queries'
 import { summarize } from '../utils/devices'
 
-// Unbuilt modules stay reachable but muted.
 const menuItems: MenuProps['items'] = navGroups.map((g) => ({
   type: 'group',
   key: g.title,
   label: g.title,
   children: g.items.map((i) => ({
     key: i.path,
-    className: i.ready ? undefined : 'menu-soon',
     icon: <Icon name={i.icon} />,
     label: <Link to={i.path}>{i.label}</Link>,
   })),
@@ -37,15 +36,18 @@ export default function AppLayout() {
   const accountMenu: MenuProps = {
     items: [{ type: 'group', key: 'account', label: user?.email, children: [{ key: 'sign-out', label: 'Sign out' }] }],
     onClick: () => {
+      const wasDemo = isDemo()
       signOut()
       // Drop cached fleet data so the next person to sign in never sees it.
       queryClient.clear()
-      navigate('/login', { replace: true })
+      // The demo swaps the HTTP adapter for the whole page, so leaving it needs a fresh load.
+      if (wasDemo) location.assign('/login')
+      else navigate('/login', { replace: true })
     },
   }
 
   const crumbs = [
-    { title: 'EdgePortal' },
+    { title: 'BoxMesh' },
     ...(active ? [{ title: deviceMatch ? <Link to={active.path}>{active.label}</Link> : active.label }] : []),
     ...(deviceMatch ? [{ title: deviceMatch.params.id }] : []),
   ]
@@ -55,7 +57,7 @@ export default function AppLayout() {
       <Layout.Sider className="app-sider" width={216} breakpoint="lg" collapsedWidth={0}>
         <Link to="/dashboard" className="brand">
           <Icon name="logo" size={22} />
-          EdgePortal
+          BoxMesh
         </Link>
         <Menu mode="inline" selectedKeys={active ? [active.path] : []} items={menuItems} />
       </Layout.Sider>
@@ -63,6 +65,11 @@ export default function AppLayout() {
         <Layout.Header className="app-header">
           <Breadcrumb items={crumbs} />
           <div className="header-tools">
+            {isDemo() ? (
+              <Tooltip title="Sample fleet, held in this tab only. Nothing here reaches a real machine.">
+                <Tag color="warning">Demo data</Tag>
+              </Tooltip>
+            ) : null}
             <Input
               className="header-search"
               prefix={<Icon name="search" size={14} />}

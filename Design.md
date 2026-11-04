@@ -1,6 +1,6 @@
-# EdgePortal — Design System
+# BoxMesh — Design System
 
-Source of truth: the **EdgePortal – System Design (Ant Design)** canvas
+Source of truth: the **BoxMesh – System Design (Ant Design)** canvas
 (https://claude.ai/artifact/5TYshytP6kBopBmewcPMv5), 15 artboards designed at 1440 px wide.
 This file records its tokens, components and screens so the UI can be built without reopening the canvas.
 If the two disagree, the canvas wins; update this file.
@@ -46,7 +46,7 @@ Rules: one accent only (lime). Status is never told by hue alone — always with
 ### Light theme (added in the app, not on the canvas)
 
 **How it switches**
-- The default follows the OS setting (`prefers-color-scheme`). The sun/moon button in the header overrides it, and the choice is saved in `localStorage` as `edgeportal-theme`.
+- The default follows the OS setting (`prefers-color-scheme`). The sun/moon button in the header overrides it, and the choice is saved in `localStorage` as `boxmesh-theme`.
 - An inline script in `index.html` sets `<html data-theme>` before the first paint, so a light visit never flashes black.
 - Switching animates: the new theme spreads as a circle from the toggle's centre (View Transitions API, 550 ms,
   `cubic-bezier(0.2, 0, 0, 1)`). Browsers without the API, and reduced-motion users, switch instantly.
@@ -168,7 +168,7 @@ Gotchas found while building:
 **App shell** (ProLayout, side menu)
 - Sider 216 px, `bg-surface`, right border `border`. Content area takes the rest.
 - Header min-height 56, `bg-surface`, bottom border, padding `8px 24px`:
-  breadcrumb left (`EdgePortal / Page`, current page in `text`), right side: search (240 px, leading icon),
+  breadcrumb left (`BoxMesh / Page`, current page in `text`), right side: search (240 px, leading icon),
   notification bell (36×36, red count badge `#ff7a6b` / `#090b0c`), avatar (28 px lime circle with initial) + username.
 - Page body: padding 24, vertical stack with gap 16.
 
@@ -186,7 +186,7 @@ Gotchas found while building:
 
 ### Sider menu (compact — redesigned in the app, replaces the canvas's lime-pill version)
 - Logo row: 56 px tall with a bottom `border`, so it lines up with the header and the top band reads as one line.
-  Hexagon stroke icon (lime, 22 px) + "EdgePortal" 15/600, padding `0 20px`.
+  Hexagon stroke icon (lime, 22 px) + "BoxMesh" 15/600, padding `0 20px`.
 - Group title: 12/16, weight 500, sentence case, `text-disabled`, padding `16px 20px 4px`. It is aligned with the item icons.
 - Item: 13 px text, height 32, margin `1px 8px`, padding `0 12px`, radius 8, gap 10, 16 px icon.
   - Idle: `text-secondary`, no fill. Hover: `bg-raised` fill, `text`.
@@ -284,8 +284,8 @@ Entry points to unbuilt modules stay visible but muted. There is no "Soon" badge
 ### Sign-in page (added in the app, not on the canvas)
 `/login` is public; every other route sends a signed-out visitor there and returns them to the page they asked for.
 - Layout: the theme pill ("Light mode / Dark mode") top-right; centred, slightly above centre: the logo mark
-  (56 px tile, lime border, glow, pulsing ring) with "EdgePortal" under it, then the form card.
-- Background: `src/assets/edgeportal.svg` (the owner's artwork), inlined full-window by
+  (56 px tile, lime border, glow, pulsing ring) with "BoxMesh" under it, then the form card.
+- Background: `src/assets/boxmesh.svg` (the owner's artwork), inlined full-window by
   `src/pages/login/LoginBackground.tsx`: a topology mesh with lime nodes, two orbit rings, a lime glow and a darkened
   quiet zone behind the card, and a vignette. No agent icons, tunnels or packets. The artwork is drawn in the dark
   palette; `.login-bg` rules in `index.css` re-map each of its colours (#000000, #2a3135, #3a4247, #c7f36b) to theme

@@ -7,11 +7,15 @@ import App from './App.tsx'
 import AlreadyOpen from './components/AlreadyOpen.tsx'
 import ThemeProvider from './components/ThemeProvider.tsx'
 import './styles/index.css'
+import { install as installDemo, isDemo } from './services/demo.ts'
 import { singleInstance } from './utils/singleInstance.ts'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1 } },
 })
+
+// Before the first render, so the first query already talks to the demo fleet instead of the network.
+if (isDemo()) installDemo()
 
 const root = createRoot(document.getElementById('root')!)
 

@@ -4,7 +4,7 @@ import { flushSync } from 'react-dom'
 import { buildTheme, type ThemeMode } from '../config/theme'
 import { ThemeModeContext, type ThemeOrigin } from '../hooks/useThemeMode'
 
-const STORAGE_KEY = 'edgeportal-theme'
+const STORAGE_KEY = 'boxmesh-theme'
 const THEME_COLOR: Record<ThemeMode, string> = { dark: '#101416', light: '#ffffff' }
 
 // index.html sets data-theme before first paint (saved choice, else the OS preference); start from it.
@@ -28,7 +28,7 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
         // Storage blocked (private mode, policy): the choice lasts for this session only.
       }
 
-      // The new theme spreads as a circle from the button; without View Transitions, or with reduced motion, it just switches.
+      // The new theme spreads as a circle from the control; without View Transitions, or with reduced motion, it just switches.
       if (!('startViewTransition' in document) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
         setMode(next)
         return

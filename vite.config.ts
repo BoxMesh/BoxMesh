@@ -12,8 +12,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'EdgePortal',
-        short_name: 'EdgePortal',
+        name: 'BoxMesh',
+        short_name: 'BoxMesh',
         description: 'Manage and reach EdgeAgent devices through EdgePanel.',
         start_url: '/dashboard',
         scope: '/',

@@ -1,81 +1,36 @@
 import type { NavGroup } from '../types/nav'
 
-// Menu groups from the design's Sider; summaries follow the canvas's sitemap.
+// Menu groups from the design's Sider.
 export const navGroups: NavGroup[] = [
   {
     title: 'Overview',
     items: [
-      { icon: 'dashboard', label: 'Dashboard', path: '/dashboard', ready: true },
-      { icon: 'devices', label: 'Devices', path: '/devices', ready: true },
+      { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
+      { icon: 'devices', label: 'Devices', path: '/devices' },
     ],
   },
   {
     title: 'Remote',
     items: [
-      {
-        icon: 'terminal',
-        label: 'Remote Terminal',
-        path: '/remote-terminal',
-        summary: 'Run PowerShell, CMD or Bash on a device through its agent tunnel, with a history of every command.',
-      },
-      {
-        icon: 'desktop',
-        label: 'Remote Desktop',
-        path: '/remote-desktop',
-        summary: "See and control a device's screen, with clipboard sync, through its agent tunnel.",
-      },
-      {
-        icon: 'files',
-        label: 'Remote Files',
-        path: '/remote-files',
-        summary: 'Browse, upload, download and rename files on a device.',
-      },
-      {
-        icon: 'web',
-        label: 'Remote Service',
-        path: '/remote-services',
-        summary: "Open web apps running on a device, such as Grafana or an internal dashboard, through EdgePanel's proxy.",
-      },
+      { icon: 'terminal', label: 'Remote Terminal', path: '/remote-terminal' },
+      { icon: 'desktop', label: 'Remote Desktop', path: '/remote-desktop' },
+      { icon: 'files', label: 'Remote Files', path: '/remote-files' },
+      { icon: 'web', label: 'Remote Service', path: '/remote-services' },
     ],
   },
   {
     title: 'Operations',
     items: [
-      {
-        icon: 'jobs',
-        label: 'Command & Jobs',
-        path: '/jobs',
-        summary: 'Run a command on many devices or groups at once, now or on a schedule, and track each result.',
-      },
-      {
-        icon: 'audit',
-        label: 'Audit & Alerts',
-        path: '/audit',
-        summary: 'See who did what on which device, and get alerted when a device goes offline or crosses a threshold.',
-      },
+      { icon: 'jobs', label: 'Command & Jobs', path: '/jobs' },
+      { icon: 'audit', label: 'Audit & Alerts', path: '/audit' },
     ],
   },
   {
     title: 'Admin',
     items: [
-      {
-        icon: 'security',
-        label: 'Security & Certificates',
-        path: '/security/certificates',
-        summary: "Manage agent certificates and enrollment tokens, and revoke a device's access.",
-      },
-      {
-        icon: 'users',
-        label: 'Users & Access',
-        path: '/users',
-        summary: 'Add people, give them the Admin, Operator or Viewer role, and choose which devices each can reach.',
-      },
-      {
-        icon: 'settings',
-        label: 'System Settings',
-        path: '/settings',
-        summary: "Set heartbeat and log retention, check EdgePanel's health, and back up or restore its data.",
-      },
+      { icon: 'security', label: 'Security & Certificates', path: '/security/certificates' },
+      { icon: 'users', label: 'Users & Access', path: '/users' },
+      { icon: 'settings', label: 'System Settings', path: '/settings' },
     ],
   },
 ]

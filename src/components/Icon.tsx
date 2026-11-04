@@ -13,6 +13,8 @@ const paths = {
   audit: 'M6 3h9l4 4v14H6zM9 12h7M9 16h7M9 8h3',
   settings: 'M12 15a3 3 0 1 0 0-6a3 3 0 1 0 0 6M19 12h2M3 12h2M12 3v2M12 19v2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4',
   search: 'M11 18a7 7 0 1 0 0-14a7 7 0 1 0 0 14M21 21l-5-5',
+  mail: 'M3 5h18v14H3zM3 5l9 7 9-7',
+  lock: 'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
   bell: 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4',
   plus: 'M12 5v14M5 12h14',
   warning: 'M12 3l10 18H2zM12 10v5M12 18v.5',

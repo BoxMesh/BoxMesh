@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Card, Table, type TableProps } from 'antd'
+import { userMessage } from '../../services/http'
 import { connectionHistoryQuery } from '../../services/queries'
 import type { ConnectionEvent, Device } from '../../types/device'
 import { ago, formatDateTime } from '../../utils/time'
@@ -38,7 +39,7 @@ export default function ConnectionCard({ device: d }: { device: Device }) {
           emptyText: (
             <span className="muted">
               {history.error
-                ? `Connection history didn't load (${history.error.message}). Reload the page to try again.`
+                ? `Connection history didn't load. ${userMessage(history.error)}`
                 : 'No connections recorded yet.'}
             </span>
           ),

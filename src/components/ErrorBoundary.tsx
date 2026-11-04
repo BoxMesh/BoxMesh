@@ -1,5 +1,6 @@
 import { Button, Result } from 'antd'
 import { Component, type ReactNode } from 'react'
+import { userMessage } from '../services/http'
 
 type Props = { children: ReactNode; onReset: () => void }
 
@@ -9,6 +10,11 @@ export default class ErrorBoundary extends Component<Props, { error: Error | nul
 
   static getDerivedStateFromError(error: Error) {
     return { error }
+  }
+
+  componentDidCatch(error: Error) {
+    // The screen only ever gets userMessage(); the real cause belongs in the console, for whoever debugs it.
+    console.error(error)
   }
 
   retry = () => {
@@ -23,7 +29,7 @@ export default class ErrorBoundary extends Component<Props, { error: Error | nul
       <Result
         status="error"
         title="This page couldn't load"
-        subTitle={`${error.message}. Check that EdgePanel is reachable, then try again.`}
+        subTitle={userMessage(error)}
         extra={
           <Button type="primary" onClick={this.retry}>
             Try again

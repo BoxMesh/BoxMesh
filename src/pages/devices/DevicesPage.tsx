@@ -231,15 +231,17 @@ function RowActions({ device }: { device: Device }) {
     <div className="row-actions">
       {REMOTE_ACTIONS.map(({ path, verb }) => {
         const feature = navItem(path)
-        // aria-disabled rather than disabled, so keyboard users can still focus it and hear why.
-        return (
-          <Tooltip key={path} title={`${feature.label} isn't available yet`}>
-            <button
-              type="button"
-              className="icon-btn"
-              aria-disabled="true"
-              aria-label={`${verb} on ${device.host}, not available yet`}
-            >
+        const label = `${verb} on ${device.host}`
+        // Offline keeps aria-disabled rather than disabled, so keyboard users can still focus it and hear why.
+        return device.online ? (
+          <Tooltip key={path} title={feature.label}>
+            <Link to={`${path}?host=${encodeURIComponent(device.host)}`} className="icon-btn" aria-label={label}>
+              <Icon name={feature.icon} />
+            </Link>
+          </Tooltip>
+        ) : (
+          <Tooltip key={path} title={`${device.host} is offline`}>
+            <button type="button" className="icon-btn" aria-disabled="true" aria-label={`${label}, offline`}>
               <Icon name={feature.icon} />
             </button>
           </Tooltip>

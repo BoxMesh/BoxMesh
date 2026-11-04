@@ -28,6 +28,15 @@ describe('authService', () => {
     expect(getSession()).toBeNull()
   })
 
+  // A 502 from the proxy is still "you are not signed in" to the person at the keyboard.
+  it('reports any other failure as a failed sign-in', async () => {
+    http.defaults.adapter = reply(502, { error: 'Bad Gateway' })
+    await expect(signIn('ops@example.com', 'secret', false)).rejects.toThrow(
+      'Sign-in failed. Try again in a moment.',
+    )
+    expect(getSession()).toBeNull()
+  })
+
   it('reports a wrong email or password', async () => {
     // EdgePanel answers a failed sign-in with a bare 401 and { data: "Unauthorized" }.
     http.defaults.adapter = reply(401, { data: 'Unauthorized' })

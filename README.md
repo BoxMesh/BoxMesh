@@ -1,27 +1,46 @@
-# EdgePortal
+# BoxMesh
 
 [![CI/CD](https://github.com/EdgeDock/EdgePortal/actions/workflows/ci.yml/badge.svg)](https://github.com/EdgeDock/EdgePortal/actions/workflows/ci.yml)
 
-**EdgePortal** is the web console of EdgeTunnel, used by a company's IT team to monitor and remotely operate its Windows and Linux machines.
+**BoxMesh** is the web console of EdgeTunnel, used by a company's IT team to monitor and remotely operate its Windows and Linux machines.
 
-Each machine runs **EdgeAgent**, which dials out to the company's self-hosted **EdgePanel** over gRPC + mTLS, so machines need no public IP, inbound ports or VPN. EdgePortal talks only to EdgePanel.
+Each machine runs **EdgeAgent**, which dials out to the company's self-hosted **EdgePanel** over gRPC + mTLS, so machines need no public IP, inbound ports or VPN. BoxMesh talks only to EdgePanel.
 
 ```text
-Browser ── EdgePortal ──HTTPS / WebSocket──► EdgePanel (VPS) ◄──gRPC + mTLS── EdgeAgent (each machine)
+Browser ── BoxMesh ──HTTPS / WebSocket──► EdgePanel (VPS) ◄──gRPC + mTLS── EdgeAgent (each machine)
 ```
 
 ## Status
 
-| Module | State |
-|---|---|
-| Sign in (`/login`) | Built; calls EdgePanel `POST /sign-in` |
-| Dashboard | Built |
-| Devices (list, detail, enrollment drawer) | Built |
-| Remote Terminal, Remote Desktop, Remote Files, Remote Service | Planned; the UI shows "isn't available yet" |
-| Command & Jobs, Audit & Alerts | Planned |
-| Security & Certificates, Users & Access, System Settings | Planned |
+Every screen is built, and every screen calls the real EdgePanel API. EdgePanel serves only
+`POST /sign-in` so far, so the rest show an error until it has their endpoints (see
+[API contract](#api-contract)) — or run the [demo](#demo-mode), which answers all of them.
 
-Every screen calls the real EdgePanel API. EdgePanel serves only sign-in so far, so the other screens show an error until it has their endpoints (see [API contract](#api-contract)).
+| Module | Built | EdgePanel endpoint |
+|---|---|---|
+| Sign in (`/login`) | yes | `POST /sign-in` — live |
+| Dashboard | yes | missing |
+| Devices (list, detail, enrollment) | yes | missing |
+| Remote Terminal, Desktop, Files, Service | yes | missing |
+| Command & Jobs, Audit & Alerts | yes | missing |
+| Security & Certificates, Users & Access, System Settings | yes | missing |
+
+Remote Desktop has no video stream yet: the UI runs, and the frame says so.
+
+## Demo mode
+
+**Explore the demo** on the sign-in page opens the whole console against a sample fleet of 12
+machines, with no backend and no password.
+
+It works by swapping the shared axios adapter ([`src/services/demo.ts`](src/services/demo.ts)) for
+one that answers every endpoint in EdgePanel's `{ data }` envelope. No screen, service or query knows
+about it, so what you click is the same code that will talk to EdgePanel — there is no demo-only
+branch to drift out of step.
+
+- A **Demo data** tag sits in the header for as long as it is on.
+- Changes you make — tokens, jobs, approvals, settings — are held in memory and gone on reload.
+- The flag lives in `sessionStorage`, so the demo ends with the browser tab.
+- Signing out reloads the page, which puts the real HTTP adapter back.
 
 ## Tech stack
 
@@ -102,8 +121,8 @@ These are the endpoints the app calls today:
 The image is a static build served by unprivileged nginx on port **8080**.
 
 ```bash
-docker build -t edgeportal .
-docker run --rm -p 8080:8080 edgeportal
+docker build -t boxmesh .
+docker run --rm -p 8080:8080 boxmesh
 ```
 
 Pass `--build-arg VITE_API_URL=...` to point at another API base.
@@ -117,7 +136,7 @@ What nginx does:
 
 Pick one way to reach EdgePanel:
 
-- **Same origin (default).** Keep `VITE_API_URL=/api` and put EdgePortal behind the same reverse proxy as EdgePanel. Route `/api` (stripping the `/api` prefix), `/ws` and `/web` to EdgePanel and everything else to this container. No CORS needed.
+- **Same origin (default).** Keep `VITE_API_URL=/api` and put BoxMesh behind the same reverse proxy as EdgePanel. Route `/api` (stripping the `/api` prefix), `/ws` and `/web` to EdgePanel and everything else to this container. No CORS needed.
 - **EdgePanel on its own domain.** Build with `VITE_API_URL=https://panel.company.com`. The portal sends requests with credentials so EdgePanel's HttpOnly JWT cookies cross origins, which needs on EdgePanel's side:
   - a CORS policy that allows the portal's exact origin **with credentials** (`AllowCredentials`; a `*` origin is refused by browsers);
   - the portal and EdgePanel on the **same site** (same registrable domain, e.g. `portal.company.com` and `panel.company.com`), because the cookies are `SameSite=Strict`. Different domains need `SameSite=None` on EdgePanel.

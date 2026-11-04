@@ -1,8 +1,7 @@
 import { usePrefetchQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { Alert, Button, Result, Tabs, Tag, Tooltip } from 'antd'
+import { Alert, Button, Result, Tabs, Tag } from 'antd'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { Icon } from '../../components/Icon'
-import NotSupported from '../../components/NotSupported'
 import Status from '../../components/Status'
 import { navItem } from '../../config/nav'
 import { useNotSupported } from '../../hooks/useNotSupported'
@@ -11,16 +10,8 @@ import { ago } from '../../utils/time'
 import ConnectionCard from './ConnectionCard'
 import DeviceOverview from './DeviceOverview'
 
-const terminal = navItem('/remote-terminal')
-const desktop = navItem('/remote-desktop')
-
-// Tabs for modules that aren't built yet: muted, and their page leads back to Overview.
-const SOON_TABS = [
-  { key: 'terminal', label: 'Terminal', feature: terminal },
-  { key: 'desktop', label: 'Desktop', feature: desktop },
-  { key: 'files', label: 'Files', feature: navItem('/remote-files') },
-  { key: 'web', label: 'Remote Service', feature: navItem('/remote-services') },
-]
+// Each remote screen takes the device in `?host=`, so these open straight onto this machine.
+const REMOTE = ['/remote-terminal', '/remote-desktop', '/remote-files', '/remote-services'].map(navItem)
 
 export default function DeviceDetailPage() {
   const { id = '' } = useParams()
@@ -57,10 +48,12 @@ export default function DeviceDetailPage() {
           <Tag color="processing">{device.group}</Tag>
         </div>
         <div className="page-actions">
-          {[terminal, desktop].map((feature) => (
-            <Tooltip key={feature.path} title={`${feature.label} isn't available yet`}>
-              <Button disabled>{feature === terminal ? 'Open terminal' : 'Remote desktop'}</Button>
-            </Tooltip>
+          {REMOTE.map((feature) => (
+            <Link key={feature.path} to={`${feature.path}?host=${encodeURIComponent(device.host)}`}>
+              <Button icon={<Icon name={feature.icon} size={14} />} disabled={!device.online}>
+                {feature.label.replace('Remote ', '')}
+              </Button>
+            </Link>
           ))}
           <Button onClick={() => notSupported('Updating agents')}>Update agent</Button>
           <Button danger onClick={() => notSupported('Disabling devices')}>
@@ -83,11 +76,6 @@ export default function DeviceDetailPage() {
         onChange={openTab}
         items={[
           { key: 'overview', label: 'Overview', children: <DeviceOverview device={device} /> },
-          ...SOON_TABS.map(({ key, label, feature }) => ({
-            key,
-            label: <span className="tab-soon">{label}</span>,
-            children: <NotSupported feature={feature} onBack={() => openTab('overview')} />,
-          })),
           { key: 'connection', label: 'Connection', children: <ConnectionCard device={device} /> },
         ]}
       />

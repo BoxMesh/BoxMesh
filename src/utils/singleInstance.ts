@@ -1,6 +1,6 @@
-const LOCK = 'edgeportal-instance'
+const LOCK = 'boxmesh-instance'
 
-// One EdgePortal window at a time, across tabs and the installed app. The active window holds a Web Lock
+// One BoxMesh window at a time, across tabs and the installed app. The active window holds a Web Lock
 // until it closes; a later window shows `onBlocked` and takes over automatically once the lock is free.
 export function singleInstance(onActive: () => void, onBlocked: () => void) {
   // Web Locks need a secure context (HTTPS or localhost); without them, don't block anyone.

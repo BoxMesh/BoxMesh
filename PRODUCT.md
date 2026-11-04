@@ -8,7 +8,7 @@ web
 
 ## Users
 
-The internal IT team of a single company. They self-host EdgePanel on the company's own VPS and use EdgePortal to look after the company's office PCs and servers (Windows and Linux), which sit behind NAT and firewalls across departments and sites.
+The internal IT team of a single company. They self-host EdgePanel on the company's own VPS and use BoxMesh to look after the company's office PCs and servers (Windows and Linux), which sit behind NAT and firewalls across departments and sites.
 
 Roles:
 - **Admin**: everything, plus users and access, certificates, enrollment and system settings.
@@ -19,7 +19,7 @@ Their job: know which machines are healthy, find the ones that need attention, r
 
 ## Product Purpose
 
-EdgeTunnel lets a company's IT team monitor and remotely operate its own fleet of Windows and Linux machines from one web portal. EdgePortal is that portal, and it talks only to EdgePanel.
+EdgeTunnel lets a company's IT team monitor and remotely operate its own fleet of Windows and Linux machines from one web portal. BoxMesh is that portal, and it talks only to EdgePanel.
 
 Success means an operator can:
 - see the fleet's health at a glance;
@@ -47,11 +47,11 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 **Remote access and usage**
 - Internal web apps on agent machines (e.g. Grafana, in-house dashboards) are reached through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
-- EdgePortal is used mainly in desktop browsers. It can be installed as a PWA, and only one window may be open at a time.
+- BoxMesh is used mainly in desktop browsers. It can be installed as a PWA, and only one window may be open at a time.
 
 ## Capabilities and Constraints
 
-**Built in EdgePortal**
+**Built in BoxMesh**
 - Dashboard, the Devices list, and Device detail (overview and connection history).
 - Every screen calls the real EdgePanel API; there is no mock-data mode. EdgePanel serves only sign-in so far, so the other screens show an error until their endpoints exist.
 
@@ -62,7 +62,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 **EdgePanel API**
 - REST under `/api`. Responses are wrapped as `{ data }` on success and `{ error }` on failure.
 - Realtime runs over WebSocket (`/ws/events`, `/ws/terminal/{id}`, …).
-- The product owner builds EdgeAgent and EdgePanel. EdgePortal work must not change them.
+- The product owner builds EdgeAgent and EdgePanel. BoxMesh work must not change them.
 
 **Language**
 - The UI ships in English and Vietnamese, switchable by the user, with English as the default.
@@ -75,7 +75,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 ## Brand Commitments
 
-- Names: EdgeTunnel (the platform), EdgeAgent, EdgePanel, EdgePortal.
+- Names: EdgeTunnel (the platform), EdgeAgent, EdgePanel, BoxMesh.
 - The owner's design canvas pins the visual direction, and `Design.md` records it.
 
 ## Evidence on Hand

@@ -1,8 +1,9 @@
 import { isAxiosError } from 'axios'
 import type { User } from '../types/auth'
-import { http } from './http'
+import { stopDemo } from './demo'
+import { http, userMessage } from './http'
 
-const STORAGE_KEY = 'edgeportal-session'
+const STORAGE_KEY = 'boxmesh-session'
 
 // EdgePanel keeps the JWTs in HttpOnly cookies the browser sends on every same-origin request; the portal only
 // remembers who signed in.
@@ -28,7 +29,10 @@ export async function signIn(email: string, password: string, remember: boolean)
     .post<{ id: string; email: string }>('/sign-in', { email, password })
     .catch((error: unknown) => {
       // EdgePanel answers a bad email or password with a bare 401 ({ data: "Unauthorized" }).
-      throw isAxiosError(error) && error.response?.status === 401 ? new Error('Wrong email or password.') : error
+      if (isAxiosError(error) && error.response?.status === 401) throw new Error('Wrong email or password.')
+      // Anything else — EdgePanel down, a 502 from the proxy, a timeout — is still a failed sign-in to the
+      // person at the keyboard, so say that first and give the reason in plain words.
+      throw new Error(`Sign-in failed. ${userMessage(error)}`)
     })
   const data: User = { email: account.email, name: account.email.split('@')[0] }
   session = data
@@ -41,8 +45,21 @@ export async function signIn(email: string, password: string, remember: boolean)
   return data
 }
 
+/** Sign in to the demo fleet: no panel, no password, and the session ends with the browser. */
+export function signInDemo() {
+  const data: User = { email: 'ops@company.com', name: 'Quang Huy' }
+  session = data
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+  } catch {
+    // Storage blocked: the demo lasts until the page reloads.
+  }
+  return data
+}
+
 export function signOut() {
   session = null
+  stopDemo()
   try {
     localStorage.removeItem(STORAGE_KEY)
     sessionStorage.removeItem(STORAGE_KEY)

@@ -10,7 +10,7 @@ export default function AlreadyOpen() {
             <Icon name="logo" size={64} />
           </span>
         }
-        title="EdgePortal is already open in another window"
+        title="BoxMesh is already open in another window"
         subTitle="Switch to that window to keep working. This one takes over automatically when the other window closes."
       />
     </main>

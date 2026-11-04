@@ -29,3 +29,8 @@ export async function getPendingEnrollments() {
   const { data } = await http.get<PendingEnrollment[]>('/enrollments', { params: { status: 'pending' } })
   return data
 }
+
+/** Approve or reject an agent waiting for its certificate. */
+export async function decideEnrollment(host: string, outcome: 'approve' | 'reject') {
+  await http.post(`/enrollments/${encodeURIComponent(host)}/${outcome}`, {})
+}

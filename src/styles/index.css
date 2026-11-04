@@ -108,16 +108,7 @@ body .app-sider .ant-menu-item-selected .ant-menu-item-icon {
   color: var(--accent);
 }
 
-/* ---------- Not built yet ---------- */
-body .app-sider .ant-menu-item.menu-soon:not(.ant-menu-item-selected),
-.ant-tabs-tab:not(.ant-tabs-tab-active) .tab-soon {
-  color: var(--text-disabled);
-}
-
-body .app-sider .ant-menu-item.menu-soon:not(.ant-menu-item-selected):hover {
-  color: var(--text-secondary);
-}
-
+/* Round frame for a full-page Result icon. */
 .soon-icon {
   display: inline-flex;
   align-items: center;
@@ -438,25 +429,16 @@ body .icon-btn[aria-disabled='true'] {
   min-height: 100dvh;
   box-sizing: border-box;
   display: grid;
-  grid-template-rows: auto 1fr;
   padding: 24px 32px;
   overflow: hidden;
 }
 
-.login-top {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-}
 
 .login-main {
   position: relative;
   align-self: center;
   justify-self: center;
-  width: min(100%, 420px);
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  width: min(100%, 360px);
   /* Sit slightly above centre, where the eye lands. */
   padding: 16px 0 56px;
 }
@@ -465,26 +447,35 @@ body .icon-btn[aria-disabled='true'] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
-  line-height: 28px;
+  gap: 8px;
+  margin: 0 0 24px;
+  font-size: 16px;
+  line-height: 24px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
-/* Logo mark above the card. */
+/* Logo mark, and the page's theme switch. */
 .login-hub {
   position: relative;
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   box-sizing: border-box;
   display: grid;
   place-items: center;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 150ms;
   border: 1.5px solid var(--accent);
-  border-radius: 16px;
+  border-radius: 14px;
   background: var(--bg-surface);
   color: var(--accent);
   box-shadow: 0 0 32px -4px color-mix(in srgb, var(--brand) 45%, transparent);
+}
+
+.login-hub:hover {
+  border-color: var(--brand);
 }
 
 /* Starts invisible, so with motion off (the global reduced-motion rule) no ring is drawn. */
@@ -493,7 +484,7 @@ body .icon-btn[aria-disabled='true'] {
   position: absolute;
   inset: -1.5px;
   border: 1.5px solid var(--accent);
-  border-radius: 16px;
+  border-radius: 14px;
   opacity: 0;
   animation: login-hub-pulse 2.4s cubic-bezier(0.2, 0, 0, 1) infinite;
 }
@@ -510,53 +501,23 @@ body .icon-btn[aria-disabled='true'] {
   }
 }
 
-.theme-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--border-hover);
-  border-radius: 12px;
-  background: var(--bg-surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 150ms;
-}
-
-.theme-pill:hover {
-  background: var(--bg-raised);
-}
-
 .login-card {
   box-sizing: border-box;
-  padding: 36px 36px 24px;
+  padding: 24px 24px 20px;
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 16px;
   background: var(--bg-surface);
   box-shadow: var(--shadow-card);
-}
-
-.login-card h1 {
-  margin: 0 0 6px;
-  font-size: 32px;
-  line-height: 40px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.login-subtitle {
-  margin: 0 0 28px;
-  color: var(--text-secondary);
 }
 
 .login-error {
   margin-bottom: 20px;
 }
 
+.login-card .ant-input-prefix {
+  margin-inline-end: 8px;
+  color: var(--text-secondary);
+}
 
 /* Laptop-height windows (e.g. 1366×657): tighter card so the form fits without scrolling. */
 @media (max-height: 800px) {
@@ -565,27 +526,12 @@ body .icon-btn[aria-disabled='true'] {
   }
 
   .login-main {
-    gap: 16px;
     padding-bottom: 24px;
-  }
-
-  .login-card {
-    padding: 28px 32px 20px;
-  }
-
-  .login-card h1 {
-    font-size: 28px;
-    line-height: 36px;
-  }
-
-  .login-subtitle {
-    margin-bottom: 20px;
   }
 
   .login-card .ant-form-item {
     margin-bottom: 16px;
   }
-
 }
 
 @media (max-width: 575px) {
@@ -598,7 +544,7 @@ body .icon-btn[aria-disabled='true'] {
   }
 }
 
-/* Background: edgeportal.svg, inlined by LoginBackground.tsx. The artwork is drawn in the dark palette;
+/* Background: boxmesh.svg, inlined by LoginBackground.tsx. The artwork is drawn in the dark palette;
    these rules re-map each of its colours to a theme token (CSS beats SVG presentation attributes), so it follows
    light mode without editing the file. A colour added to the artwork outside this list stays as drawn. */
 .login-bg {
@@ -609,8 +555,8 @@ body .icon-btn[aria-disabled='true'] {
 }
 
 :root[data-theme='light'] .login-bg {
-  --lbg-mesh: #dde2da;
-  --lbg-line: #c3c9c1;
+  --lbg-mesh: #bdc5b9;
+  --lbg-line: #99a396;
 }
 
 .login-bg svg {
@@ -646,6 +592,39 @@ body .icon-btn[aria-disabled='true'] {
 
 .login-bg [fill='#c7f36b'] {
   fill: var(--accent);
+}
+
+.login-bg [stroke='#c7f36b'] {
+  stroke: var(--accent);
+}
+
+/* One packet per node, hopping along the mesh edges to the panel at the centre: agents only ever
+   dial out. Every route is a <path pathLength="100">, so the same dash travel fits any length.
+   The global reduced-motion rule stops all of them. */
+.login-bg .ping {
+  animation-name: login-ping;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes login-ping {
+  from {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.9;
+  }
+
+  60% {
+    opacity: 0.9;
+  }
+
+  to {
+    stroke-dashoffset: -100;
+    opacity: 0;
+  }
 }
 
 /* ---------- Device detail ---------- */
@@ -772,4 +751,163 @@ body .ant-layout-sider .ant-layout-sider-zero-width-trigger {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* ---------- Device picker ---------- */
+.picker-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.picker-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+}
+
+/* ---------- Remote terminal ---------- */
+.terminal {
+  height: min(52vh, 460px);
+  overflow-y: auto;
+  padding: 16px 20px;
+  background: var(--bg-page);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.terminal-intro {
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+.terminal-echo {
+  margin-top: 10px;
+  color: var(--text);
+  word-break: break-all;
+}
+
+.terminal-prompt {
+  color: var(--accent);
+  user-select: none;
+}
+
+.terminal-out {
+  margin: 2px 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-secondary);
+}
+
+.terminal-bad {
+  color: var(--error);
+}
+
+.terminal-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+/* ---------- Remote desktop ---------- */
+.screen-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.screen-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.screen-spacer {
+  flex: 1;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: min(56vh, 520px);
+  background: var(--bg-page);
+}
+
+.screen-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.screen-host {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.screen-note {
+  font-size: 13px;
+}
+
+.screen-taskbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-surface);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ---------- Files, jobs, users ---------- */
+.link-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.link-cell:hover {
+  text-decoration: underline;
+}
+
+.job-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.job-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+body .row-off > td {
+  opacity: 0.55;
 }
