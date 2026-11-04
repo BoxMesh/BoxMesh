@@ -22,7 +22,7 @@ export const navGroups: NavGroup[] = [
     title: 'Operations',
     items: [
       { icon: 'jobs', label: 'Command & Jobs', path: '/jobs' },
-      { icon: 'audit', label: 'Audit & Alerts', path: '/audit' },
+      { icon: 'audit', label: 'Audit', path: '/audit' },
     ],
   },
   {

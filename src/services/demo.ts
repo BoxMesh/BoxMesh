@@ -39,7 +39,6 @@ export function stopDemo() {
 // demo honest about being a demo, and nothing can leak into a real deployment.
 const state = {
   jobs: structuredClone(seed.jobs),
-  alertRules: structuredClone(seed.alertRules),
   certificates: structuredClone(seed.certificates),
   tokens: structuredClone(seed.enrollmentTokens),
   accounts: structuredClone(seed.accounts),
@@ -115,16 +114,6 @@ const routes: Route[] = [
     },
   ],
   ['get', /^\/audit\/entries$/, () => seed.auditLog],
-  ['get', /^\/alerts\/rules$/, () => state.alertRules],
-  [
-    'patch',
-    /^\/alerts\/rules\/([^/]+)$/,
-    (m, c) => {
-      const rule = state.alertRules.find((r) => r.id === m[1])
-      if (rule) rule.enabled = body<{ enabled: boolean }>(c).enabled
-      return rule ?? null
-    },
-  ],
 
   // ---- Admin ----
   ['get', /^\/certificates$/, () => state.certificates],

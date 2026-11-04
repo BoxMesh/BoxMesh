@@ -29,15 +29,19 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
       }
 
       // The new theme spreads as a circle from the control; without View Transitions, or with reduced motion, it just switches.
+      // The attribute goes first in both paths. Child effects run before the provider's own, so a
+      // child that reads the palette out of CSS variables during this commit — the terminal does,
+      // because xterm paints to its own tree — would otherwise pick up the theme being replaced.
       if (!('startViewTransition' in document) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.dataset.theme = next
         setMode(next)
         return
       }
       const { x, y } = origin ?? { x: innerWidth / 2, y: 0 }
       const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))
       const transition = document.startViewTransition(() => {
-        flushSync(() => setMode(next))
         document.documentElement.dataset.theme = next
+        flushSync(() => setMode(next))
       })
       transition.ready
         .then(() =>

@@ -22,7 +22,7 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 | Dashboard | yes | missing |
 | Devices (list, detail, enrollment) | yes | missing |
 | Remote Terminal, Desktop, Files, Service | yes | missing |
-| Command & Jobs, Audit & Alerts | yes | missing |
+| Command & Jobs, Audit | yes | missing |
 | Security & Certificates, Users & Access, System Settings | yes | missing |
 
 Remote Desktop has no video stream yet: the UI runs, and the frame says so.

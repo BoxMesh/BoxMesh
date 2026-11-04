@@ -3,7 +3,7 @@ import type { TimeRange } from '../types/dashboard'
 import { getCertificates, getHealth, getSettings, getTokens, getUsers } from './adminService'
 import { getRecentActivity, getRemoteSessions, getResourceUsage } from './dashboardService'
 import { getConnectionHistory, getDevice, getDevices, getPendingEnrollments } from './deviceService'
-import { getAlertRules, getAuditLog, getJobs } from './opsService'
+import { getAuditLog, getJobs } from './opsService'
 import { getFiles, getServices } from './remoteService'
 
 // Shared query keys, so every screen reading the same data hits the same cache entry.
@@ -37,8 +37,6 @@ export const servicesQuery = (host: string) =>
 export const jobsQuery = queryOptions({ queryKey: ['jobs'], queryFn: getJobs })
 
 export const auditLogQuery = queryOptions({ queryKey: ['audit', 'log'], queryFn: getAuditLog })
-
-export const alertRulesQuery = queryOptions({ queryKey: ['alerts', 'rules'], queryFn: getAlertRules })
 
 // ---- Admin ----
 

@@ -1,4 +1,5 @@
 import { Result } from 'antd'
+import { lazy } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router'
 import AppLayout from './layouts/AppLayout'
 import AuditPage from './pages/audit/AuditPage'
@@ -10,11 +11,13 @@ import LoginPage from './pages/login/LoginPage'
 import DesktopPage from './pages/remote-desktop/DesktopPage'
 import FilesPage from './pages/remote-files/FilesPage'
 import ServicesPage from './pages/remote-services/ServicesPage'
-import TerminalPage from './pages/remote-terminal/TerminalPage'
 import CertificatesPage from './pages/security/CertificatesPage'
 import SettingsPage from './pages/settings/SettingsPage'
 import UsersPage from './pages/users/UsersPage'
 import { getSession } from './services/authService'
+
+// xterm is a third of the bundle and only this screen needs it; AppLayout's Suspense covers the wait.
+const TerminalPage = lazy(() => import('./pages/remote-terminal/TerminalPage'))
 
 // Signed-out visitors go to /login, which sends them back here after signing in.
 function RequireAuth() {

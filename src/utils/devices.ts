@@ -35,7 +35,6 @@ export function summarize(list: Device[], now = Date.now()) {
     offline: list.length - online.length,
     staleOffline: list.filter((d) => !d.online && now - Date.parse(d.lastSeen) > 10 * MINUTE).length,
     attention,
-    alerts: attention.filter((a) => a.kind !== 'offline'),
     expiringCerts: list
       .filter((d) => daysLeft(d.certExpires, now) <= 14)
       .toSorted((a, b) => Date.parse(a.certExpires) - Date.parse(b.certExpires)),

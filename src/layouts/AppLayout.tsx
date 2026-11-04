@@ -1,5 +1,5 @@
-import { useQuery, useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
-import { Avatar, Badge, Breadcrumb, Dropdown, Input, Layout, Menu, Spin, Tag, Tooltip, type MenuProps } from 'antd'
+import { useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { Avatar, Breadcrumb, Dropdown, Input, Layout, Menu, Spin, Tag, Tooltip, type MenuProps } from 'antd'
 import { Suspense } from 'react'
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import ErrorBoundary from '../components/ErrorBoundary'
@@ -8,8 +8,6 @@ import ThemeToggle from '../components/ThemeToggle'
 import { navGroups, navItems } from '../config/nav'
 import { getSession, signOut } from '../services/authService'
 import { isDemo } from '../services/demo'
-import { devicesQuery } from '../services/queries'
-import { summarize } from '../utils/devices'
 
 const menuItems: MenuProps['items'] = navGroups.map((g) => ({
   type: 'group',
@@ -27,8 +25,6 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const deviceMatch = useMatch('/devices/:id')
   const { reset } = useQueryErrorResetBoundary()
-  const { data: devices } = useQuery(devicesQuery)
-  const openAlerts = devices ? summarize(devices).alerts.length : 0
   const active = navItems.find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
   const queryClient = useQueryClient()
   const user = getSession()
@@ -78,11 +74,6 @@ export default function AppLayout() {
               onPressEnter={(e) => navigate(`/devices?q=${encodeURIComponent(e.currentTarget.value.trim())}`)}
             />
             <ThemeToggle />
-            <Link to="/dashboard#attention" className="icon-btn" aria-label={`Open alerts: ${openAlerts}`}>
-              <Badge count={openAlerts} size="small">
-                <Icon name="bell" size={18} />
-              </Badge>
-            </Link>
             <Dropdown menu={accountMenu} trigger={['click']} placement="bottomRight">
               <button type="button" className="user" aria-label={`Account: ${user?.email}`}>
                 <Avatar size={28}>{user?.name.charAt(0).toUpperCase()}</Avatar>

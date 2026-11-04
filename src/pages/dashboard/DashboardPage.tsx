@@ -1,7 +1,7 @@
 import { useSuspenseQueries } from '@tanstack/react-query'
 import { Alert, Card, Progress, Segmented, Statistic, Table, Tag, Timeline, type TableProps } from 'antd'
-import { Fragment, useEffect, useState, useTransition } from 'react'
-import { Link, useLocation } from 'react-router'
+import { Fragment, useState, useTransition } from 'react'
+import { Link } from 'react-router'
 import { Icon } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { tone } from '../../config/theme'
@@ -41,22 +41,13 @@ export default function DashboardPage() {
     queries: [devicesQuery, resourceUsageQuery(range), remoteSessionsQuery, recentActivityQuery],
   })
   const s = summarize(devices)
-  const { hash } = useLocation()
-  // The header bell and the "Open alerts" card link to #attention; the router doesn't scroll to hashes itself.
-  useEffect(() => {
-    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: 'start' })
-  }, [hash])
   const certs = s.expiringCerts
-  const alertNote = RESOURCES.map((r) => [r.label, s.alerts.filter((a) => a.kind === r.key).length] as const)
-    .filter(([, n]) => n > 0)
-    .map(([label, n]) => `${label} ${n}`)
-    .join(' · ')
 
   return (
     <div className="stack">
       <PageHeader
         title="Dashboard"
-        subtitle="Agents, resources and alerts at a glance"
+        subtitle="Agents, resources and health at a glance"
         actions={
           <Segmented<TimeRange>
             aria-label="Time range"
@@ -105,7 +96,6 @@ export default function DashboardPage() {
           color={tone.muted}
           note={`${s.staleOffline} without heartbeat for over 10 min`}
         />
-        <StatCard to="#attention" title="Open alerts" value={s.alerts.length} color={tone.error} note={alertNote || 'No alerts'} />
       </div>
 
       <div className="grid-2">
@@ -156,7 +146,6 @@ export default function DashboardPage() {
 
       <div className="grid-2">
         <Card
-          id="attention"
           title="Devices needing attention"
           extra={<Link to="/devices">All devices</Link>}
           styles={{ body: { padding: 0 } }}

@@ -38,7 +38,7 @@ describe('filterDevices', () => {
 })
 
 describe('summarize', () => {
-  it('counts devices, alerts and expiring certificates', () => {
+  it('counts devices, issues and expiring certificates', () => {
     const s = summarize(
       [
         dev({ cpu: 95, latencyMs: 30 }),
@@ -49,8 +49,8 @@ describe('summarize', () => {
     )
     expect(s).toMatchObject({ total: 3, online: 2, offline: 1, staleOffline: 1, avgLatency: 20 })
     expect(s.expiringCerts.map((d) => d.latencyMs)).toEqual([10])
-    expect(s.alerts.map((a) => a.kind)).toEqual(['cpu'])
-    expect(s.attention).toHaveLength(2)
+    // One over its CPU threshold, one with no heartbeat.
+    expect(s.attention.map((a) => a.kind)).toEqual(['cpu', 'offline'])
   })
 })
 

@@ -1,4 +1,4 @@
-import type { AlertRule, AuditEntry, Job } from '../types/ops'
+import type { AuditEntry, Job } from '../types/ops'
 import { http } from './http'
 
 export interface NewJob {
@@ -26,12 +26,3 @@ export async function getAuditLog() {
   return data
 }
 
-export async function getAlertRules() {
-  const { data } = await http.get<AlertRule[]>('/alerts/rules')
-  return data
-}
-
-export async function setAlertRule(id: string, enabled: boolean) {
-  const { data } = await http.patch<AlertRule>(`/alerts/rules/${id}`, { enabled })
-  return data
-}

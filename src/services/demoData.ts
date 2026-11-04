@@ -1,7 +1,7 @@
 import type { Account, Certificate, EnrollmentToken, Health, Settings } from '../types/admin'
 import type { ActivityEvent, RemoteSessions, ResourceUsage, TimeRange } from '../types/dashboard'
 import type { ConnectionEvent, Device, OsFamily, PendingEnrollment } from '../types/device'
-import type { AlertRule, AuditEntry, Job } from '../types/ops'
+import type { AuditEntry, Job } from '../types/ops'
 import type { DesktopSession, FileEntry, FileListing, RemoteService, Shell } from '../types/remote'
 import { DAY, MINUTE, SECOND, fromNow } from '../utils/time'
 
@@ -267,21 +267,13 @@ export const jobs: Job[] = [
 
 export const auditLog: AuditEntry[] = [
   { id: 'a-9001', at: fromNow(-4 * MINUTE), actor: 'ops@company.com', action: 'Ran command', target: 'ACC-PC-01', outcome: 'ok', ip: '10.0.0.5' },
-  { id: 'a-9000', at: fromNow(-26 * MINUTE), actor: 'system', action: 'Alert raised', target: 'CAD-WS-01', outcome: 'failed', ip: '—' },
+  { id: 'a-9000', at: fromNow(-26 * MINUTE), actor: 'system', action: 'Threshold crossed', target: 'CAD-WS-01', outcome: 'failed', ip: '—' },
   { id: 'a-8999', at: fromNow(-52 * MINUTE), actor: 'ops@company.com', action: 'Opened terminal', target: 'SRV-DB-01', outcome: 'ok', ip: '10.0.0.5' },
   { id: 'a-8998', at: fromNow(-2 * 60 * MINUTE), actor: 'admin@company.com', action: 'Approved enrollment', target: 'WH-PC-02', outcome: 'ok', ip: '10.0.0.2' },
   { id: 'a-8997', at: fromNow(-3 * 60 * MINUTE), actor: 'viewer@company.com', action: 'Opened remote desktop', target: 'ACC-PC-02', outcome: 'failed', ip: '10.0.0.9' },
   { id: 'a-8996', at: fromNow(-6 * 60 * MINUTE), actor: 'admin@company.com', action: 'Created enrollment token', target: 'Accounting', outcome: 'ok', ip: '10.0.0.2' },
   { id: 'a-8995', at: fromNow(-DAY), actor: 'ops@company.com', action: 'Downloaded file', target: 'SRV-BAK-01:/var/log/syslog', outcome: 'ok', ip: '10.0.0.5' },
   { id: 'a-8994', at: fromNow(-DAY - 60 * MINUTE), actor: 'system', action: 'Certificate renewed', target: 'SRV-MON-01', outcome: 'ok', ip: '—' },
-]
-
-export const alertRules: AlertRule[] = [
-  { id: 'r-1', name: 'High CPU', condition: 'CPU above 90% for 5 min', channel: 'Email · ops@company.com', enabled: true },
-  { id: 'r-2', name: 'High RAM', condition: 'RAM above 90% for 5 min', channel: 'Email · ops@company.com', enabled: true },
-  { id: 'r-3', name: 'Disk almost full', condition: 'Disk above 85%', channel: 'Email · ops@company.com', enabled: true },
-  { id: 'r-4', name: 'Heartbeat lost', condition: 'No heartbeat for 10 min', channel: 'Email · admin@company.com', enabled: true },
-  { id: 'r-5', name: 'Certificate expiring', condition: 'Certificate expires within 14 days', channel: 'Email · admin@company.com', enabled: false },
 ]
 
 // ---------- Admin ----------

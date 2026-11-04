@@ -30,12 +30,3 @@ export interface AuditEntry {
   outcome: 'ok' | 'failed'
   ip: string
 }
-
-export interface AlertRule {
-  id: string
-  name: string
-  /** Human-readable trigger, e.g. "CPU above 90% for 5 min". */
-  condition: string
-  channel: string
-  enabled: boolean
-}

@@ -1,19 +1,42 @@
-import { useMutation } from '@tanstack/react-query'
-import { Button, Card, Input, Segmented } from 'antd'
+import { FitAddon } from '@xterm/addon-fit'
+import { Terminal } from '@xterm/xterm'
+import '@xterm/xterm/css/xterm.css'
+import { Card, Segmented } from 'antd'
 import { useEffect, useRef, useState } from 'react'
 import DevicePicker, { DeviceOffline, PickFirst } from '../../components/DevicePicker'
-import { Icon } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import Status from '../../components/Status'
 import { useDeviceParam } from '../../hooks/useDeviceParam'
+import { useThemeMode } from '../../hooks/useThemeMode'
+import { userMessage } from '../../services/http'
 import { runCommand } from '../../services/remoteService'
 import type { Device, OsFamily } from '../../types/device'
-import type { Shell, ShellResult } from '../../types/remote'
+import type { Shell } from '../../types/remote'
 
 const SHELLS: Record<OsFamily, Shell[]> = { Windows: ['PowerShell', 'CMD'], Linux: ['Bash'] }
 
 const promptFor = (shell: Shell, host: string) =>
   shell === 'Bash' ? `root@${host.toLowerCase()}:~#` : shell === 'CMD' ? 'C:\\>' : 'PS C:\\>'
+
+// The palette lives in CSS variables, so the terminal reads the same tokens as everything else rather
+// than hard-coding a second set that would drift.
+function paletteFrom(root: HTMLElement) {
+  const css = getComputedStyle(root)
+  const token = (name: string) => css.getPropertyValue(name).trim()
+  return {
+    theme: {
+      background: token('--bg-page'),
+      foreground: token('--text'),
+      cursor: token('--accent'),
+      cursorAccent: token('--bg-page'),
+      selectionBackground: token('--border-hover'),
+      green: token('--accent'),
+      red: token('--error'),
+      brightBlack: token('--text-secondary'),
+    },
+    fontFamily: token('--mono') || 'monospace',
+  }
+}
 
 export default function TerminalPage() {
   const { devices, host, device, setHost } = useDeviceParam()
@@ -49,91 +72,163 @@ export default function TerminalPage() {
 function Session({ device }: { device: Device }) {
   const shells = SHELLS[device.osFamily]
   const [shell, setShell] = useState<Shell>(shells[0])
-  const [draft, setDraft] = useState('')
-  const [lines, setLines] = useState<ShellResult[]>([])
-  // Commands already sent, newest last; ArrowUp walks back through them like a real shell.
-  const [recall, setRecall] = useState<number | null>(null)
-  const pane = useRef<HTMLDivElement>(null)
+  const { mode } = useThemeMode()
 
-  const run = useMutation({
-    mutationFn: (command: string) => runCommand(device.host, shell, command),
-    onSuccess: (result) => setLines((prev) => [...prev, result]),
-    onError: (error, command) =>
-      setLines((prev) => [...prev, { command, output: error.message, exitCode: 1, at: new Date().toISOString() }]),
-  })
+  const mount = useRef<HTMLDivElement>(null)
+  const term = useRef<Terminal | null>(null)
+  // xterm owns what is on screen, so none of this belongs in React state: a re-render per keystroke
+  // would do nothing but cost frames.
+  const draft = useRef('')
+  const history = useRef<string[]>([])
+  const recall = useRef<number | null>(null)
+  const busy = useRef(false)
+  const shellRef = useRef(shell)
+  const firstShell = useRef(true)
 
   useEffect(() => {
-    pane.current?.scrollTo({ top: pane.current.scrollHeight })
-  }, [lines, run.isPending])
+    const element = mount.current
+    if (!element) return
+    const { theme, fontFamily } = paletteFrom(document.documentElement)
+    const terminal = new Terminal({
+      theme,
+      fontFamily,
+      fontSize: 13,
+      lineHeight: 1.35,
+      cursorBlink: true,
+      // The agent sends bare \n; without this every line would stair-step to the right.
+      convertEol: true,
+      scrollback: 2000,
+    })
+    const fit = new FitAddon()
+    terminal.loadAddon(fit)
+    terminal.open(element)
+    term.current = terminal
 
-  const submit = () => {
-    if (!draft.trim() || run.isPending) return
-    run.mutate(draft)
-    setDraft('')
-    setRecall(null)
-  }
+    const resize = () => {
+      try {
+        fit.fit()
+      } catch {
+        // The card is hidden or has no size yet; the next resize will fit it.
+      }
+    }
+    resize()
+    const observer = new ResizeObserver(resize)
+    observer.observe(element)
 
-  const history = lines.map((l) => l.command)
-  const stepHistory = (delta: number) => {
-    if (history.length === 0) return
-    const at = recall === null ? history.length : recall
-    const next = Math.min(history.length, Math.max(0, at + delta))
-    setRecall(next === history.length ? null : next)
-    setDraft(next === history.length ? '' : history[next])
-  }
+    const prompt = () => terminal.write(`\x1b[32m${promptFor(shellRef.current, device.host)}\x1b[0m `)
 
-  const prompt = promptFor(shell, device.host)
+    terminal.writeln(`\x1b[90mConnected to ${device.host} over the agent tunnel.\x1b[0m`)
+    terminal.writeln('\x1b[90mTry whoami, hostname, uptime, df, ipconfig, ls or get-service.\x1b[0m')
+    terminal.writeln('')
+    prompt()
+
+    const submit = async () => {
+      const command = draft.current.trim()
+      terminal.write('\r\n')
+      draft.current = ''
+      recall.current = null
+      if (!command) return prompt()
+
+      history.current.push(command)
+      busy.current = true
+      try {
+        const result = await runCommand(device.host, shellRef.current, command)
+        if (result.output) terminal.writeln(result.exitCode === 0 ? result.output : `\x1b[31m${result.output}\x1b[0m`)
+      } catch (error) {
+        terminal.writeln(`\x1b[31m${userMessage(error)}\x1b[0m`)
+      } finally {
+        busy.current = false
+        prompt()
+      }
+    }
+
+    // Replace what is typed with an earlier command: \r returns to column 0, \x1b[2K wipes the row.
+    const replaceLine = (next: string) => {
+      draft.current = next
+      terminal.write('\r\x1b[2K')
+      prompt()
+      terminal.write(next)
+    }
+
+    const step = (delta: number) => {
+      if (history.current.length === 0) return
+      const at = recall.current ?? history.current.length
+      const next = Math.min(history.current.length, Math.max(0, at + delta))
+      recall.current = next === history.current.length ? null : next
+      replaceLine(next === history.current.length ? '' : history.current[next])
+    }
+
+    const listener = terminal.onData((data) => {
+      if (busy.current) return
+      switch (data) {
+        case '\r':
+          void submit()
+          return
+        case '\u007f': // Backspace
+          if (draft.current) {
+            draft.current = draft.current.slice(0, -1)
+            terminal.write('\b \b')
+          }
+          return
+        case '\u0003': // Ctrl+C
+          terminal.write('^C\r\n')
+          draft.current = ''
+          recall.current = null
+          prompt()
+          return
+        case '\u001b[A':
+          return step(-1)
+        case '\u001b[B':
+          return step(1)
+        case '\u001b[C':
+        case '\u001b[D':
+          // shortcut: the line editor is append-only, so left/right are ignored. Give it a cursor
+          // position if anyone needs to edit mid-line.
+          return
+        default:
+          // Printable only: drop the remaining control and escape sequences.
+          if (data >= ' ') {
+            draft.current += data
+            terminal.write(data)
+          }
+      }
+    })
+
+    terminal.focus()
+    return () => {
+      listener.dispose()
+      observer.disconnect()
+      terminal.dispose()
+      term.current = null
+    }
+  }, [device.host])
+
+  // Follow the app's theme; xterm paints to a canvas, so CSS alone cannot reach it.
+  useEffect(() => {
+    if (term.current) term.current.options.theme = paletteFrom(document.documentElement).theme
+  }, [mode])
+
+  // A new shell means a new prompt: clear whatever is half-typed and redraw it.
+  useEffect(() => {
+    shellRef.current = shell
+    if (firstShell.current) {
+      firstShell.current = false
+      return
+    }
+    const terminal = term.current
+    if (!terminal || busy.current) return
+    draft.current = ''
+    terminal.write(`\r\x1b[2K\x1b[32m${promptFor(shell, device.host)}\x1b[0m `)
+    terminal.focus()
+  }, [shell, device.host])
 
   return (
     <Card
       title={`${device.host} · ${device.os}`}
-      extra={
-        <Segmented<Shell> aria-label="Shell" options={shells} value={shell} onChange={setShell} disabled={run.isPending} />
-      }
+      extra={<Segmented<Shell> aria-label="Shell" options={shells} value={shell} onChange={setShell} />}
       styles={{ body: { padding: 0 } }}
     >
-      <div className="terminal" ref={pane}>
-        <div className="terminal-intro">
-          Connected to {device.host} over the agent tunnel. Try <code>whoami</code>, <code>uptime</code>, <code>df</code>,{' '}
-          <code>ipconfig</code> or <code>get-service</code>.
-        </div>
-        {lines.map((line, i) => (
-          <div key={`${line.at}-${i}`}>
-            <div className="terminal-echo">
-              <span className="terminal-prompt">{prompt}</span> {line.command}
-            </div>
-            {line.output ? (
-              <pre className={line.exitCode === 0 ? 'terminal-out' : 'terminal-out terminal-bad'}>{line.output}</pre>
-            ) : null}
-          </div>
-        ))}
-        {run.isPending ? <div className="terminal-echo muted">Running…</div> : null}
-      </div>
-      <div className="terminal-input">
-        <span className="terminal-prompt">{prompt}</span>
-        <Input
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onPressEnter={submit}
-          onKeyDown={(e) => {
-            if (e.key === 'ArrowUp') {
-              e.preventDefault()
-              stepHistory(-1)
-            } else if (e.key === 'ArrowDown') {
-              e.preventDefault()
-              stepHistory(1)
-            }
-          }}
-          placeholder="Type a command and press Enter"
-          aria-label="Command"
-          variant="borderless"
-          autoFocus
-        />
-        <Button type="primary" onClick={submit} loading={run.isPending} disabled={!draft.trim()}>
-          Run
-          <Icon name="arrow" size={14} />
-        </Button>
-      </div>
+      <div className="terminal-host" ref={mount} />
     </Card>
   )
 }
