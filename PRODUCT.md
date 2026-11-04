@@ -53,7 +53,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 **Built in EdgePortal**
 - Dashboard, the Devices list, and Device detail (overview and connection history).
-- Data comes from mock responses until EdgePanel exposes the endpoints (`src/mocks`, switched off with `VITE_USE_MOCK=false`).
+- Every screen calls the real EdgePanel API; there is no mock-data mode. EdgePanel serves only sign-in so far, so the other screens show an error until their endpoints exist.
 
 **Planned modules** (shown in the UI as not yet available)
 - Remote Terminal (PowerShell, CMD, Bash), Remote Desktop, Remote Files, Remote Service (web apps).
@@ -82,7 +82,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 - Design canvas, 15 artboards: https://claude.ai/artifact/5TYshytP6kBopBmewcPMv5
 - `../EdgeAgent/README.md`: the agent's purpose and architecture.
-- There are no customers, testimonials, benchmarks or production metrics. The data in `src/mocks` is illustrative only and must never be presented as real.
+- There are no customers, testimonials, benchmarks or production metrics.
 
 ## Product Principles
 

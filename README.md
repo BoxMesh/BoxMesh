@@ -14,14 +14,14 @@ Browser ── EdgePortal ──HTTPS / WebSocket──► EdgePanel (VPS) ◄�
 
 | Module | State |
 |---|---|
-| Sign in (`/login`) | Built; until EdgePanel has sign-in, the mock accepts any email and password |
+| Sign in (`/login`) | Built; calls EdgePanel `POST /sign-in` |
 | Dashboard | Built |
 | Devices (list, detail, enrollment drawer) | Built |
 | Remote Terminal, Remote Desktop, Remote Files, Remote Service | Planned; the UI shows "isn't available yet" |
 | Command & Jobs, Audit & Alerts | Planned |
 | Security & Certificates, Users & Access, System Settings | Planned |
 
-EdgePanel does not serve the API yet, so the app runs on **mock data** by default (see [Configuration](#configuration)).
+Every screen calls the real EdgePanel API. EdgePanel serves only sign-in so far, so the other screens show an error until it has their endpoints (see [API contract](#api-contract)).
 
 ## Tech stack
 
@@ -41,14 +41,9 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
-The app opens with mock data. To work against a running EdgePanel instead:
+Start EdgePanel first (its `http` profile, on port 8080); the portal has no offline mode.
 
-```bash
-# .env.local
-VITE_USE_MOCK=false
-```
-
-`npm run dev` proxies `/api` to EdgePanel on `http://localhost:8080`, its default `http` launch profile.
+`npm run dev` proxies `/api` to EdgePanel on `http://localhost:8080`, its default `http` launch profile, and strips the `/api` prefix because EdgePanel serves its routes from the root.
 
 | Script | What it does |
 |---|---|
@@ -60,14 +55,11 @@ VITE_USE_MOCK=false
 
 ## Configuration
 
-Vite bakes these into the bundle **at build time**. Copy `.env.example` to `.env.local` to override them locally.
+Vite bakes this into the bundle **at build time**. Copy `.env.example` to `.env.local` to override them locally.
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `VITE_API_URL` | `/api` | Base URL of the EdgePanel REST API |
-| `VITE_USE_MOCK` | on (anything but `false`) | `false` calls EdgePanel; otherwise `src/mocks` answers every request |
-
-With mocks off, mock data is left out of the bundle entirely.
+| `VITE_API_URL` | `/api` | Base URL of the EdgePanel REST API: `/api` behind a shared reverse proxy, or EdgePanel's own origin such as `https://panel.company.com` (no `/api`; EdgePanel serves its routes from the root). See [Deployment](#deployment). |
 
 ## Project structure
 
@@ -78,7 +70,6 @@ src/
   pages/<feature>/     one folder per screen, with its private components
   components/          shared components
   services/            axios client, API calls, TanStack Query keys
-  mocks/               mock data and the axios mock adapter
   types/               shared interfaces
   utils/               pure helpers, each with its tests
   config/              theme tokens and the navigation
@@ -97,7 +88,7 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/auth/login` (`{ email, password }` → `{ email, name }`) |
+| POST | `/api/sign-in` → EdgePanel `/sign-in` (`{ email, password }` → `{ id, email }`, JWTs set as HttpOnly cookies) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
 | GET | `/api/devices/{host}/connections` |
@@ -115,7 +106,7 @@ docker build -t edgeportal .
 docker run --rm -p 8080:8080 edgeportal
 ```
 
-Pass `--build-arg VITE_USE_MOCK=true` to build with mock data, or `--build-arg VITE_API_URL=...` to point at another API base.
+Pass `--build-arg VITE_API_URL=...` to point at another API base.
 
 What nginx does:
 - Serves the single-page app, falling back to `index.html` for client-side routes.
@@ -124,7 +115,12 @@ What nginx does:
 
 ### Deployment
 
-- **Same origin as EdgePanel.** The bundle calls `/api` on its own origin, so put EdgePortal behind the same reverse proxy as EdgePanel. Route `/api`, `/ws` and `/web` to EdgePanel and everything else to this container.
+Pick one way to reach EdgePanel:
+
+- **Same origin (default).** Keep `VITE_API_URL=/api` and put EdgePortal behind the same reverse proxy as EdgePanel. Route `/api` (stripping the `/api` prefix), `/ws` and `/web` to EdgePanel and everything else to this container. No CORS needed.
+- **EdgePanel on its own domain.** Build with `VITE_API_URL=https://panel.company.com`. The portal sends requests with credentials so EdgePanel's HttpOnly JWT cookies cross origins, which needs on EdgePanel's side:
+  - a CORS policy that allows the portal's exact origin **with credentials** (`AllowCredentials`; a `*` origin is refused by browsers);
+  - the portal and EdgePanel on the **same site** (same registrable domain, e.g. `portal.company.com` and `panel.company.com`), because the cookies are `SameSite=Strict`. Different domains need `SameSite=None` on EdgePanel.
 - **HTTPS is required.** Without it the app can't be installed as a PWA, and the one-window rule (it uses a Web Lock) is not enforced.
 
 ## CI/CD
@@ -141,11 +137,10 @@ To start a run by hand, use **Actions → CI/CD → Run workflow**.
 
 ### Docker image
 
-The image builds with mock data until told otherwise. Change this in **Settings → Secrets and variables → Actions → Variables**:
+To change the API base the image is built with, set this in **Settings → Secrets and variables → Actions → Variables**:
 
 | Variable | Workflow default |
 |---|---|
-| `VITE_USE_MOCK` | `true` (set it to `false` once EdgePanel serves `/api`) |
 | `VITE_API_URL` | `/api` |
 
 To pull the image:
@@ -177,11 +172,11 @@ One-time setup:
 
 Until those secrets exist, the `vercel` job fails with a message naming them; the Docker job is unaffected.
 
-Build-time variables (`VITE_USE_MOCK`, `VITE_API_URL`) come from the Vercel project's **Environment Variables**. Without them, the deploy runs on mock data.
+The build-time variable `VITE_API_URL` comes from the Vercel project's **Environment Variables**; without it the deploy calls `/api` on its own domain.
 
 To use the real API from Vercel:
-- Set `VITE_API_URL` to EdgePanel's public URL, for example `https://panel.example.com/api`.
-- Allow the Vercel domain in EdgePanel's CORS policy, because the portal and the API are then on different origins.
+- Set `VITE_API_URL` to EdgePanel's public URL, for example `https://panel.company.com`.
+- Meet the "EdgePanel on its own domain" requirements in [Deployment](#deployment). A `*.vercel.app` address is a different site from EdgePanel's domain, so give the portal a custom domain on the same site (or switch EdgePanel's cookies to `SameSite=None`).
 
 ## License
 

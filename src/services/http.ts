@@ -3,13 +3,10 @@ import axios, { isAxiosError } from 'axios'
 export const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? '/api',
   timeout: 15_000,
+  // EdgePanel keeps the sign-in in HttpOnly cookies. When VITE_API_URL points at another origin, the browser only
+  // stores and sends them with this flag (EdgePanel must allow credentials in CORS); same-origin it changes nothing.
+  withCredentials: true,
 })
-
-// shortcut: EdgePanel has no endpoints for these screens yet, so src/mocks answers every request;
-// set VITE_USE_MOCK=false once it does. The dynamic import keeps mock data out of that build.
-if (import.meta.env.VITE_USE_MOCK !== 'false') {
-  http.defaults.adapter = async (config) => (await import('../mocks/adapter')).mockAdapter(config)
-}
 
 // EdgePanel's ResponseFilter wraps bodies as { data } on success and { error } on failure.
 http.interceptors.response.use(

@@ -6,11 +6,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-# Vite bakes these into the bundle at build time (see .env.example).
+# Vite bakes this into the bundle at build time (see .env.example).
 ARG VITE_API_URL=/api
-ARG VITE_USE_MOCK=false
-ENV VITE_API_URL=$VITE_API_URL \
-    VITE_USE_MOCK=$VITE_USE_MOCK
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # ---- Serve it (non-root nginx, port 8080) ----

@@ -377,8 +377,7 @@ In use now: Vite + React 19 + TypeScript · Ant Design 6 · React Router · axio
 Vitest. Add xterm.js with the terminal, charts with the metrics tab.
 
 Data flow: page → `services/queries.ts` (TanStack Query keys) → `services/*Service.ts` (axios) → EdgePanel `/api`.
-Until EdgePanel has the endpoints, an axios adapter in `src/mocks/adapter.ts` answers with mock data;
-`VITE_USE_MOCK=false` switches to the real API (see `.env.example`).
+There is no mock data: endpoints EdgePanel doesn't serve yet surface as the page's error state.
 
 PWA: installable (`manifest` in `vite.config.ts`), one window at a time — `launch_handler: focus-existing` for the
 installed app, plus a Web Lock (`src/utils/singleInstance.ts`) that blocks a second browser tab until the first closes.

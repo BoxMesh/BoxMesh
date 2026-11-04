@@ -4,8 +4,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // EdgePanel's http profile (EdgePanel.API launchSettings.json).
-  server: { proxy: { '/api': 'http://localhost:8080' } },
+  // EdgePanel's http profile (EdgePanel.API launchSettings.json). EdgePanel serves its routes from the root
+  // (POST /sign-in), so the portal's /api prefix is stripped on the way through.
+  server: { proxy: { '/api': { target: 'http://localhost:8080', rewrite: (path) => path.replace(/^\/api/, '') } } },
   plugins: [
     react(),
     VitePWA({

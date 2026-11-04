@@ -1,9 +1,14 @@
+import { isAxiosError } from 'axios'
 import type { User } from '../types/auth'
 import { http } from './http'
 
 const STORAGE_KEY = 'edgeportal-session'
 
-// shortcut: the session is only a client-side flag until EdgePanel has sign-in; switch to its session cookie or token then.
+// EdgePanel keeps the JWTs in HttpOnly cookies the browser sends on every same-origin request; the portal only
+// remembers who signed in.
+// shortcut: EdgePanel has no sign-out, refresh or "who am I" endpoint yet, so signing out only forgets the user here
+// (the cookies live until they expire) and an expired access cookie isn't noticed until an API call fails.
+// Call those endpoints once EdgePanel has them.
 let session = load()
 
 function load(): User | null {
@@ -19,7 +24,13 @@ export const getSession = () => session
 
 /** With `remember`, the session outlives the browser; otherwise it ends when the browser closes. */
 export async function signIn(email: string, password: string, remember: boolean) {
-  const { data } = await http.post<User>('/auth/login', { email, password })
+  const { data: account } = await http
+    .post<{ id: string; email: string }>('/sign-in', { email, password })
+    .catch((error: unknown) => {
+      // EdgePanel answers a bad email or password with a bare 401 ({ data: "Unauthorized" }).
+      throw isAxiosError(error) && error.response?.status === 401 ? new Error('Wrong email or password.') : error
+    })
+  const data: User = { email: account.email, name: account.email.split('@')[0] }
   session = data
   try {
     const storage = remember ? localStorage : sessionStorage

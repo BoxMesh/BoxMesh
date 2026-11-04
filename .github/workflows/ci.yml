@@ -52,11 +52,9 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Repository variables override these. Mock data stays on until EdgePanel serves /api;
-          # set the VITE_USE_MOCK variable to "false" then.
+          # The VITE_API_URL repository variable overrides the default.
           build-args: |
             VITE_API_URL=${{ vars.VITE_API_URL || '/api' }}
-            VITE_USE_MOCK=${{ vars.VITE_USE_MOCK || 'true' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
