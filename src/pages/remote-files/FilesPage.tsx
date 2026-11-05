@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { App, Breadcrumb, Button, Card, Dropdown, Table, Upload, type TableProps } from 'antd'
 import { useState } from 'react'
 import DevicePicker, { DeviceOffline, PickFirst } from '../../components/DevicePicker'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { useDeviceParam } from '../../hooks/useDeviceParam'
 import { userMessage } from '../../services/http'
@@ -63,7 +63,7 @@ function Browser({ device }: { device: Device }) {
 
   const columns: TableProps<FileEntry>['columns'] = [
     {
-      title: 'Name',
+      title: <Th icon="files" label="Name" />,
       key: 'name',
       render: (_, entry) =>
         entry.kind === 'folder' ? (
@@ -78,10 +78,10 @@ function Browser({ device }: { device: Device }) {
           </span>
         ),
     },
-    { title: 'Size', key: 'size', render: (_, e) => size(e.size) },
-    { title: 'Modified', key: 'modified', render: (_, e) => ago(e.modified) },
+    { title: <Th icon="box" label="Size" />, key: 'size', render: (_, e) => size(e.size) },
+    { title: <Th icon="clock" label="Modified" />, key: 'modified', render: (_, e) => ago(e.modified) },
     {
-      title: 'Actions',
+      title: <Th icon="more" label="Actions" />,
       key: 'actions',
       render: (_, entry) => (
         <div className="row-actions">

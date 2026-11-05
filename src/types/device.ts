@@ -45,7 +45,6 @@ export interface Issue {
 export interface DeviceFilter {
   q: string
   os: string
-  group: string
   status: string
 }
 

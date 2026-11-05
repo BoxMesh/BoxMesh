@@ -2,7 +2,7 @@ import { useSuspenseQueries } from '@tanstack/react-query'
 import { Alert, Card, Progress, Segmented, Statistic, Table, Tag, Timeline, type TableProps } from 'antd'
 import { Fragment, useState, useTransition } from 'react'
 import { Link } from 'react-router'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { tone } from '../../config/theme'
 import { devicesQuery, recentActivityQuery, remoteSessionsQuery, resourceUsageQuery } from '../../services/queries'
@@ -27,10 +27,10 @@ const RESOURCES = [
 ] as const
 
 const attentionColumns: TableProps<AttentionRow>['columns'] = [
-  { title: 'Device', key: 'device', render: (_, r) => <Link to={`/devices/${r.device.host}`}>{r.device.host}</Link> },
-  { title: 'Issue', key: 'issue', render: (_, r) => <Tag color={r.level}>{r.label}</Tag> },
-  { title: 'Value', dataIndex: 'value' },
-  { title: 'Last seen', key: 'seen', render: (_, r) => ago(r.device.lastSeen) },
+  { title: <Th icon="devices" label="Device" />, key: 'device', render: (_, r) => <Link to={`/devices/${r.device.host}`}>{r.device.host}</Link> },
+  { title: <Th icon="warning" label="Issue" />, key: 'issue', render: (_, r) => <Tag color={r.level}>{r.label}</Tag> },
+  { title: <Th icon="pulse" label="Value" />, dataIndex: 'value' },
+  { title: <Th icon="clock" label="Last seen" />, key: 'seen', render: (_, r) => ago(r.device.lastSeen) },
 ]
 
 export default function DashboardPage() {

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { App, Button, Card, Drawer, Form, Input, Segmented, Select, Table, Tag, type TableProps } from 'antd'
 import { useState } from 'react'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { createJob, type NewJob } from '../../services/opsService'
 import { devicesQuery, jobsQuery } from '../../services/queries'
@@ -39,7 +39,7 @@ export default function JobsPage() {
 
   const columns: TableProps<Job>['columns'] = [
     {
-      title: 'Job',
+      title: <Th icon="jobs" label="Job" />,
       key: 'name',
       render: (_, j) => (
         <>
@@ -50,16 +50,16 @@ export default function JobsPage() {
         </>
       ),
     },
-    { title: 'Targets', key: 'targets', render: (_, j) => j.targets.map((t) => <Tag key={t}>{t}</Tag>) },
-    { title: 'Shell', dataIndex: 'shell' },
-    { title: 'State', key: 'state', render: (_, j) => <Tag color={STATE_COLOR[j.state]}>{j.state}</Tag> },
+    { title: <Th icon="devices" label="Targets" />, key: 'targets', render: (_, j) => j.targets.map((t) => <Tag key={t}>{t}</Tag>) },
+    { title: <Th icon="terminal" label="Shell" />, dataIndex: 'shell' },
+    { title: <Th icon="pulse" label="State" />, key: 'state', render: (_, j) => <Tag color={STATE_COLOR[j.state]}>{j.state}</Tag> },
     {
-      title: 'When',
+      title: <Th icon="clock" label="When" />,
       key: 'when',
       render: (_, j) => (j.schedule ? <span className="muted">{j.schedule}</span> : ago(j.startedAt)),
     },
     {
-      title: 'Results',
+      title: <Th icon="check" label="Results" />,
       key: 'results',
       render: (_, j) =>
         j.results.length === 0 ? (

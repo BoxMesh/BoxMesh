@@ -46,28 +46,37 @@ const hardwareFor = (family: OsFamily, i: number) =>
     ? { cpu: 'Intel Core i5-12400 · 6C/12T', ram: '16 GB DDR4', disk: '512 GB NVMe', uptime: `${2 + (i % 9)} days` }
     : { cpu: 'AMD EPYC 7313P · 16C/32T', ram: '64 GB DDR4 ECC', disk: '2 TB NVMe RAID1', uptime: `${40 + i * 7} days` }
 
+const rand = (min: number, max: number) => min + Math.floor(Math.random() * (max - min + 1))
+
+// The fleet is drawn fresh on every load, so the demo is never the same two visits running: which
+// agents are up, and what the office LAN handed each one. The seeded readings stay as the agent's
+// last known values, which is all an offline device can show anyway.
 export const devices: Device[] = SEEDS.map(
-  ([host, alias, os, osFamily, group, tag, online, cpu, ram, disk, agentVersion, latencyMs, certDays, seenMin], i) => ({
-    host,
-    alias,
-    os,
-    osFamily,
-    ip: `10.0.${osFamily === 'Linux' ? 20 : 10 + (i % 3)}.${11 + i}`,
-    mac: `AA:BB:CC:${(16 + i).toString(16).toUpperCase().padStart(2, '0')}:0${i % 10}:${(32 + i).toString(16).toUpperCase()}`,
-    online,
-    agentVersion,
-    agentOutdated: agentVersion !== LATEST_AGENT,
-    group,
-    tag,
-    lastSeen: fromNow(-seenMin * MINUTE),
-    enrolledAt: fromNow(-(90 + i * 11) * DAY),
-    certExpires: fromNow(certDays * DAY),
-    cpu,
-    ram,
-    disk,
-    latencyMs,
-    hardware: hardwareFor(osFamily, i),
-  }),
+  ([host, alias, os, osFamily, group, tag, , cpu, ram, disk, agentVersion, latencyMs, certDays, seenMin], i) => {
+    const online = Math.random() < 0.78
+    return {
+      host,
+      alias,
+      os,
+      osFamily,
+      ip: `192.168.${rand(1, 20)}.${rand(2, 254)}`,
+      mac: `AA:BB:CC:${(16 + i).toString(16).toUpperCase().padStart(2, '0')}:0${i % 10}:${(32 + i).toString(16).toUpperCase()}`,
+      online,
+      agentVersion,
+      agentOutdated: agentVersion !== LATEST_AGENT,
+      group,
+      tag,
+      // Clamped both ways: a live agent was heard from moments ago, a lost one minutes to hours ago.
+      lastSeen: fromNow(-(online ? Math.min(seenMin, 2) : Math.max(seenMin, 7)) * MINUTE),
+      enrolledAt: fromNow(-(90 + i * 11) * DAY),
+      certExpires: fromNow(certDays * DAY),
+      cpu,
+      ram,
+      disk,
+      latencyMs: online ? latencyMs || rand(8, 48) : 0,
+      hardware: hardwareFor(osFamily, i),
+    }
+  },
 )
 
 const byRange: Record<TimeRange, ResourceUsage> = {
@@ -92,8 +101,8 @@ export const activity: ActivityEvent[] = [
 ]
 
 export const pendingEnrollments: PendingEnrollment[] = [
-  { host: 'ACC-PC-04', os: 'Windows 11 Pro 24H2', ip: '10.0.11.24' },
-  { host: 'SRV-APP-02', os: 'Ubuntu 24.04 LTS', ip: '10.0.20.31' },
+  { host: 'ACC-PC-04', os: 'Windows 11 Pro 24H2', ip: '192.168.11.24' },
+  { host: 'SRV-APP-02', os: 'Ubuntu 24.04 LTS', ip: '192.168.20.31' },
 ]
 
 export const connectionHistory = (host: string): ConnectionEvent[] => {
@@ -202,7 +211,7 @@ const REPLIES: { match: RegExp; output: (host: string) => string }[] = [
     match: /^(ipconfig|ip a|ifconfig)/i,
     output: (h) => {
       const d = devices.find((x) => x.host === h)
-      return `eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\n        inet ${d?.ip ?? '10.0.0.1'}  netmask 255.255.255.0\n        ether ${d?.mac ?? 'AA:BB:CC:00:00:00'}`
+      return `eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>\n        inet ${d?.ip ?? '192.168.10.1'}  netmask 255.255.255.0\n        ether ${d?.mac ?? 'AA:BB:CC:00:00:00'}`
     },
   },
   { match: /^(ls|dir|get-childitem)/i, output: (h) => listFiles(h, rootFor(h)).entries.map((e) => e.name).join('\n') },
@@ -266,13 +275,13 @@ export const jobs: Job[] = [
 ]
 
 export const auditLog: AuditEntry[] = [
-  { id: 'a-9001', at: fromNow(-4 * MINUTE), actor: 'ops@company.com', action: 'Ran command', target: 'ACC-PC-01', outcome: 'ok', ip: '10.0.0.5' },
+  { id: 'a-9001', at: fromNow(-4 * MINUTE), actor: 'ops@company.com', action: 'Ran command', target: 'ACC-PC-01', outcome: 'ok', ip: '192.168.1.5' },
   { id: 'a-9000', at: fromNow(-26 * MINUTE), actor: 'system', action: 'Threshold crossed', target: 'CAD-WS-01', outcome: 'failed', ip: '—' },
-  { id: 'a-8999', at: fromNow(-52 * MINUTE), actor: 'ops@company.com', action: 'Opened terminal', target: 'SRV-DB-01', outcome: 'ok', ip: '10.0.0.5' },
-  { id: 'a-8998', at: fromNow(-2 * 60 * MINUTE), actor: 'admin@company.com', action: 'Approved enrollment', target: 'WH-PC-02', outcome: 'ok', ip: '10.0.0.2' },
-  { id: 'a-8997', at: fromNow(-3 * 60 * MINUTE), actor: 'viewer@company.com', action: 'Opened remote desktop', target: 'ACC-PC-02', outcome: 'failed', ip: '10.0.0.9' },
-  { id: 'a-8996', at: fromNow(-6 * 60 * MINUTE), actor: 'admin@company.com', action: 'Created enrollment token', target: 'Accounting', outcome: 'ok', ip: '10.0.0.2' },
-  { id: 'a-8995', at: fromNow(-DAY), actor: 'ops@company.com', action: 'Downloaded file', target: 'SRV-BAK-01:/var/log/syslog', outcome: 'ok', ip: '10.0.0.5' },
+  { id: 'a-8999', at: fromNow(-52 * MINUTE), actor: 'ops@company.com', action: 'Opened terminal', target: 'SRV-DB-01', outcome: 'ok', ip: '192.168.1.5' },
+  { id: 'a-8998', at: fromNow(-2 * 60 * MINUTE), actor: 'admin@company.com', action: 'Approved enrollment', target: 'WH-PC-02', outcome: 'ok', ip: '192.168.1.2' },
+  { id: 'a-8997', at: fromNow(-3 * 60 * MINUTE), actor: 'viewer@company.com', action: 'Opened remote desktop', target: 'ACC-PC-02', outcome: 'failed', ip: '192.168.1.9' },
+  { id: 'a-8996', at: fromNow(-6 * 60 * MINUTE), actor: 'admin@company.com', action: 'Created enrollment token', target: 'Accounting', outcome: 'ok', ip: '192.168.1.2' },
+  { id: 'a-8995', at: fromNow(-DAY), actor: 'ops@company.com', action: 'Downloaded file', target: 'SRV-BAK-01:/var/log/syslog', outcome: 'ok', ip: '192.168.1.5' },
   { id: 'a-8994', at: fromNow(-DAY - 60 * MINUTE), actor: 'system', action: 'Certificate renewed', target: 'SRV-MON-01', outcome: 'ok', ip: '—' },
 ]
 

@@ -13,7 +13,8 @@ describe('demo mode', () => {
   it('serves the sample fleet', async () => {
     const devices = await getDevices()
     expect(devices).toHaveLength(12)
-    expect(devices.filter((d) => !d.online).map((d) => d.host)).toEqual(['ACC-PC-03', 'WH-PC-01'])
+    // Which agents are up is random per load; the addresses are always on the office LAN.
+    expect(devices.every((d) => /^192\.168\.\d+\.\d+$/.test(d.ip))).toBe(true)
   })
 
   it('answers a known command and refuses an unknown one', async () => {
@@ -32,12 +33,11 @@ describe('demo mode', () => {
   it('runs a job only on the devices that are online', async () => {
     const job = await createJob({ name: 'Ping', command: 'hostname', shell: 'Bash', targets: ['Accounting'] })
     expect(job.state).toBe('running')
-    // ACC-PC-03 is offline in the sample fleet, so its result is a failure rather than a missing row.
-    expect(job.results.map((r) => [r.host, r.state])).toEqual([
-      ['ACC-PC-01', 'done'],
-      ['ACC-PC-02', 'done'],
-      ['ACC-PC-03', 'failed'],
-    ])
+    // Every targeted device gets a row: offline ones a failure rather than a missing result.
+    const { devices } = await import('./demoData')
+    const expected = devices.filter((d) => d.group === 'Accounting').map((d) => [d.host, d.online ? 'done' : 'failed'])
+    expect(expected).toHaveLength(3)
+    expect(job.results.map((r) => [r.host, r.state])).toEqual(expected)
   })
 
   it('turns an unknown route into a message for people', async () => {

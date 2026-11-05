@@ -8,7 +8,7 @@ const iso = (offsetMs: number) => fromNow(offsetMs, NOW)
 
 const base: Device = {
   host: 'PC-001', alias: 'Front desk', os: 'Windows 11 Pro', osFamily: 'Windows',
-  ip: '10.0.0.1', mac: 'AA:BB:CC:00:00:01', online: true, agentVersion: 'v1.4.2', agentOutdated: false,
+  ip: '192.168.1.11', mac: 'AA:BB:CC:00:00:01', online: true, agentVersion: 'v1.4.2', agentOutdated: false,
   group: 'Office', tag: 'floor 1', lastSeen: iso(-5_000), enrolledAt: iso(-DAY), certExpires: iso(30 * DAY),
   cpu: 10, ram: 10, disk: 10, latencyMs: 20,
   hardware: { cpu: '', ram: '', disk: '', uptime: '' },
@@ -25,11 +25,11 @@ describe('issuesOf', () => {
 })
 
 describe('filterDevices', () => {
-  const list = [dev({ host: 'PC-001' }), dev({ host: 'SRV-02', ip: '10.0.10.2', osFamily: 'Linux', online: false })]
-  const none = { q: '', os: '', group: '', status: '' }
+  const list = [dev({ host: 'PC-001' }), dev({ host: 'SRV-02', ip: '192.168.10.2', osFamily: 'Linux', online: false })]
+  const none = { q: '', os: '', status: '' }
   it('matches search against host, ip and mac, case-insensitively', () => {
     expect(filterDevices(list, { ...none, q: ' srv ' }).map((d) => d.host)).toEqual(['SRV-02'])
-    expect(filterDevices(list, { ...none, q: '10.0.10' }).map((d) => d.host)).toEqual(['SRV-02'])
+    expect(filterDevices(list, { ...none, q: '192.168.10' }).map((d) => d.host)).toEqual(['SRV-02'])
   })
   it('combines os and status filters', () => {
     expect(filterDevices(list, { ...none, os: 'Linux', status: 'online' })).toEqual([])

@@ -348,13 +348,12 @@ body .filters .search {
   max-width: 320px;
 }
 
-.bulk-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
-  padding: 4px 16px;
-  background: var(--success-bg);
+/* A table runs to its card's edges, so the body has to clip to the card's own corners: the filled
+   header would otherwise square off the top two. :first-child leaves out the cards that have a
+   heading, where the body's top edge is not the card's. */
+body .table-card .ant-card-body:first-child {
+  border-radius: inherit;
+  overflow: hidden;
 }
 
 body .table-card .ant-table-pagination {
@@ -363,6 +362,33 @@ body .table-card .ant-table-pagination {
 
 .strong {
   font-weight: 600;
+}
+
+/* Filtering lives in the column headings, so each panel holds the control and nothing else. */
+.filter-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+
+.filter-search {
+  width: 210px;
+  margin: 8px;
+}
+
+.th {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body .ant-table-wrapper .ant-table .ant-table-thead > tr > th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
 /* The devices table has no Status column: an online row reads at full strength, an offline one

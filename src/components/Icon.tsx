@@ -23,9 +23,25 @@ const paths = {
   more: 'M5 11a1 1 0 1 0 0 2a1 1 0 1 0 0-2M12 11a1 1 0 1 0 0 2a1 1 0 1 0 0-2M19 11a1 1 0 1 0 0 2a1 1 0 1 0 0-2',
   sun: 'M12 16a4 4 0 1 0 0-8a4 4 0 1 0 0 8M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4',
   moon: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
+  clock: 'M12 21a9 9 0 1 0 0-18a9 9 0 1 0 0 18M12 7v5l4 2',
+  chip: 'M7 7h10v10H7zM4 10h3M4 14h3M17 10h3M17 14h3M10 4v3M14 4v3M10 17v3M14 17v3',
+  box: 'M3 8h18v11H3zM3 8l2-4h14l2 4M12 8v11',
+  pulse: 'M3 12h4l2-5 3.5 10 2.5-5h6',
+  tag: 'M19 13l-6 6-9-9V4h7zM7.5 7.5h.01',
+  check: 'M4 12.5l5 5L20 6.5',
 }
 
 export type IconName = keyof typeof paths
+
+/** A table column heading. Every data table uses it, so the header row reads as a header everywhere. */
+export function Th({ icon, label }: { icon: IconName; label: string }) {
+  return (
+    <span className="th">
+      <Icon name={icon} size={13} />
+      {label}
+    </span>
+  )
+}
 
 // className lets antd (Menu, Button) attach its icon classes for spacing.
 export function Icon({ name, size = 16, className }: { name: IconName; size?: number; className?: string }) {

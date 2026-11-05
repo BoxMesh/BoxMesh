@@ -20,7 +20,6 @@ export function filterDevices(list: Device[], f: DeviceFilter): Device[] {
     (d) =>
       (!q || [d.host, d.alias, d.ip, d.mac].some((v) => v.toLowerCase().includes(q))) &&
       (!f.os || d.osFamily === f.os) &&
-      (!f.group || d.group === f.group) &&
       (!f.status || (f.status === 'online') === d.online),
   )
 }

@@ -1,12 +1,11 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { Button, Card, Dropdown, Input, Select, Table, Tag, Tooltip, type MenuProps, type TableProps } from 'antd'
-import { useState, type Key } from 'react'
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { App, Button, Card, Input, Radio, Table, Tooltip, type TableProps } from 'antd'
+import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { tone } from '../../config/theme'
 import { navItem } from '../../config/nav'
-import { useNotSupported } from '../../hooks/useNotSupported'
 import { devicesQuery } from '../../services/queries'
 import type { Device, DeviceFilter } from '../../types/device'
 import { filterDevices, toCsv } from '../../utils/devices'
@@ -15,98 +14,24 @@ import EnrollDrawer from './EnrollDrawer'
 const ALL = { value: '', label: 'All' }
 const OS_OPTIONS = [ALL, { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }]
 const STATUS_OPTIONS = [ALL, { value: 'online', label: 'Online' }, { value: 'offline', label: 'Offline' }]
-// `subject` names the action in its "… isn't available yet" message.
-const BULK_ACTIONS = [
-  { label: 'Assign group', subject: 'Assigning groups' },
-  { label: 'Assign tag', subject: 'Assigning tags' },
-  { label: 'Run command', subject: 'Running commands' },
-  { label: 'Update agent', subject: 'Updating agents' },
-]
-// Menu keys double as that message subject.
-const MORE_ACTIONS: MenuProps['items'] = [
-  { key: 'Renaming devices', label: 'Rename' },
-  { key: 'Disabling devices', label: 'Disable' },
-  { type: 'divider' },
-  { key: 'Deleting devices', label: 'Delete', danger: true },
-]
 const REMOTE_ACTIONS = [
   { path: '/remote-terminal', verb: 'Open a terminal' },
   { path: '/remote-desktop', verb: 'Open remote desktop' },
   { path: '/remote-files', verb: 'Browse files' },
 ]
 
-const columns: TableProps<Device>['columns'] = [
-  {
-    title: '',
-    key: 'online',
-    width: 32,
-    render: (_, d) => {
-      const label = d.online ? 'Online' : 'Offline'
-      // The dot is the only thing in the cell, so it carries the word for anyone not seeing colour.
-      return (
-        <Tooltip title={label}>
-          <span className="status-dot" role="img" aria-label={label} style={{ background: d.online ? tone.positive : tone.disabled }} />
-        </Tooltip>
-      )
-    },
-  },
-  {
-    title: 'Hostname',
-    key: 'host',
-    render: (_, d) => (
-      <Link to={`/devices/${d.host}`} className="strong">
-        {d.host}
-      </Link>
-    ),
-  },
-  { title: 'OS', dataIndex: 'os' },
-  { title: 'IP', dataIndex: 'ip' },
-  { title: 'MAC', key: 'mac', render: (_, d) => <code>{d.mac}</code> },
-  {
-    title: 'Agent',
-    key: 'agent',
-    render: (_, d) =>
-      d.agentOutdated ? (
-        <Tooltip title="A newer agent has been released">
-          {/* role + label: the icon is the whole message, so it has to reach a screen reader too. */}
-          <span className="agent-outdated" role="img" aria-label={`${d.agentVersion}, update available`}>
-            {d.agentVersion}
-            <Icon name="warning" size={13} />
-          </span>
-        </Tooltip>
-      ) : (
-        d.agentVersion
-      ),
-  },
-  {
-    title: 'Group · Tag',
-    key: 'group',
-    render: (_, d) => (
-      <>
-        <Tag color="processing">{d.group}</Tag>
-        <Tag>{d.tag}</Tag>
-      </>
-    ),
-  },
-  { title: 'Actions', key: 'actions', render: (_, d) => <RowActions device={d} /> },
-]
-
 export default function DevicesPage() {
   const [params, setParams] = useSearchParams()
-  const [selected, setSelected] = useState<Key[]>([])
   const [enrollOpen, setEnrollOpen] = useState(false)
-  const notSupported = useNotSupported()
   const { data: devices } = useSuspenseQuery(devicesQuery)
   const groups = [...new Set(devices.map((d) => d.group))].sort()
 
   const filter: DeviceFilter = {
     q: params.get('q') ?? '',
     os: params.get('os') ?? '',
-    group: params.get('group') ?? '',
     status: params.get('status') ?? '',
   }
   const rows = filterDevices(devices, filter)
-  const picked = rows.filter((d) => selected.includes(d.host))
   const filtered = Object.values(filter).some(Boolean)
 
   const setFilter = (key: keyof DeviceFilter, value: string) =>
@@ -119,6 +44,67 @@ export default function DevicesPage() {
       },
       { replace: true },
     )
+
+  // The column headings are the only filter UI. antd draws the trigger and the panel; the URL still
+  // owns the value, so the app header's search and the dashboard's "Agents online" link land filtered.
+  const choice = (options: { value: string; label: string }[], key: 'os' | 'status') => ({
+    filteredValue: filter[key] ? [filter[key]] : null,
+    filterDropdown: () => (
+      <Radio.Group className="filter-panel" value={filter[key]} options={options} onChange={(e) => setFilter(key, e.target.value)} />
+    ),
+  })
+
+  const columns: TableProps<Device>['columns'] = [
+    {
+      title: <Th icon="devices" label="Hostname" />,
+      key: 'host',
+      // The search reaches alias and MAC as well, so it sits on the first column rather than each one.
+      filteredValue: filter.q ? [filter.q] : null,
+      filterIcon: <Icon name="search" size={13} />,
+      filterDropdown: () => (
+        <Input
+          className="filter-search"
+          allowClear
+          autoFocus
+          placeholder="Hostname, IP, MAC…"
+          aria-label="Search devices"
+          value={filter.q}
+          onChange={(e) => setFilter('q', e.target.value)}
+        />
+      ),
+      render: (_, d) => (
+        <Link to={`/devices/${d.host}`} className="strong">
+          {d.host}
+        </Link>
+      ),
+    },
+    { title: <Th icon="desktop" label="OS" />, dataIndex: 'os', ...choice(OS_OPTIONS, 'os') },
+    { title: <Th icon="web" label="IP" />, dataIndex: 'ip' },
+    { title: <Th icon="chip" label="MAC" />, key: 'mac', render: (_, d) => <code>{d.mac}</code> },
+    {
+      title: <Th icon="box" label="Agent" />,
+      key: 'agent',
+      render: (_, d) =>
+        d.agentOutdated ? (
+          <Tooltip title="A newer agent has been released">
+            {/* role + label: the icon is the whole message, so it has to reach a screen reader too. */}
+            <span className="agent-outdated" role="img" aria-label={`${d.agentVersion}, update available`}>
+              {d.agentVersion}
+              <Icon name="warning" size={13} />
+            </span>
+          </Tooltip>
+        ) : (
+          d.agentVersion
+        ),
+    },
+    {
+      title: <Th icon="pulse" label="Status" />,
+      key: 'status',
+      ...choice(STATUS_OPTIONS, 'status'),
+      render: (_, d) => <StatusButton device={d} />,
+    },
+    { title: <Th icon="more" label="Actions" />, key: 'actions', render: (_, d) => <RowActions device={d} /> },
+  ]
 
   const exportCsv = () => {
     // BOM so Excel reads the file as UTF-8.
@@ -148,47 +134,13 @@ export default function DevicesPage() {
       />
 
       <Card className="table-card" styles={{ body: { padding: 0 } }}>
-        <div className="filters">
-          <Input
-            className="search"
-            allowClear
-            prefix={<Icon name="search" size={14} />}
-            placeholder="Hostname, IP, MAC…"
-            aria-label="Search devices"
-            value={filter.q}
-            onChange={(e) => setFilter('q', e.target.value)}
-          />
-          <FilterSelect label="OS" value={filter.os} options={OS_OPTIONS} onChange={(v) => setFilter('os', v)} />
-          <FilterSelect
-            label="Group"
-            value={filter.group}
-            options={[ALL, ...groups.map((g) => ({ value: g, label: g }))]}
-            onChange={(v) => setFilter('group', v)}
-          />
-          <FilterSelect label="Status" value={filter.status} options={STATUS_OPTIONS} onChange={(v) => setFilter('status', v)} />
-        </div>
-
-        {picked.length > 0 ? (
-          <div className="bulk-bar">
-            <span>
-              <b>{picked.length}</b> {picked.length === 1 ? 'device' : 'devices'} selected
-            </span>
-            {BULK_ACTIONS.map(({ label, subject }) => (
-              <Button key={label} type="link" onClick={() => notSupported(subject)}>
-                {label}
-              </Button>
-            ))}
-          </div>
-        ) : null}
-
         <Table<Device>
           columns={columns}
           dataSource={rows}
           rowKey="host"
           rowClassName={(d) => (d.online ? '' : 'row-offline')}
-          rowSelection={{ selectedRowKeys: selected, onChange: setSelected }}
           scroll={{ x: 'max-content' }}
-          pagination={{ pageSize: 8, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
+          pagination={{ pageSize: 10, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
           locale={{
             emptyText: filtered ? (
               <div className="empty">
@@ -212,27 +164,56 @@ export default function DevicesPage() {
   )
 }
 
-function FilterSelect({
-  label,
-  value,
-  options,
-  onChange,
-}: {
-  label: string
-  value: string
-  options: { value: string; label: string }[]
-  onChange: (value: string) => void
-}) {
+function StatusButton({ device }: { device: Device }) {
+  const { message } = App.useApp()
+  const queryClient = useQueryClient()
+  // The device list carries what a machine is; whether its agent is actually there is only known once
+  // that agent reports in. So a row starts Offline and turns Online when its own check lands, and the
+  // waits are spread out, the way a thousand agents report in rather than all at once.
+  // shortcut: EdgePanel has no /ws/events yet, so reporting in is a timer that resolves to what the
+  // list already said. Swap the timeout for that subscription once the endpoint exists.
+  const [online, setOnline] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setOnline(device.online), 500 + Math.random() * 2500)
+    return () => clearTimeout(timer)
+  }, [device.online])
+  // EdgePanel has no ping endpoint. The fleet list already says whether a device answers and how fast,
+  // so a ping re-reads that list past the cache: the row's own dot and the message then agree.
+  const ping = useMutation({
+    mutationFn: async () => {
+      const fresh = await queryClient.fetchQuery({ ...devicesQuery, staleTime: 0 })
+      return fresh.find((d) => d.host === device.host) ?? null
+    },
+    onSuccess: (fresh) => {
+      setOnline(Boolean(fresh?.online))
+      if (fresh?.online) message.success(`${device.host} answered in ${fresh.latencyMs} ms`)
+      else message.warning(`${device.host} did not answer`)
+    },
+    onError: (error) => message.error(error.message),
+  })
+
+  // One control for both jobs: it reads the current state and clicking it checks that state again.
+  // The word carries the state, so colour is the second signal rather than the only one.
+  const waiting = online === null
+  const state = online ? 'Online' : 'Offline'
+  const color = online ? tone.positive : tone.error
   return (
-    <label className="filter">
-      <span>{label}</span>
-      <Select value={value} options={options} onChange={onChange} style={{ minWidth: 120 }} popupMatchSelectWidth={false} />
-    </label>
+    <Tooltip title={waiting ? `Waiting for ${device.host} to report in` : `Ping ${device.host}`}>
+      <Button
+        size="small"
+        loading={waiting || ping.isPending}
+        onClick={() => ping.mutate()}
+        aria-label={waiting ? `Waiting for ${device.host} to report in` : `${state} — ping ${device.host}`}
+        style={{ color, borderColor: color }}
+      >
+        {state}
+      </Button>
+    </Tooltip>
   )
 }
 
 function RowActions({ device }: { device: Device }) {
-  const notSupported = useNotSupported()
   return (
     <div className="row-actions">
       {REMOTE_ACTIONS.map(({ path, verb }) => {
@@ -253,11 +234,6 @@ function RowActions({ device }: { device: Device }) {
           </Tooltip>
         )
       })}
-      <Dropdown trigger={['click']} menu={{ items: MORE_ACTIONS, onClick: ({ key }) => notSupported(key) }}>
-        <button type="button" className="icon-btn" aria-label={`More actions for ${device.host}`}>
-          <Icon name="more" />
-        </button>
-      </Dropdown>
     </div>
   )
 }

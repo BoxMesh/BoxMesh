@@ -2,14 +2,15 @@ import { useQuery } from '@tanstack/react-query'
 import { Card, Table, type TableProps } from 'antd'
 import { userMessage } from '../../services/http'
 import { connectionHistoryQuery } from '../../services/queries'
+import { Th } from '../../components/Icon'
 import type { ConnectionEvent, Device } from '../../types/device'
 import { ago, formatDateTime } from '../../utils/time'
 
 const columns: TableProps<ConnectionEvent>['columns'] = [
-  { title: 'Event', dataIndex: 'event' },
-  { title: 'Time', key: 'at', render: (_, r) => formatDateTime(r.at) },
-  { title: 'Public IP', dataIndex: 'publicIp' },
-  { title: 'Duration', dataIndex: 'duration' },
+  { title: <Th icon="pulse" label="Event" />, dataIndex: 'event' },
+  { title: <Th icon="clock" label="Time" />, key: 'at', render: (_, r) => formatDateTime(r.at) },
+  { title: <Th icon="web" label="Public IP" />, dataIndex: 'publicIp' },
+  { title: <Th icon="clock" label="Duration" />, dataIndex: 'duration' },
 ]
 
 export default function ConnectionCard({ device: d }: { device: Device }) {

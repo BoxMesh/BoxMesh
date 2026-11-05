@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { Card, Input, Select, Table, Tag, type TableProps } from 'antd'
 import { useState } from 'react'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { auditLogQuery } from '../../services/queries'
 import type { AuditEntry } from '../../types/ops'
@@ -11,16 +11,16 @@ const ALL = { value: '', label: 'All' }
 const OUTCOMES = [ALL, { value: 'ok', label: 'Succeeded' }, { value: 'failed', label: 'Failed' }]
 
 const columns: TableProps<AuditEntry>['columns'] = [
-  { title: 'When', key: 'at', render: (_, e) => formatDateTime(e.at) },
-  { title: 'Who', dataIndex: 'actor' },
-  { title: 'Action', dataIndex: 'action' },
-  { title: 'Target', key: 'target', render: (_, e) => <code>{e.target}</code> },
+  { title: <Th icon="clock" label="When" />, key: 'at', render: (_, e) => formatDateTime(e.at) },
+  { title: <Th icon="users" label="Who" />, dataIndex: 'actor' },
+  { title: <Th icon="jobs" label="Action" />, dataIndex: 'action' },
+  { title: <Th icon="devices" label="Target" />, key: 'target', render: (_, e) => <code>{e.target}</code> },
   {
-    title: 'Outcome',
+    title: <Th icon="check" label="Outcome" />,
     key: 'outcome',
     render: (_, e) => <Tag color={e.outcome === 'ok' ? 'success' : 'error'}>{e.outcome === 'ok' ? 'ok' : 'failed'}</Tag>,
   },
-  { title: 'From', dataIndex: 'ip' },
+  { title: <Th icon="web" label="From" />, dataIndex: 'ip' },
 ]
 
 export default function AuditPage() {

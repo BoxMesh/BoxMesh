@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
 import { App, Button, Card, Drawer, Form, Input, Select, Switch, Table, Tag, type TableProps } from 'antd'
 import { useState } from 'react'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { inviteUser, updateUser } from '../../services/adminService'
 import { devicesQuery, usersQuery } from '../../services/queries'
@@ -44,7 +44,7 @@ export default function UsersPage() {
 
   const columns: TableProps<Account>['columns'] = [
     {
-      title: 'Person',
+      title: <Th icon="users" label="Person" />,
       key: 'person',
       render: (_, a) => (
         <>
@@ -54,7 +54,7 @@ export default function UsersPage() {
       ),
     },
     {
-      title: 'Role',
+      title: <Th icon="security" label="Role" />,
       key: 'role',
       render: (_, a) => (
         <Select
@@ -68,7 +68,7 @@ export default function UsersPage() {
       ),
     },
     {
-      title: 'Can reach',
+      title: <Th icon="devices" label="Can reach" />,
       key: 'scope',
       render: (_, a) =>
         a.scope.length === 0 ? (
@@ -78,12 +78,12 @@ export default function UsersPage() {
         ),
     },
     {
-      title: 'Last sign-in',
+      title: <Th icon="clock" label="Last sign-in" />,
       key: 'last',
       render: (_, a) => (a.lastSignIn ? ago(a.lastSignIn) : <span className="muted">Never</span>),
     },
     {
-      title: 'Active',
+      title: <Th icon="pulse" label="Active" />,
       key: 'active',
       render: (_, a) => (
         <Switch

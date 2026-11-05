@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
 import { Alert, App, Button, Card, Checkbox, Drawer, Form, Popconfirm, Select, Table, Tag, type TableProps } from 'antd'
 import { useState } from 'react'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { createToken, revokeCertificate, type NewToken } from '../../services/adminService'
 import { certificatesQuery, devicesQuery, tokensQuery } from '../../services/queries'
@@ -45,11 +45,11 @@ export default function CertificatesPage() {
   })
 
   const certColumns: TableProps<Certificate>['columns'] = [
-    { title: 'Device', key: 'host', render: (_, c) => <span className="strong">{c.host}</span> },
-    { title: 'Serial', key: 'serial', render: (_, c) => <code>{c.serial}</code> },
-    { title: 'Issued', key: 'issued', render: (_, c) => formatDate(c.issuedAt) },
+    { title: <Th icon="devices" label="Device" />, key: 'host', render: (_, c) => <span className="strong">{c.host}</span> },
+    { title: <Th icon="lock" label="Serial" />, key: 'serial', render: (_, c) => <code>{c.serial}</code> },
+    { title: <Th icon="clock" label="Issued" />, key: 'issued', render: (_, c) => formatDate(c.issuedAt) },
     {
-      title: 'Expires',
+      title: <Th icon="clock" label="Expires" />,
       key: 'expires',
       render: (_, c) => {
         const days = daysLeft(c.expiresAt)
@@ -62,12 +62,12 @@ export default function CertificatesPage() {
       },
     },
     {
-      title: 'Status',
+      title: <Th icon="pulse" label="Status" />,
       key: 'status',
       render: (_, c) => <Tag color={c.revoked ? 'error' : 'success'}>{c.revoked ? 'revoked' : 'trusted'}</Tag>,
     },
     {
-      title: 'Actions',
+      title: <Th icon="more" label="Actions" />,
       key: 'actions',
       render: (_, c) => (
         <Popconfirm
@@ -86,10 +86,10 @@ export default function CertificatesPage() {
   ]
 
   const tokenColumns: TableProps<EnrollmentToken>['columns'] = [
-    { title: 'Token', key: 'token', render: (_, t) => <code>{t.token}</code> },
-    { title: 'Group', key: 'group', render: (_, t) => <Tag color="processing">{t.group}</Tag> },
+    { title: <Th icon="lock" label="Token" />, key: 'token', render: (_, t) => <code>{t.token}</code> },
+    { title: <Th icon="tag" label="Group" />, key: 'group', render: (_, t) => <Tag color="processing">{t.group}</Tag> },
     {
-      title: 'Expires',
+      title: <Th icon="clock" label="Expires" />,
       key: 'expires',
       render: (_, t) => {
         const days = daysLeft(t.expiresAt)
@@ -97,12 +97,12 @@ export default function CertificatesPage() {
       },
     },
     {
-      title: 'Approval',
+      title: <Th icon="check" label="Approval" />,
       key: 'approval',
       render: (_, t) => (t.requiresApproval ? 'Admin approves' : <span className="muted">Automatic</span>),
     },
     {
-      title: 'Used by',
+      title: <Th icon="devices" label="Used by" />,
       key: 'used',
       render: (_, t) => (t.usedBy.length ? t.usedBy.join(', ') : <span className="muted">—</span>),
     },
@@ -137,7 +137,7 @@ export default function CertificatesPage() {
           columns={certColumns}
           dataSource={certificates}
           rowKey="host"
-          pagination={{ pageSize: 8, hideOnSinglePage: true }}
+          pagination={{ pageSize: 10, hideOnSinglePage: true }}
           scroll={{ x: 'max-content' }}
         />
       </Card>

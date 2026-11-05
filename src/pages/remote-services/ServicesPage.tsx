@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { App, Button, Card, Table, Tag, type TableProps } from 'antd'
 import DevicePicker, { DeviceOffline, PickFirst } from '../../components/DevicePicker'
 import { useDeviceParam } from '../../hooks/useDeviceParam'
-import { Icon } from '../../components/Icon'
+import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { userMessage } from '../../services/http'
 import { servicesQuery } from '../../services/queries'
@@ -18,7 +18,7 @@ export default function ServicesPage() {
 
   const columns: TableProps<RemoteService>['columns'] = [
     {
-      title: 'Service',
+      title: <Th icon="web" label="Service" />,
       key: 'name',
       render: (_, s) => (
         <>
@@ -27,19 +27,19 @@ export default function ServicesPage() {
         </>
       ),
     },
-    { title: 'Port', key: 'port', render: (_, s) => <code>{s.port}</code> },
+    { title: <Th icon="chip" label="Port" />, key: 'port', render: (_, s) => <code>{s.port}</code> },
     {
-      title: 'Status',
+      title: <Th icon="pulse" label="Status" />,
       key: 'status',
       render: (_, s) => <Tag color={s.status === 'running' ? 'success' : 'default'}>{s.status}</Tag>,
     },
     {
-      title: 'Address',
+      title: <Th icon="arrow" label="Address" />,
       key: 'url',
       render: (_, s) => <code>{proxyPath(host, s)}</code>,
     },
     {
-      title: 'Actions',
+      title: <Th icon="more" label="Actions" />,
       key: 'actions',
       render: (_, s) => (
         <div className="row-actions">
