@@ -34,9 +34,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=sha
+          tags: lastest
 
       - uses: docker/build-push-action@v6
         with:
@@ -50,7 +48,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   vercel:
-28    needs: check
+    needs: check
     runs-on: ubuntu-latest
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
