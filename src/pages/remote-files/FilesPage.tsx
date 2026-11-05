@@ -11,8 +11,8 @@ import type { Device } from '../../types/device'
 import type { FileEntry } from '../../types/remote'
 import { ago } from '../../utils/time'
 
-const sepOf = (device: Device) => (device.osFamily === 'Linux' ? '/' : '\\')
-const rootOf = (device: Device) => (device.osFamily === 'Linux' ? '/' : 'C:\\')
+const sepOf = (device: Device) => (device.osFamily === 'Windows' ? '\\' : '/')
+const rootOf = (device: Device) => (device.osFamily === 'Windows' ? 'C:\\' : '/')
 
 const join = (path: string, name: string, sep: string) => (path.endsWith(sep) ? path + name : path + sep + name)
 

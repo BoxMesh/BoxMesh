@@ -7,77 +7,107 @@ import { DAY, MINUTE, SECOND, fromNow } from '../utils/time'
 
 // A believable fleet for the demo: a mix of office desktops, two servers and a workshop, with a few
 // machines deliberately in trouble so the alerting and certificate screens have something to show.
-type Seed = [
-  host: string,
-  alias: string,
-  os: string,
-  family: OsFamily,
-  group: string,
-  tag: string,
-  online: boolean,
-  cpu: number,
-  ram: number,
-  disk: number,
-  agent: string,
-  latency: number,
-  certDays: number,
-  seenMinutes: number,
-]
+type Seed = [host: string, alias: string, group: string, tag: string, cpu: number, ram: number, disk: number, agent: string, certDays: number]
 
+// Only what stays put is seeded. The OS, whether the agent is up, what it answers in and when it was
+// last heard from are rolled per load, so the seed cannot disagree with them.
 const SEEDS: Seed[] = [
-  ['ACC-PC-01', 'Accounting 1', 'Windows 11 Pro 24H2', 'Windows', 'Accounting', 'desktop', true, 23, 54, 61, '1.4.2', 18, 240, 0],
-  ['ACC-PC-02', 'Accounting 2', 'Windows 11 Pro 24H2', 'Windows', 'Accounting', 'desktop', true, 94, 71, 44, '1.4.2', 21, 180, 0],
-  ['ACC-PC-03', 'Accounting 3', 'Windows 10 Pro 22H2', 'Windows', 'Accounting', 'desktop', false, 0, 0, 0, '1.3.9', 0, 9, 46],
-  ['CAD-WS-01', 'CAD Workshop 1', 'Windows 11 Pro 24H2', 'Windows', 'CAD Workshop', 'workstation', true, 67, 92, 88, '1.4.2', 27, 311, 0],
-  ['CAD-WS-02', 'CAD Workshop 2', 'Windows 11 Pro 24H2', 'Windows', 'CAD Workshop', 'workstation', true, 41, 63, 91, '1.4.0', 24, 275, 1],
-  ['HR-PC-01', 'HR Desk', 'Windows 11 Pro 24H2', 'Windows', 'HR', 'desktop', true, 12, 38, 52, '1.4.2', 16, 198, 0],
-  ['SRV-DB-01', 'Database', 'Ubuntu 24.04 LTS', 'Linux', 'Server', 'database', true, 58, 77, 73, '1.4.2', 4, 402, 0],
-  ['SRV-WEB-01', 'Internal web', 'Ubuntu 24.04 LTS', 'Linux', 'Server', 'web', true, 31, 49, 36, '1.4.2', 5, 402, 0],
-  ['SRV-BAK-01', 'Backup', 'Debian 12', 'Linux', 'Server', 'backup', true, 8, 22, 94, '1.4.1', 7, 12, 0],
-  ['SRV-MON-01', 'Monitoring', 'Ubuntu 22.04 LTS', 'Linux', 'Server', 'monitoring', true, 44, 58, 40, '1.3.9', 6, 355, 2],
-  ['WH-PC-01', 'Warehouse terminal', 'Windows 10 Pro 22H2', 'Windows', 'Warehouse', 'kiosk', false, 0, 0, 0, '1.3.9', 0, 120, 1380],
-  ['WH-PC-02', 'Warehouse office', 'Windows 11 Pro 24H2', 'Windows', 'Warehouse', 'desktop', true, 19, 44, 57, '1.4.2', 33, 220, 0],
+  ['ACC-PC-01', 'Accounting 1', 'Accounting', 'desktop', 23, 54, 61, '1.4.2', 240],
+  ['ACC-PC-02', 'Accounting 2', 'Accounting', 'desktop', 94, 71, 44, '1.4.2', 180],
+  ['ACC-PC-03', 'Accounting 3', 'Accounting', 'desktop', 35, 61, 72, '1.3.9', 9],
+  ['CAD-WS-01', 'CAD Workshop 1', 'CAD Workshop', 'workstation', 67, 92, 88, '1.4.2', 311],
+  ['CAD-WS-02', 'CAD Workshop 2', 'CAD Workshop', 'workstation', 41, 63, 91, '1.4.0', 275],
+  ['HR-PC-01', 'HR Desk', 'HR', 'desktop', 12, 38, 52, '1.4.2', 198],
+  ['SRV-DB-01', 'Database', 'Server', 'database', 58, 77, 73, '1.4.2', 402],
+  ['SRV-WEB-01', 'Internal web', 'Server', 'web', 31, 49, 36, '1.4.2', 402],
+  ['SRV-BAK-01', 'Backup', 'Server', 'backup', 8, 22, 94, '1.4.1', 12],
+  ['SRV-MON-01', 'Monitoring', 'Server', 'monitoring', 44, 58, 40, '1.3.9', 355],
+  ['WH-PC-01', 'Warehouse terminal', 'Warehouse', 'kiosk', 28, 47, 66, '1.3.9', 120],
+  ['WH-PC-02', 'Warehouse office', 'Warehouse', 'desktop', 19, 44, 57, '1.4.2', 220],
 ]
 
 const LATEST_AGENT = '1.4.2'
 
+const rand = (min: number, max: number) => min + Math.floor(Math.random() * (max - min + 1))
+const pick = <T>(list: T[]) => list[rand(0, list.length - 1)]
+
+// A server room and a desk do not run the same things, so they draw from different pools.
+type OsPick = [family: OsFamily, name: string, version: string, arch: string]
+
+const CLIENT_OS: OsPick[] = [
+  ['Windows', 'Windows 11 Pro', '24H2', 'x64'],
+  ['Windows', 'Windows 11 Pro', '23H2', 'x64'],
+  ['Windows', 'Windows 10 Pro', '22H2', 'x64'],
+  ['macOS', 'macOS', '15 Sequoia', 'arm64'],
+  ['macOS', 'macOS', '14 Sonoma', 'arm64'],
+  ['Linux', 'Ubuntu', '24.04 LTS', 'x64'],
+  ['Linux', 'Fedora', '41', 'x64'],
+]
+
+const SERVER_OS: OsPick[] = [
+  ['Linux', 'Ubuntu', '24.04 LTS', 'x64'],
+  ['Linux', 'Ubuntu', '22.04 LTS', 'x64'],
+  ['Linux', 'Debian', '12', 'x64'],
+  ['Linux', 'Debian', '12', 'arm64'],
+  ['Windows', 'Windows Server', '2022', 'x64'],
+]
+
 const hardwareFor = (family: OsFamily, i: number) =>
   family === 'Windows'
     ? { cpu: 'Intel Core i5-12400 · 6C/12T', ram: '16 GB DDR4', disk: '512 GB NVMe', uptime: `${2 + (i % 9)} days` }
-    : { cpu: 'AMD EPYC 7313P · 16C/32T', ram: '64 GB DDR4 ECC', disk: '2 TB NVMe RAID1', uptime: `${40 + i * 7} days` }
+    : family === 'macOS'
+      ? { cpu: 'Apple M3 · 8C', ram: '16 GB unified', disk: '512 GB SSD', uptime: `${3 + (i % 12)} days` }
+      : { cpu: 'AMD EPYC 7313P · 16C/32T', ram: '64 GB DDR4 ECC', disk: '2 TB NVMe RAID1', uptime: `${40 + i * 7} days` }
 
-const rand = (min: number, max: number) => min + Math.floor(Math.random() * (max - min + 1))
+// Being up decides what else can be true of an agent: a live one answers in milliseconds and was heard
+// from moments ago, a lost one does not answer at all and was last heard minutes to hours back. Keeping
+// the three together is what stops "Online, last seen 23 h ago".
+const asOnline = (online: boolean) => ({
+  online,
+  latencyMs: online ? rand(8, 48) : 0,
+  lastSeen: fromNow(online ? -rand(0, 120) * SECOND : -rand(7, 240) * MINUTE),
+})
 
-// The fleet is drawn fresh on every load, so the demo is never the same two visits running: which
-// agents are up, and what the office LAN handed each one. The seeded readings stay as the agent's
-// last known values, which is all an offline device can show anyway.
-export const devices: Device[] = SEEDS.map(
-  ([host, alias, os, osFamily, group, tag, , cpu, ram, disk, agentVersion, latencyMs, certDays, seenMin], i) => {
-    const online = Math.random() < 0.78
-    return {
-      host,
-      alias,
-      os,
-      osFamily,
-      ip: `192.168.${rand(1, 20)}.${rand(2, 254)}`,
-      mac: `AA:BB:CC:${(16 + i).toString(16).toUpperCase().padStart(2, '0')}:0${i % 10}:${(32 + i).toString(16).toUpperCase()}`,
-      online,
-      agentVersion,
-      agentOutdated: agentVersion !== LATEST_AGENT,
-      group,
-      tag,
-      // Clamped both ways: a live agent was heard from moments ago, a lost one minutes to hours ago.
-      lastSeen: fromNow(-(online ? Math.min(seenMin, 2) : Math.max(seenMin, 7)) * MINUTE),
-      enrolledAt: fromNow(-(90 + i * 11) * DAY),
-      certExpires: fromNow(certDays * DAY),
-      cpu,
-      ram,
-      disk,
-      latencyMs: online ? latencyMs || rand(8, 48) : 0,
-      hardware: hardwareFor(osFamily, i),
-    }
-  },
-)
+const UP = 0.78
+
+export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, disk, agentVersion, certDays], i) => {
+  const [osFamily, os, osVersion, osArchitecture] = pick(group === 'Server' ? SERVER_OS : CLIENT_OS)
+  return {
+    host,
+    alias,
+    os,
+    osVersion,
+    osArchitecture,
+    osFamily,
+    ip: `192.168.${rand(1, 20)}.${rand(2, 254)}`,
+    mac: `AA:BB:CC:${(16 + i).toString(16).toUpperCase().padStart(2, '0')}:0${i % 10}:${(32 + i).toString(16).toUpperCase()}`,
+    agentVersion,
+    agentOutdated: agentVersion !== LATEST_AGENT,
+    group,
+    tag,
+    enrolledAt: fromNow(-(90 + i * 11) * DAY),
+    certExpires: fromNow(certDays * DAY),
+    cpu,
+    ram,
+    disk,
+    hardware: hardwareFor(osFamily, i),
+    ...asOnline(Math.random() < UP),
+  }
+})
+
+const CHURN = 0.15
+
+/**
+ * The fleet as of this read. Each read re-rolls a few agents, so between two reads some come back and
+ * some drop: that is what makes pinging one worth doing. The array is rebuilt so React sees the change,
+ * and `devices` is updated in place so every other endpoint answers from the same state.
+ */
+export function fleet(): Device[] {
+  devices.forEach((d, i) => {
+    if (Math.random() < CHURN) devices[i] = { ...d, ...asOnline(!d.online) }
+  })
+  return [...devices]
+}
 
 const byRange: Record<TimeRange, ResourceUsage> = {
   '1h': { cpu: 38, ram: 57, disk: 63 },
@@ -101,13 +131,13 @@ export const activity: ActivityEvent[] = [
 ]
 
 export const pendingEnrollments: PendingEnrollment[] = [
-  { host: 'ACC-PC-04', os: 'Windows 11 Pro 24H2', ip: '192.168.11.24' },
-  { host: 'SRV-APP-02', os: 'Ubuntu 24.04 LTS', ip: '192.168.20.31' },
+  { host: 'ACC-PC-04', os: 'Windows 11 Pro 24H2 · x64', ip: '192.168.11.24' },
+  { host: 'SRV-APP-02', os: 'Ubuntu 24.04 LTS · arm64', ip: '192.168.20.31' },
 ]
 
 export const connectionHistory = (host: string): ConnectionEvent[] => {
   const device = devices.find((d) => d.host === host)
-  const publicIp = device?.osFamily === 'Linux' ? '203.0.113.17' : '203.0.113.42'
+  const publicIp = device?.osFamily === 'Windows' ? '203.0.113.42' : '203.0.113.17'
   const base: ConnectionEvent[] = [
     { event: 'Tunnel established', at: fromNow(-6 * 60 * MINUTE), publicIp, duration: '6 h 02 m' },
     { event: 'Reconnected after network drop', at: fromNow(-14 * 60 * MINUTE), publicIp, duration: '7 h 48 m' },
@@ -160,11 +190,11 @@ const LINUX_TREE: Record<string, FileEntry[]> = {
   ],
 }
 
-export const rootFor = (host: string) => (devices.find((d) => d.host === host)?.osFamily === 'Linux' ? '/' : 'C:\\')
+export const rootFor = (host: string) => (devices.find((d) => d.host === host)?.osFamily === 'Windows' ? 'C:\\' : '/')
 
 export function listFiles(host: string, path: string): FileListing {
-  const linux = devices.find((d) => d.host === host)?.osFamily === 'Linux'
-  const tree = linux ? LINUX_TREE : WINDOWS_TREE
+  const windows = devices.find((d) => d.host === host)?.osFamily === 'Windows'
+  const tree = windows ? WINDOWS_TREE : LINUX_TREE
   return { path, entries: tree[path] ?? [] }
 }
 
@@ -184,7 +214,7 @@ export const servicesOn = (host: string): RemoteService[] => SERVICES[host] ?? [
 
 export const desktopSession = (host: string): DesktopSession => ({
   id: `vd-${host.toLowerCase()}`,
-  resolution: devices.find((d) => d.host === host)?.osFamily === 'Linux' ? '1280 × 1024' : '1920 × 1080',
+  resolution: devices.find((d) => d.host === host)?.osFamily === 'Windows' ? '1920 × 1080' : '1280 × 1024',
   startedAt: fromNow(-12 * SECOND),
   fps: 24,
   quality: 'auto',

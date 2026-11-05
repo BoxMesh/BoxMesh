@@ -1,4 +1,4 @@
-import type { Device, DeviceFilter, Issue } from '../types/device'
+import type { Device, DeviceFilter, Issue, OsFamily } from '../types/device'
 import { daysLeft, MINUTE } from './time'
 
 // Default per-device alert thresholds (percent), as drawn on the device detail screen.
@@ -29,7 +29,10 @@ export function summarize(list: Device[], now = Date.now()) {
   const attention = list.flatMap((d) => issuesOf(d).map((issue) => ({ ...issue, device: d })))
   return {
     total: list.length,
-    windows: list.filter((d) => d.osFamily === 'Windows').length,
+    byFamily: list.reduce<Partial<Record<OsFamily, number>>>((acc, d) => {
+      acc[d.osFamily] = (acc[d.osFamily] ?? 0) + 1
+      return acc
+    }, {}),
     online: online.length,
     offline: list.length - online.length,
     staleOffline: list.filter((d) => !d.online && now - Date.parse(d.lastSeen) > 10 * MINUTE).length,
@@ -41,7 +44,20 @@ export function summarize(list: Device[], now = Date.now()) {
   }
 }
 
-const CSV_COLUMNS = ['host', 'alias', 'os', 'ip', 'mac', 'online', 'agentVersion', 'group', 'tag', 'lastSeen'] as const
+const CSV_COLUMNS = [
+  'host',
+  'alias',
+  'os',
+  'osVersion',
+  'osArchitecture',
+  'ip',
+  'mac',
+  'online',
+  'agentVersion',
+  'group',
+  'tag',
+  'lastSeen',
+] as const
 
 export function toCsv(list: Device[]) {
   const cell = (v: unknown) => {

@@ -10,7 +10,7 @@ export default function DeviceOverview({ device: d }: { device: Device }) {
   const certDays = daysLeft(d.certExpires)
   const info: DescriptionsProps['items'] = [
     { key: 'host', label: 'Hostname', children: d.host },
-    { key: 'os', label: 'Operating system', children: d.os },
+    { key: 'os', label: 'Operating system', children: `${d.os} ${d.osVersion} · ${d.osArchitecture}` },
     { key: 'ip', label: 'IP', children: d.ip },
     { key: 'mac', label: 'MAC', children: <code>{d.mac}</code> },
     { key: 'cpu', label: 'CPU', children: d.hardware.cpu },

@@ -60,7 +60,7 @@ const routes: Route[] = [
   ['post', /^\/log-out$/, () => null],
 
   // ---- Fleet ----
-  ['get', /^\/devices$/, () => seed.devices],
+  ['get', /^\/devices$/, () => seed.fleet()],
   ['get', /^\/devices\/([^/]+)$/, (m) => seed.devices.find((d) => d.host === decodeURIComponent(m[1])) ?? null],
   ['get', /^\/devices\/([^/]+)\/connections$/, (m) => seed.connectionHistory(decodeURIComponent(m[1]))],
   ['get', /^\/metrics\/summary$/, (_m, c) => seed.resourceUsage((param(c, 'range') || '24h') as TimeRange)],

@@ -13,7 +13,7 @@ import { runCommand } from '../../services/remoteService'
 import type { Device, OsFamily } from '../../types/device'
 import type { Shell } from '../../types/remote'
 
-const SHELLS: Record<OsFamily, Shell[]> = { Windows: ['PowerShell', 'CMD'], Linux: ['Bash'] }
+const SHELLS: Record<OsFamily, Shell[]> = { Windows: ['PowerShell', 'CMD'], Linux: ['Bash'], macOS: ['Bash'] }
 
 const promptFor = (shell: Shell, host: string) =>
   shell === 'Bash' ? `root@${host.toLowerCase()}:~#` : shell === 'CMD' ? 'C:\\>' : 'PS C:\\>'
@@ -224,7 +224,7 @@ function Session({ device }: { device: Device }) {
 
   return (
     <Card
-      title={`${device.host} · ${device.os}`}
+      title={`${device.host} · ${device.os} ${device.osVersion}`}
       extra={<Segmented<Shell> aria-label="Shell" options={shells} value={shell} onChange={setShell} />}
       styles={{ body: { padding: 0 } }}
     >

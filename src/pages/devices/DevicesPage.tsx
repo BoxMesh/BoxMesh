@@ -12,7 +12,7 @@ import { filterDevices, toCsv } from '../../utils/devices'
 import EnrollDrawer from './EnrollDrawer'
 
 const ALL = { value: '', label: 'All' }
-const OS_OPTIONS = [ALL, { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }]
+const OS_OPTIONS = [ALL, { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }, { value: 'macOS', label: 'macOS' }]
 const STATUS_OPTIONS = [ALL, { value: 'online', label: 'Online' }, { value: 'offline', label: 'Offline' }]
 const REMOTE_ACTIONS = [
   { path: '/remote-terminal', verb: 'Open a terminal' },
@@ -79,8 +79,10 @@ export default function DevicesPage() {
       ),
     },
     { title: <Th icon="desktop" label="OS" />, dataIndex: 'os', ...choice(OS_OPTIONS, 'os') },
+    { title: <Th icon="tag" label="Version" />, dataIndex: 'osVersion' },
+    { title: <Th icon="chip" label="Arch" />, dataIndex: 'osArchitecture' },
     { title: <Th icon="web" label="IP" />, dataIndex: 'ip' },
-    { title: <Th icon="chip" label="MAC" />, key: 'mac', render: (_, d) => <code>{d.mac}</code> },
+    { title: <Th icon="hash" label="MAC" />, key: 'mac', render: (_, d) => <code>{d.mac}</code> },
     {
       title: <Th icon="box" label="Agent" />,
       key: 'agent',

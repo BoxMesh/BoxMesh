@@ -29,6 +29,7 @@ const paths = {
   pulse: 'M3 12h4l2-5 3.5 10 2.5-5h6',
   tag: 'M19 13l-6 6-9-9V4h7zM7.5 7.5h.01',
   check: 'M4 12.5l5 5L20 6.5',
+  hash: 'M9 3L7 21M17 3l-2 18M4 9h17M3 15h17',
 }
 
 export type IconName = keyof typeof paths

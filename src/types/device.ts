@@ -1,4 +1,4 @@
-export type OsFamily = 'Windows' | 'Linux'
+export type OsFamily = 'Windows' | 'Linux' | 'macOS'
 
 export interface DeviceHardware {
   cpu: string
@@ -10,7 +10,11 @@ export interface DeviceHardware {
 export interface Device {
   host: string
   alias: string
+  /** Product name only, e.g. Ubuntu or Windows 11 Pro. */
   os: string
+  /** Release, e.g. 24.04 LTS or 24H2. */
+  osVersion: string
+  osArchitecture: string
   osFamily: OsFamily
   ip: string
   mac: string

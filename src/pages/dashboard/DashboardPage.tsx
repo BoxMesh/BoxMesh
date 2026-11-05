@@ -81,7 +81,9 @@ export default function DashboardPage() {
       ) : null}
 
       <div className="grid-stats">
-        <StatCard to="/devices" title="Total devices" value={s.total} note={`Windows ${s.windows} · Linux ${s.total - s.windows}`} />
+        <StatCard to="/devices" title="Total devices" value={s.total} note={Object.entries(s.byFamily)
+            .map(([family, count]) => `${family} ${count}`)
+            .join(' · ')} />
         <StatCard
           to="/devices?status=online"
           title="Agents online"

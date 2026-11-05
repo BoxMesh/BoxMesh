@@ -98,7 +98,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
           <h3>
             <span className="step-num">2</span>Install EdgeAgent on the device
           </h3>
-          <Segmented<OsFamily> aria-label="Operating system" options={['Windows', 'Linux']} value={os} onChange={setOs} />
+          <Segmented<OsFamily> aria-label="Operating system" options={['Windows', 'Linux', 'macOS']} value={os} onChange={setOs} />
           <pre className="code">{command}</pre>
           <Button onClick={copy}>Copy command</Button>
         </li>

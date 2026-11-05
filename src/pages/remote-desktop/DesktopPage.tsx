@@ -109,7 +109,7 @@ function Viewer({ device }: { device: Device }) {
           <Icon name="desktop" size={44} />
           <div className="screen-host">{device.host}</div>
           <div className="screen-note">
-            {device.os} · {session.resolution}
+            {device.os} {device.osVersion} · {session.resolution}
           </div>
           <div className="screen-note muted">Demo mode has no video stream. A real session draws frames here.</div>
         </div>
