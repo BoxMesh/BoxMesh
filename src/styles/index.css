@@ -589,6 +589,17 @@ body .icon-btn[aria-disabled='true'] {
   display: block;
   width: 100%;
   height: 100%;
+  /* The full-size overlay rects (glow, quiet zone, vignette) sit above the machines and would take the pointer. */
+  pointer-events: none;
+}
+
+.login-bg #os-nodes use {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.login-bg #os-nodes use:hover {
+  filter: url(#node-glow);
 }
 
 .login-bg [fill='#000000'] {
@@ -624,6 +635,10 @@ body .icon-btn[aria-disabled='true'] {
   stroke: var(--accent);
 }
 
+.login-bg [flood-color='#c7f36b'] {
+  flood-color: var(--accent);
+}
+
 /* One packet per node, hopping along the mesh edges to the panel at the centre: agents only ever
    dial out. Every route is a <path pathLength="100">, so the same dash travel fits any length.
    The global reduced-motion rule stops all of them. */
@@ -650,6 +665,19 @@ body .icon-btn[aria-disabled='true'] {
   to {
     stroke-dashoffset: -100;
     opacity: 0;
+  }
+}
+
+/* A click on a machine sends one larger packet at once (LoginBackground.tsx sets its duration and removes it).
+   No fade: it vanishes behind the sign-in card, where the route ends. */
+.login-bg .ping-burst {
+  stroke-width: 8;
+  animation: login-ping-burst linear forwards;
+}
+
+@keyframes login-ping-burst {
+  to {
+    stroke-dashoffset: -100;
   }
 }
 
