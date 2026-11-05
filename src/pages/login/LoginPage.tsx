@@ -1,16 +1,15 @@
 import { useMutation } from '@tanstack/react-query'
-import { Alert, Button, Checkbox, Divider, Form, Input } from 'antd'
+import { Alert, Button, Divider, Form, Input } from 'antd'
 import { Navigate, useLocation, useNavigate, type Location } from 'react-router'
 import { Icon } from '../../components/Icon'
 import { useThemeSwitch } from '../../hooks/useThemeMode'
-import { getSession, signIn, signInDemo } from '../../services/authService'
-import { startDemo } from '../../services/demo'
+import { getSession, logIn } from '../../services/authService'
+import { isDemo, startDemo } from '../../services/demo'
 import LoginBackground from './LoginBackground'
 
 interface Fields {
   email: string
   password: string
-  remember: boolean
 }
 
 export default function LoginPage() {
@@ -20,15 +19,15 @@ export default function LoginPage() {
   const target = from ? `${from.pathname}${from.search}${from.hash}` : '/dashboard'
   const { switchProps } = useThemeSwitch()
   const login = useMutation({
-    mutationFn: ({ email, password, remember }: Fields) => signIn(email, password, remember),
-    onSuccess: () => navigate(target, { replace: true }),
+    mutationFn: ({ email, password }: Fields) => logIn(email, password),
+    onSuccess: () => navigate(isDemo() ? '/dashboard' : target, { replace: true }),
   })
 
-  // No request and no password: the demo swaps the HTTP layer for a sample fleet held in this tab.
+  // startDemo swaps the HTTP adapter, and that adapter answers /log-in itself, so the demo signs in
+  // through the same mutation as a real visitor: no panel is reached and the password is ignored.
   const exploreDemo = () => {
     startDemo()
-    signInDemo()
-    navigate('/dashboard', { replace: true })
+    login.mutate({ email: 'ops@company.com', password: 'demo' })
   }
 
   if (getSession()) return <Navigate to={target} replace />
@@ -48,10 +47,9 @@ export default function LoginPage() {
           <Form<Fields>
             layout="vertical"
             requiredMark={false}
-            initialValues={{ remember: false }}
             onFinish={(values) => login.mutate(values)}
           >
-            {/* Safe to show: signIn() writes this sentence itself, so it is never axios's transport text. */}
+            {/* Safe to show: logIn() writes this sentence itself, so it is never axios's transport text. */}
             {login.isError ? <Alert className="login-error" type="error" showIcon title={login.error.message} /> : null}
             <Form.Item
               name="email"
@@ -66,9 +64,6 @@ export default function LoginPage() {
             </Form.Item>
             <Form.Item name="password" label="Password" rules={[{ required: true, message: 'Enter your password.' }]}>
               <Input.Password autoComplete="current-password" prefix={<Icon name="lock" />} />
-            </Form.Item>
-            <Form.Item name="remember" valuePropName="checked">
-              <Checkbox>Remember me</Checkbox>
             </Form.Item>
             <Button type="primary" htmlType="submit" block loading={login.isPending}>
               Sign in

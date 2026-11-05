@@ -56,7 +56,8 @@ const param = (config: InternalAxiosRequestConfig, key: string) => String(config
 const id = () => Math.random().toString(36).slice(2, 10)
 
 const routes: Route[] = [
-  ['post', /^\/sign-in$/, (_m, c) => ({ id: 'demo-user', email: body<{ email: string }>(c).email })],
+  ['post', /^\/log-in$/, (_m, c) => ({ id: 'demo-user', email: body<{ email: string }>(c).email })],
+  ['post', /^\/log-out$/, () => null],
 
   // ---- Fleet ----
   ['get', /^\/devices$/, () => seed.devices],

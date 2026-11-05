@@ -30,7 +30,7 @@ export default function DevicePicker({
         const device = devices.find((d) => d.host === data.value)!
         return (
           <span className="picker-option">
-            <span className="picker-dot" style={{ background: device.online ? tone.positive : tone.disabled }} />
+            <span className="status-dot" style={{ background: device.online ? tone.positive : tone.disabled }} />
             <span className="strong">{device.host}</span>
             <span className="muted">{device.alias}</span>
           </span>

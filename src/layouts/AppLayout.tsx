@@ -6,7 +6,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import { Icon } from '../components/Icon'
 import ThemeToggle from '../components/ThemeToggle'
 import { navGroups, navItems } from '../config/nav'
-import { getSession, signOut } from '../services/authService'
+import { getSession, logOut } from '../services/authService'
 import { isDemo } from '../services/demo'
 
 const menuItems: MenuProps['items'] = navGroups.map((g) => ({
@@ -31,9 +31,9 @@ export default function AppLayout() {
 
   const accountMenu: MenuProps = {
     items: [{ type: 'group', key: 'account', label: user?.email, children: [{ key: 'sign-out', label: 'Sign out' }] }],
-    onClick: () => {
+    onClick: async () => {
       const wasDemo = isDemo()
-      signOut()
+      await logOut()
       // Drop cached fleet data so the next person to sign in never sees it.
       queryClient.clear()
       // The demo swaps the HTTP adapter for the whole page, so leaving it needs a fresh load.

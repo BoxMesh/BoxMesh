@@ -365,6 +365,24 @@ body .table-card .ant-table-pagination {
   font-weight: 600;
 }
 
+/* The devices table has no Status column: an online row reads at full strength, an offline one
+   steps back to the secondary text colour, which still clears 7:1 in both themes. */
+.row-offline > td,
+.row-offline > td a {
+  color: var(--text-secondary);
+}
+
+.row-offline > td a:hover {
+  color: var(--text);
+}
+
+.agent-outdated {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--warning);
+}
+
 .row-actions {
   display: flex;
   gap: 2px;
@@ -843,7 +861,8 @@ body .ant-layout-sider .ant-layout-sider-zero-width-trigger {
   gap: 8px;
 }
 
-.picker-dot {
+.status-dot {
+  display: inline-block;
   width: 8px;
   height: 8px;
   flex: none;

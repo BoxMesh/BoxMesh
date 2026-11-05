@@ -13,12 +13,12 @@ Browser ── BoxMesh ──HTTPS / WebSocket──► EdgePanel (VPS) ◄─�
 ## Status
 
 Every screen is built, and every screen calls the real EdgePanel API. EdgePanel serves only
-`POST /sign-in` so far, so the rest show an error until it has their endpoints (see
+`POST /log-in` and `POST /log-out` so far, so the rest show an error until it has their endpoints (see
 [API contract](#api-contract)) — or run the [demo](#demo-mode), which answers all of them.
 
 | Module | Built | EdgePanel endpoint |
 |---|---|---|
-| Sign in (`/login`) | yes | `POST /sign-in` — live |
+| Sign in and out (`/login`) | yes | `POST /log-in`, `POST /log-out` — live |
 | Dashboard | yes | missing |
 | Devices (list, detail, enrollment) | yes | missing |
 | Remote Terminal, Desktop, Files, Service | yes | missing |
@@ -107,7 +107,8 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/sign-in` → EdgePanel `/sign-in` (`{ email, password }` → `{ id, email }`, JWTs set as HttpOnly cookies) |
+| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email }`, JWTs set as HttpOnly cookies) |
+| POST | `/api/log-out` → EdgePanel `/log-out` (clears both cookies) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
 | GET | `/api/devices/{host}/connections` |

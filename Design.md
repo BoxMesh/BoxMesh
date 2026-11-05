@@ -295,9 +295,9 @@ Entry points to unbuilt modules stay visible but muted. There is no "Soon" badge
   tokens or `--lbg-*` variables (light: pale-blue clouds, grey dust, slate nodes and links, dark-lime hubs), so light
   mode needs no second file. Keep new artwork colours inside that list, or add a rule.
 - Card: `bg-surface`, radius 24, padding 36. h1 "Welcome back" 32/40/600, subtitle, large (40 px) fields,
-  "Remember me", full-width primary button with an arrow.
+  full-width primary button with an arrow.
 - Windows under 800 px tall get a tighter card; below 576 px the page padding drops to 16.
-- "Remember me" keeps the session in `localStorage`; otherwise it's in `sessionStorage`. Signing out from the avatar menu
+- The session lives in `sessionStorage`, so it ends with the browser. Signing out from the avatar menu
   clears it and the query cache.
 
 ### Icons

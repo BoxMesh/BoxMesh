@@ -4,13 +4,12 @@ import { useState, type Key } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Icon } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
-import Status from '../../components/Status'
+import { tone } from '../../config/theme'
 import { navItem } from '../../config/nav'
 import { useNotSupported } from '../../hooks/useNotSupported'
 import { devicesQuery } from '../../services/queries'
 import type { Device, DeviceFilter } from '../../types/device'
 import { filterDevices, toCsv } from '../../utils/devices'
-import { ago } from '../../utils/time'
 import EnrollDrawer from './EnrollDrawer'
 
 const ALL = { value: '', label: 'All' }
@@ -38,39 +37,46 @@ const REMOTE_ACTIONS = [
 
 const columns: TableProps<Device>['columns'] = [
   {
+    title: '',
+    key: 'online',
+    width: 32,
+    render: (_, d) => {
+      const label = d.online ? 'Online' : 'Offline'
+      // The dot is the only thing in the cell, so it carries the word for anyone not seeing colour.
+      return (
+        <Tooltip title={label}>
+          <span className="status-dot" role="img" aria-label={label} style={{ background: d.online ? tone.positive : tone.disabled }} />
+        </Tooltip>
+      )
+    },
+  },
+  {
     title: 'Hostname',
     key: 'host',
     render: (_, d) => (
-      <>
-        <Link to={`/devices/${d.host}`} className="strong">
-          {d.host}
-        </Link>
-        <div className="sub">{d.alias}</div>
-      </>
+      <Link to={`/devices/${d.host}`} className="strong">
+        {d.host}
+      </Link>
     ),
   },
   { title: 'OS', dataIndex: 'os' },
-  {
-    title: 'IP / MAC',
-    key: 'ip',
-    render: (_, d) => (
-      <>
-        {d.ip}
-        <div className="sub">
-          <code>{d.mac}</code>
-        </div>
-      </>
-    ),
-  },
-  { title: 'Status', key: 'status', render: (_, d) => <Status online={d.online} /> },
+  { title: 'IP', dataIndex: 'ip' },
+  { title: 'MAC', key: 'mac', render: (_, d) => <code>{d.mac}</code> },
   {
     title: 'Agent',
     key: 'agent',
-    render: (_, d) => (
-      <>
-        {d.agentVersion} {d.agentOutdated ? <Tag color="warning">outdated</Tag> : null}
-      </>
-    ),
+    render: (_, d) =>
+      d.agentOutdated ? (
+        <Tooltip title="A newer agent has been released">
+          {/* role + label: the icon is the whole message, so it has to reach a screen reader too. */}
+          <span className="agent-outdated" role="img" aria-label={`${d.agentVersion}, update available`}>
+            {d.agentVersion}
+            <Icon name="warning" size={13} />
+          </span>
+        </Tooltip>
+      ) : (
+        d.agentVersion
+      ),
   },
   {
     title: 'Group · Tag',
@@ -82,7 +88,6 @@ const columns: TableProps<Device>['columns'] = [
       </>
     ),
   },
-  { title: 'Last seen', key: 'seen', render: (_, d) => ago(d.lastSeen) },
   { title: 'Actions', key: 'actions', render: (_, d) => <RowActions device={d} /> },
 ]
 
@@ -180,6 +185,7 @@ export default function DevicesPage() {
           columns={columns}
           dataSource={rows}
           rowKey="host"
+          rowClassName={(d) => (d.online ? '' : 'row-offline')}
           rowSelection={{ selectedRowKeys: selected, onChange: setSelected }}
           scroll={{ x: 'max-content' }}
           pagination={{ pageSize: 8, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
