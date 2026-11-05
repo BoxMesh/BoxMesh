@@ -210,7 +210,6 @@ const adapter: AxiosAdapter = async (config) => {
     config,
   })
 
-  // Enough delay for skeletons and spinners to be seen, little enough not to feel broken.
   await wait(140 + Math.random() * 160)
 
   for (const [verb, pattern, handler] of routes) {
@@ -222,7 +221,6 @@ const adapter: AxiosAdapter = async (config) => {
   throw new AxiosError('Not Found', AxiosError.ERR_BAD_REQUEST, config, null, response)
 }
 
-/** Point the shared axios instance at the demo data. Called from main.tsx before the first render. */
 export function install() {
   http.defaults.adapter = adapter
 }

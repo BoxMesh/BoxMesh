@@ -61,11 +61,6 @@ export default function AppLayout() {
         <Layout.Header className="app-header">
           <Breadcrumb items={crumbs} />
           <div className="header-tools">
-            {isDemo() ? (
-              <Tooltip title="Sample fleet, held in this tab only. Nothing here reaches a real machine.">
-                <Tag color="warning">Demo data</Tag>
-              </Tooltip>
-            ) : null}
             <Input
               className="header-search"
               prefix={<Icon name="search" size={14} />}
