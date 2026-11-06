@@ -45,7 +45,7 @@ export default function LoginPage() {
         <div className="login-card">
           <header className="login-head">
             <h1>Sign in</h1>
-            <p>Monitor and reach every machine in your fleet from one place.</p>
+            <p>Manage all your devices in one place.</p>
           </header>
 
           <Form<Fields> layout="vertical" requiredMark={false} onFinish={(values) => login.mutate(values)}>
