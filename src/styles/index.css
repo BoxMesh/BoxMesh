@@ -511,8 +511,8 @@ body .icon-btn[aria-disabled='true'] {
 
 /* ---------- Sign in ---------- */
 /* Lockup and card centred over the full-window mesh (LoginBackground), theme toggle top-right.
-   Geometry from the design canvas (Login.dc.html): 420 card, 20 gap, 44 controls with 16px text. The
-   app's own controls stay 32px and 14px; this is a standalone form, sized for a first touch. */
+   Same scale as the app: 32px controls and 14px text (antd defaults), 20px page inset, 16px inside
+   the card, 12px between blocks. Only colour and the lockup's size are the login's own. */
 .login {
   position: relative;
   min-height: 100dvh;
@@ -526,15 +526,13 @@ body .icon-btn[aria-disabled='true'] {
 .login-toggle {
   position: absolute;
   z-index: 2;
-  top: 24px;
-  right: 24px;
+  top: 20px;
+  right: 20px;
 }
 
+/* Over the artwork the toggle needs its own surface to stay visible; its size is the app's icon button. */
 .login-toggle .icon-btn {
-  width: 44px;
-  height: 44px;
   border: 1px solid var(--border-control);
-  border-radius: 12px;
   background: var(--bg-surface);
   color: var(--text);
   transition: border-color 150ms;
@@ -551,12 +549,12 @@ body .icon-btn[aria-disabled='true'] {
   justify-self: center;
   box-sizing: border-box;
   width: 100%;
-  max-width: 452px;
+  max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  padding: 72px 16px 32px;
+  gap: 16px;
+  padding: 20px;
 }
 
 .login .logo {
@@ -571,8 +569,8 @@ body .icon-btn[aria-disabled='true'] {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: clamp(20px, 5vw, 32px);
+  gap: 12px;
+  padding: 16px;
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--bg-surface);
@@ -583,10 +581,11 @@ body .icon-btn[aria-disabled='true'] {
   box-shadow: 0 1px 0 rgba(16, 20, 22, 0.04), 0 24px 48px -16px rgba(16, 20, 22, 0.18);
 }
 
+/* Title and subtitle as a page header: 20/28 over 14px secondary text, 2px apart. */
 .login-head {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 
 .login-head h1 {
@@ -599,7 +598,6 @@ body .icon-btn[aria-disabled='true'] {
 .login-head p {
   margin: 0;
   font-size: 14px;
-  line-height: 20px;
   color: var(--text-secondary);
 }
 
@@ -610,9 +608,10 @@ body .icon-btn[aria-disabled='true'] {
 }
 
 .login-card form {
-  gap: 20px;
+  gap: 12px;
 }
 
+/* 8px from label to input: antd's own vertical-form label gap, used by the email field. */
 .login-field {
   gap: 8px;
 }
@@ -627,29 +626,21 @@ body .icon-btn[aria-disabled='true'] {
 
 .login-label label,
 .login-card .ant-form-item-label > label {
-  font-size: 14px;
   font-weight: 500;
 }
 
-/* 44px controls with 16px text through the card. */
-.login-card .ant-input,
-.login-card .ant-input-affix-wrapper,
-.login-card .ant-btn {
-  height: 44px;
-  border-radius: 12px;
-  font-size: 16px;
+.login-card .login-label .ant-btn {
+  height: auto;
+  padding: 0;
 }
 
 .login-card .ant-input,
 .login-card .ant-input-affix-wrapper {
-  padding-inline: 14px;
   background: var(--bg-raised);
 }
 
-/* The password input sits inside a 44px wrapper, so it must not claim that height or padding as well. */
 .login-card .ant-input-affix-wrapper .ant-input {
-  height: auto;
-  padding: 0;
+  background: transparent;
 }
 
 .login-card .ant-input::placeholder {
@@ -661,18 +652,6 @@ body .icon-btn[aria-disabled='true'] {
 .login-card .ant-input-affix-wrapper-focused {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(199, 243, 107, 0.25);
-}
-
-.login-card .ant-input-password-icon {
-  font-size: 18px;
-  color: var(--text-secondary);
-}
-
-/* Named through .login-label so it outranks the 44px control rule above, not just ties with it. */
-.login-card .login-label .ant-btn {
-  height: auto;
-  padding: 0;
-  font-size: 14px;
 }
 
 .login-card .ant-btn-primary {
@@ -691,14 +670,14 @@ body .icon-btn[aria-disabled='true'] {
 
 /* The secondary action under "or": the canvas's ghost button. */
 .login-card .ant-btn-default {
-  font-weight: 500;
   border-color: var(--border-control);
   background: var(--bg-raised);
   color: var(--text);
 }
 
 .login-card .ant-form-item,
-.login-card .ant-divider {
+.login-card .ant-divider,
+.login-error {
   margin: 0;
 }
 
@@ -707,21 +686,42 @@ body .icon-btn[aria-disabled='true'] {
   font-size: 14px;
 }
 
-.login-error {
-  margin: 0;
-  padding: 10px 14px;
-  border-radius: 12px;
+.login-alt {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Laptop-height windows (e.g. 1366x657): tighter so the card fits without scrolling. */
-@media (max-height: 800px) {
-  .login-main {
-    gap: 16px;
-    padding-block: 32px 16px;
-  }
+/* Sign in ⇄ reset: the blocks one mode does not use fold to zero height and fade, so the card shrinks
+   and grows instead of jumping. The -12px takes back the flex gap a folded block would still hold. */
+.login-fold {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 250ms ease, opacity 200ms ease, margin-top 250ms ease;
+}
 
-  .login-card {
-    gap: 16px;
+/* The padding/margin pair widens the clip by 3px so the input's focus ring is not cut off. */
+.login-fold > * {
+  min-height: 0;
+  overflow: hidden;
+  padding: 3px;
+  margin: -3px;
+}
+
+.login-fold.is-folded {
+  grid-template-rows: 0fr;
+  opacity: 0;
+  margin-top: -12px;
+}
+
+.login-head {
+  animation: login-fade 250ms ease;
+}
+
+@keyframes login-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
   }
 }
 
@@ -729,6 +729,10 @@ body .icon-btn[aria-disabled='true'] {
   .login-toggle {
     top: 16px;
     right: 16px;
+  }
+
+  .login-main {
+    padding: 16px;
   }
 
   .login .logo {

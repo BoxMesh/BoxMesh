@@ -45,3 +45,10 @@ export async function logOut() {
     sessionStorage.removeItem(STORAGE_KEY);
   } catch {}
 }
+
+// shortcut: "/forgot-password" is assumed, the panel's reset route is not known yet; rename it once it is.
+export async function requestPasswordReset(email: string) {
+  await http.post("/forgot-password", { email }).catch((error: unknown) => {
+    throw new Error(`Couldn't send the reset email. ${userMessage(error)}`);
+  });
+}
