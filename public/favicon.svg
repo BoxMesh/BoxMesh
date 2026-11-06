@@ -1,9 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- Dark app theme. ThemeProvider swaps in favicon-light.svg for the light theme, on the same signal that sets theme-color, so the tab icon and the window title bar agree. Drawn for 16px, not copied from the logo: solid nodes instead of rings and heavier strokes, because the logo's rings and 2.6 strokes blur into one smudge at tab size. -->
-  <rect width="48" height="48" rx="11" fill="#101416"/>
-  <g transform="translate(24 24) scale(0.82) translate(-24 -24)" fill="none" stroke="#f1efe7" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M24 5L40.5 14.5V33.5L24 43L7.5 33.5V14.5Z M24 24L7.5 14.5M24 24L40.5 14.5M24 24V43"/>
-    <g fill="#f1efe7" stroke="none">
+  <!-- Follows the browser's colour scheme, not the app's theme toggle: the tab bar is drawn by the browser,
+       and prefers-color-scheme inside the SVG is the closest a page gets to its colour. Transparent, so the
+       mark sits straight on the tab bar. Drawn for 16px: solid nodes and heavier strokes than the logo,
+       whose rings and 2.6 strokes blur into one smudge at tab size. -->
+  <style>
+    .mark { stroke: #101416; fill: #101416; }
+    .core { fill: #8fb83a; }
+    @media (prefers-color-scheme: dark) {
+      .mark { stroke: #f1efe7; fill: #f1efe7; }
+      .core { fill: #c7f36b; }
+    }
+  </style>
+  <g transform="translate(24 24) scale(0.95) translate(-24 -24)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">
+    <path class="mark" fill="none" style="fill:none" d="M24 5L40.5 14.5V33.5L24 43L7.5 33.5V14.5Z M24 24L7.5 14.5M24 24L40.5 14.5M24 24V43"/>
+    <g class="mark" stroke="none" style="stroke:none">
       <circle cx="24" cy="5" r="3.6"/>
       <circle cx="40.5" cy="14.5" r="3.6"/>
       <circle cx="40.5" cy="33.5" r="3.6"/>
@@ -11,6 +21,6 @@
       <circle cx="7.5" cy="33.5" r="3.6"/>
       <circle cx="7.5" cy="14.5" r="3.6"/>
     </g>
-    <circle cx="24" cy="24" r="6" fill="#c7f36b" stroke="none"/>
+    <circle class="core" cx="24" cy="24" r="6"/>
   </g>
 </svg>
