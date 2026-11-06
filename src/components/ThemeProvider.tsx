@@ -6,6 +6,8 @@ import { ThemeModeContext, type ThemeOrigin } from '../hooks/useThemeMode'
 
 const STORAGE_KEY = 'boxmesh-theme'
 const THEME_COLOR: Record<ThemeMode, string> = { dark: '#101416', light: '#ffffff' }
+// The tab icon follows the same theme as the title bar colour above, not the OS setting.
+const FAVICON: Record<ThemeMode, string> = { dark: '/favicon.svg', light: '/favicon-light.svg' }
 
 // index.html sets data-theme before first paint (saved choice, else the OS preference); start from it.
 const initialMode = (): ThemeMode => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark')
@@ -16,6 +18,7 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     document.documentElement.dataset.theme = mode
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', THEME_COLOR[mode])
+    document.querySelector('link[rel="icon"]')?.setAttribute('href', FAVICON[mode])
   }, [mode])
 
   // Only an explicit choice is saved; until then the app keeps following the OS setting.

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- Light app theme; the dark one and the why are in favicon.svg. -->
+  <rect width="48" height="48" rx="10" fill="#ffffff"/>
+  <g transform="translate(4.8 4.8) scale(0.8)" fill="none" stroke="#101416" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M24 5L40.5 14.5V33.5L24 43L7.5 33.5V14.5Z M24 24L7.5 14.5M24 24L40.5 14.5M24 24V43"/>
+    <g fill="#ffffff" stroke-width="2.6">
+      <circle cx="24" cy="5" r="3.2"/>
+      <circle cx="40.5" cy="14.5" r="3.2"/>
+      <circle cx="40.5" cy="33.5" r="3.2"/>
+      <circle cx="24" cy="43" r="3.2"/>
+      <circle cx="7.5" cy="33.5" r="3.2"/>
+      <circle cx="7.5" cy="14.5" r="3.2"/>
+    </g>
+    <circle cx="24" cy="24" r="5.6" fill="#c7f36b" stroke-width="2.6"/>
+  </g>
+</svg>

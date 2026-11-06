@@ -95,9 +95,9 @@ body .app-sider .ant-menu {
   padding-bottom: 16px;
 }
 
-/* Group titles line up with the item icons (8 px margin + 16 px padding), as the canvas sider draws them. */
+/* Group titles line up with the item icons (8 px margin + 12 px padding). */
 body .app-sider .ant-menu-item-group-title {
-  padding: 16px 24px 6px;
+  padding: 12px 20px 4px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -133,15 +133,16 @@ body .app-sider .ant-menu-item-selected .ant-menu-item-icon {
   color: var(--text-secondary);
 }
 
-/* Canvas sider: a 64px brand row with no rule under it, so it need not line up with the 56px header. */
+/* Same height and bottom rule as the header, so the top band reads as one line. */
 .brand {
-  height: 64px;
+  height: 56px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 0 20px;
-  font-size: 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -206,23 +207,23 @@ body .user .ant-avatar {
 }
 
 .app-content {
-  padding: 24px;
+  padding: 20px;
   min-width: 0;
 }
 
 /* ---------- Page ---------- */
-/* Spacing from the design canvas: 16px gutters between blocks, 14px secondary text. */
+/* Compact spacing on a 4px grid: 12px between blocks, 16px inside cards, 14px secondary text. */
 .stack {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -236,7 +237,7 @@ body .user .ant-avatar {
 }
 
 .page-header p {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   font-size: 14px;
   color: var(--text-secondary);
 }
@@ -250,13 +251,13 @@ body .user .ant-avatar {
 .grid-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .muted {
@@ -269,10 +270,6 @@ body .user .ant-avatar {
 }
 
 /* ---------- Cards ---------- */
-body .ant-card .ant-card-body {
-  padding: 20px 24px;
-}
-
 body .ant-card {
   min-width: 0;
   box-shadow: var(--shadow-card);
@@ -309,7 +306,7 @@ body .stat-link:hover {
 .kv {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 12px;
 }
 
 .kv-value {
@@ -319,7 +316,7 @@ body .stat-link:hover {
 }
 
 .meter + .meter {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .meter-label {
@@ -333,8 +330,8 @@ body .stat-link:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
+  gap: 8px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -358,9 +355,15 @@ body .table-card .ant-card-body:first-child {
   overflow: hidden;
 }
 
-body .table-card .ant-table-pagination {
+/* .ant-pagination too: antd's own margin rule carries three classes and would win over two. */
+/* Even-width figures, so dates, IPs and counts line up down a column. */
+body .ant-table {
+  font-variant-numeric: tabular-nums;
+}
+
+body .table-card .ant-table-pagination.ant-pagination {
   margin: 0;
-  padding: 16px 24px;
+  padding: 12px 16px;
 }
 
 .strong {
@@ -418,9 +421,9 @@ body .ant-table-wrapper .ant-table .ant-table-thead > tr > th {
 }
 
 .row-actions .icon-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
   border-color: transparent;
   background: transparent;
 }

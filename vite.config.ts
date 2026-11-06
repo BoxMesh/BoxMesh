@@ -18,7 +18,8 @@ export default defineConfig({
         start_url: '/dashboard',
         scope: '/',
         display: 'standalone',
-        background_color: '#000000',
+        // The splash draws the icon over this colour; matching the icon's tile keeps it from showing as a box.
+        background_color: '#101416',
         theme_color: '#101416',
         // Launching the installed app again focuses the open window instead of opening a second one.
         launch_handler: { client_mode: ['focus-existing', 'auto'] },

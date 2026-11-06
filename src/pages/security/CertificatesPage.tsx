@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
-import { Alert, App, Button, Card, Checkbox, Drawer, Form, Popconfirm, Select, Table, Tag, type TableProps } from 'antd'
+import { Alert, App, Button, Card, Checkbox, Drawer, Form, Popconfirm, Select, Table, Tag, Tooltip, type TableProps } from 'antd'
 import { useState } from 'react'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
+import { tone } from '../../config/theme'
 import { createToken, revokeCertificate, type NewToken } from '../../services/adminService'
 import { certificatesQuery, devicesQuery, tokensQuery } from '../../services/queries'
 import type { Certificate, EnrollmentToken } from '../../types/admin'
@@ -53,11 +54,16 @@ export default function CertificatesPage() {
       key: 'expires',
       render: (_, c) => {
         const days = daysLeft(c.expiresAt)
+        // A revoked certificate's expiry no longer matters, so it is never flagged.
+        const color = c.revoked ? undefined : days <= 7 ? tone.error : days <= 30 ? tone.warning : undefined
+        if (!color) return formatDate(c.expiresAt)
+        // Colour is the only mark in the cell, so the count rides along for hover and screen readers.
         return (
-          <>
-            {formatDate(c.expiresAt)}{' '}
-            {days <= 14 ? <Tag color={days <= 0 ? 'error' : 'warning'}>{daysLeftLabel(days)}</Tag> : null}
-          </>
+          <Tooltip title={daysLeftLabel(days)}>
+            <span style={{ color }} aria-label={`${formatDate(c.expiresAt)}, ${daysLeftLabel(days)}`}>
+              {formatDate(c.expiresAt)}
+            </span>
+          </Tooltip>
         )
       },
     },
@@ -108,8 +114,6 @@ export default function CertificatesPage() {
     },
   ]
 
-  const expiring = certificates.filter((c) => !c.revoked && daysLeft(c.expiresAt) <= 14)
-
   return (
     <div className="stack">
       <PageHeader
@@ -121,16 +125,6 @@ export default function CertificatesPage() {
           </Button>
         }
       />
-
-      {expiring.length > 0 ? (
-        <Alert
-          type="warning"
-          showIcon
-          icon={<Icon name="warning" />}
-          title={`${expiring.length} certificate${expiring.length === 1 ? '' : 's'} expire within 14 days`}
-          description={expiring.map((c) => `${c.host} (${daysLeftLabel(daysLeft(c.expiresAt))})`).join(' · ')}
-        />
-      ) : null}
 
       <Card className="table-card" title="Agent certificates" styles={{ body: { padding: 0 } }}>
         <Table<Certificate>

@@ -7,23 +7,23 @@ import { DAY, MINUTE, SECOND, fromNow } from '../utils/time'
 
 // A believable fleet for the demo: a mix of office desktops, two servers and a workshop, with a few
 // machines deliberately in trouble so the alerting and certificate screens have something to show.
-type Seed = [host: string, alias: string, group: string, tag: string, cpu: number, ram: number, disk: number, agent: string, certDays: number]
+type Seed = [host: string, alias: string, group: string, tag: string, cpu: number, ram: number, disk: number, agent: string]
 
 // Only what stays put is seeded. The OS, whether the agent is up, what it answers in and when it was
 // last heard from are rolled per load, so the seed cannot disagree with them.
 const SEEDS: Seed[] = [
-  ['ACC-PC-01', 'Accounting 1', 'Accounting', 'desktop', 23, 54, 61, '1.4.2', 240],
-  ['ACC-PC-02', 'Accounting 2', 'Accounting', 'desktop', 94, 71, 44, '1.4.2', 180],
-  ['ACC-PC-03', 'Accounting 3', 'Accounting', 'desktop', 35, 61, 72, '1.3.9', 9],
-  ['CAD-WS-01', 'CAD Workshop 1', 'CAD Workshop', 'workstation', 67, 92, 88, '1.4.2', 311],
-  ['CAD-WS-02', 'CAD Workshop 2', 'CAD Workshop', 'workstation', 41, 63, 91, '1.4.0', 275],
-  ['HR-PC-01', 'HR Desk', 'HR', 'desktop', 12, 38, 52, '1.4.2', 198],
-  ['SRV-DB-01', 'Database', 'Server', 'database', 58, 77, 73, '1.4.2', 402],
-  ['SRV-WEB-01', 'Internal web', 'Server', 'web', 31, 49, 36, '1.4.2', 402],
-  ['SRV-BAK-01', 'Backup', 'Server', 'backup', 8, 22, 94, '1.4.1', 12],
-  ['SRV-MON-01', 'Monitoring', 'Server', 'monitoring', 44, 58, 40, '1.3.9', 355],
-  ['WH-PC-01', 'Warehouse terminal', 'Warehouse', 'kiosk', 28, 47, 66, '1.3.9', 120],
-  ['WH-PC-02', 'Warehouse office', 'Warehouse', 'desktop', 19, 44, 57, '1.4.2', 220],
+  ['ACC-PC-01', 'Accounting 1', 'Accounting', 'desktop', 23, 54, 61, '1.4.2'],
+  ['ACC-PC-02', 'Accounting 2', 'Accounting', 'desktop', 94, 71, 44, '1.4.2'],
+  ['ACC-PC-03', 'Accounting 3', 'Accounting', 'desktop', 35, 61, 72, '1.3.9'],
+  ['CAD-WS-01', 'CAD Workshop 1', 'CAD Workshop', 'workstation', 67, 92, 88, '1.4.2'],
+  ['CAD-WS-02', 'CAD Workshop 2', 'CAD Workshop', 'workstation', 41, 63, 91, '1.4.0'],
+  ['HR-PC-01', 'HR Desk', 'HR', 'desktop', 12, 38, 52, '1.4.2'],
+  ['SRV-DB-01', 'Database', 'Server', 'database', 58, 77, 73, '1.4.2'],
+  ['SRV-WEB-01', 'Internal web', 'Server', 'web', 31, 49, 36, '1.4.2'],
+  ['SRV-BAK-01', 'Backup', 'Server', 'backup', 8, 22, 94, '1.4.1'],
+  ['SRV-MON-01', 'Monitoring', 'Server', 'monitoring', 44, 58, 40, '1.3.9'],
+  ['WH-PC-01', 'Warehouse terminal', 'Warehouse', 'kiosk', 28, 47, 66, '1.3.9'],
+  ['WH-PC-02', 'Warehouse office', 'Warehouse', 'desktop', 19, 44, 57, '1.4.2'],
 ]
 
 const LATEST_AGENT = '1.4.2'
@@ -70,7 +70,13 @@ const asOnline = (online: boolean) => ({
 
 const UP = 0.78
 
-export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, disk, agentVersion, certDays], i) => {
+// Certificate lifetimes, rolled per load: two inside 7 days and three inside 30, shuffled across the
+// fleet, so the Expires column's red and amber always have something to show; the rest are months out.
+const CERT_DAYS = SEEDS.map((_, i) => (i < 2 ? rand(1, 7) : i < 5 ? rand(8, 30) : rand(31, 400))).sort(
+  () => Math.random() - 0.5,
+)
+
+export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, disk, agentVersion], i) => {
   const [osFamily, os, osVersion, osArchitecture] = pick(group === 'Server' ? SERVER_OS : CLIENT_OS)
   return {
     host,
@@ -86,7 +92,7 @@ export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, 
     group,
     tag,
     enrolledAt: fromNow(-(90 + i * 11) * DAY),
-    certExpires: fromNow(certDays * DAY),
+    certExpires: fromNow(CERT_DAYS[i] * DAY),
     cpu,
     ram,
     disk,

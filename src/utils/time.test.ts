@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ago, daysLeft, fromNow } from './time'
+import { ago, daysLeft, formatDate, formatDateTime, fromNow } from './time'
 
 const NOW = Date.parse('2026-11-03T12:00:00Z')
 
@@ -15,5 +15,14 @@ describe('ago', () => {
 describe('daysLeft', () => {
   it('rounds partial days up', () => {
     expect(daysLeft(fromNow(36 * 3_600_000, NOW), NOW)).toBe(2)
+  })
+})
+
+describe('formatDate', () => {
+  it('pads the day and keeps every month three letters, so dates share one width', () => {
+    // Local-time constructors, so the test holds in any time zone.
+    expect(formatDate(new Date(2027, 6, 4).toISOString())).toBe('04 Jul 2027')
+    expect(formatDate(new Date(2027, 8, 13).toISOString())).toBe('13 Sep 2027')
+    expect(formatDateTime(new Date(2027, 6, 4, 9, 5).toISOString())).toBe('04 Jul 2027, 09:05')
   })
 })
