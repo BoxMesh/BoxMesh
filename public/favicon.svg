@@ -1,8 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <!-- The mark from Logo.html, which says to use the icon alone below 20px: that is every favicon.
+       Nodes are solid rather than rings on a surface fill, because at 16px a 2px ring collapses into a
+       dot anyway and a surface fill would show as a blob on the other theme's tab bar.
+       The cage is the text colour of whichever chrome it sits on; the core keeps the accent, lime in
+       both themes. Attributes carry the dark values so the mark still draws if the CSS is ignored. -->
   <style>
     @media (prefers-color-scheme: light) {
-      .mark { stroke: #c7f36b }
+      .cage { stroke: #101416 }
+      .node { fill: #101416 }
+      .core { stroke: #101416 }
     }
   </style>
-  <path class="mark" d="M12 2l9 5v10l-9 5-9-5V7zM12 22V12M21 7l-9 5-9-5" fill="none" stroke="#c7f36b" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path class="cage" d="M24 5L40.5 14.5V33.5L24 43L7.5 33.5V14.5Z M24 24L7.5 14.5M24 24L40.5 14.5M24 24V43" fill="none" stroke="#f1efe7" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <g class="node" fill="#f1efe7">
+    <circle cx="24" cy="5" r="3.2"/>
+    <circle cx="40.5" cy="14.5" r="3.2"/>
+    <circle cx="40.5" cy="33.5" r="3.2"/>
+    <circle cx="24" cy="43" r="3.2"/>
+    <circle cx="7.5" cy="33.5" r="3.2"/>
+    <circle cx="7.5" cy="14.5" r="3.2"/>
+  </g>
+  <circle class="core" cx="24" cy="24" r="5.2" fill="#c7f36b" stroke="#f1efe7" stroke-width="2"/>
 </svg>

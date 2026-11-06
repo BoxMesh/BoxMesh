@@ -1,6 +1,5 @@
 // Stroke icons copied from the design canvas (24 viewBox, stroke 2, round caps).
 const paths = {
-  logo: 'M12 2l9 5v10l-9 5-9-5V7zM12 22V12M21 7l-9 5-9-5',
   dashboard: 'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z',
   devices: 'M3 4h18v12H3zM8 20h8M12 16v4',
   terminal: 'M4 17l6-5-6-5M12 19h8',

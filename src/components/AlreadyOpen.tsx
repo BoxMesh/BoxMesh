@@ -1,5 +1,5 @@
 import { Result } from 'antd'
-import { Icon } from './Icon'
+import { LogoMark } from './Logo'
 
 export default function AlreadyOpen() {
   return (
@@ -7,7 +7,7 @@ export default function AlreadyOpen() {
       <Result
         icon={
           <span className="brand-mark">
-            <Icon name="logo" size={64} />
+            <LogoMark size={64} />
           </span>
         }
         title="BoxMesh is already open in another window"

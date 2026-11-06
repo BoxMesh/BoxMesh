@@ -2,7 +2,9 @@ import { useMutation } from '@tanstack/react-query'
 import { Alert, Button, Divider, Form, Input } from 'antd'
 import { Navigate, useLocation, useNavigate, type Location } from 'react-router'
 import { Icon } from '../../components/Icon'
-import { useThemeSwitch } from '../../hooks/useThemeMode'
+import Logo from '../../components/Logo'
+import ThemeToggle from '../../components/ThemeToggle'
+import { useNotSupported } from '../../hooks/useNotSupported'
 import { getSession, logIn } from '../../services/authService'
 import { isDemo, startDemo } from '../../services/demo'
 import LoginBackground from './LoginBackground'
@@ -17,9 +19,10 @@ export default function LoginPage() {
   // Set by the route guard: the page the visitor asked for before being sent here.
   const from = (useLocation().state as { from?: Location } | null)?.from
   const target = from ? `${from.pathname}${from.search}${from.hash}` : '/dashboard'
-  const { switchProps } = useThemeSwitch()
+  const notSupported = useNotSupported()
   const login = useMutation({
     mutationFn: ({ email, password }: Fields) => logIn(email, password),
+    // The demo fleet has its own hostnames, so a deep link from before the demo would not resolve in it.
     onSuccess: () => navigate(isDemo() ? '/dashboard' : target, { replace: true }),
   })
 
@@ -35,20 +38,18 @@ export default function LoginPage() {
   return (
     <div className="login">
       <LoginBackground />
+      <div className="login-toggle">
+        <ThemeToggle />
+      </div>
       <main className="login-main">
+        <Logo size={40} />
         <div className="login-card">
-          <h1 className="login-brand">
-            {/* The mark itself is the theme switch, so the page keeps "BoxMesh" as its heading text. */}
-            <button className="login-hub" {...switchProps}>
-              <Icon name="logo" size={22} />
-            </button>
-            BoxMesh
-          </h1>
-          <Form<Fields>
-            layout="vertical"
-            requiredMark={false}
-            onFinish={(values) => login.mutate(values)}
-          >
+          <header className="login-head">
+            <h1>Sign in</h1>
+            <p>Manage your Windows and Linux fleet from one place.</p>
+          </header>
+
+          <Form<Fields> layout="vertical" requiredMark={false} onFinish={(values) => login.mutate(values)}>
             {/* Safe to show: logIn() writes this sentence itself, so it is never axios's transport text. */}
             {login.isError ? <Alert className="login-error" type="error" showIcon title={login.error.message} /> : null}
             <Form.Item
@@ -60,21 +61,35 @@ export default function LoginPage() {
                 { type: 'email', message: 'Enter a valid email.' },
               ]}
             >
-              <Input type="email" autoComplete="username" autoFocus prefix={<Icon name="mail" />} />
+              <Input type="email" autoComplete="username" autoFocus placeholder="you@company.com" />
             </Form.Item>
-            <Form.Item name="password" label="Password" rules={[{ required: true, message: 'Enter your password.' }]}>
-              <Input.Password autoComplete="current-password" prefix={<Icon name="lock" />} />
-            </Form.Item>
+            <div className="login-field">
+              <div className="login-label">
+                {/* A real label: the field has no antd label of its own, because the link shares its line. */}
+                <label htmlFor="login-password">Password</label>
+                <Button type="link" size="small" onClick={() => notSupported('Password reset')}>
+                  Forgot password?
+                </Button>
+              </div>
+              <Form.Item name="password" rules={[{ required: true, message: 'Enter your password.' }]}>
+                <Input.Password id="login-password" autoComplete="current-password" placeholder="••••••••" />
+              </Form.Item>
+            </div>
             <Button type="primary" htmlType="submit" block loading={login.isPending}>
               Sign in
-              <Icon name="arrow" />
-            </Button>
-            <Divider plain>or</Divider>
-            <Button block onClick={exploreDemo}>
-              Explore the demo
             </Button>
           </Form>
+
+          <Divider plain>or</Divider>
+
+          <Button block icon={<Icon name="security" size={18} />} onClick={() => notSupported('Company SSO')}>
+            Continue with company SSO
+          </Button>
+          <Button block type="text" onClick={exploreDemo}>
+            Explore the demo
+          </Button>
         </div>
+        <p className="login-foot">Every agent connection is mTLS secured.</p>
       </main>
     </div>
   )

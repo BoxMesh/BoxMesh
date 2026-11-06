@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import ErrorBoundary from '../components/ErrorBoundary'
 import { Icon } from '../components/Icon'
+import Logo from '../components/Logo'
 import ThemeToggle from '../components/ThemeToggle'
 import { navGroups, navItems } from '../config/nav'
 import { getSession, logOut } from '../services/authService'
@@ -52,8 +53,7 @@ export default function AppLayout() {
     <Layout className="app">
       <Layout.Sider className="app-sider" width={216} breakpoint="lg" collapsedWidth={0}>
         <Link to="/dashboard" className="brand">
-          <Icon name="logo" size={22} />
-          BoxMesh
+          <Logo size={22} />
         </Link>
         <Menu mode="inline" selectedKeys={active ? [active.path] : []} items={menuItems} />
       </Layout.Sider>
