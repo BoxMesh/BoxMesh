@@ -53,7 +53,7 @@ export default function AppLayout() {
     <Layout className="app">
       <Layout.Sider className="app-sider" width={216} breakpoint="lg" collapsedWidth={0}>
         <Link to="/dashboard" className="brand">
-          <Logo size={22} />
+          <Logo size={28} />
         </Link>
         <Menu mode="inline" selectedKeys={active ? [active.path] : []} items={menuItems} />
       </Layout.Sider>

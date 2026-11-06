@@ -26,9 +26,9 @@ export function LogoMark({ size = 40 }: { size?: number }) {
       strokeLinejoin="round"
     >
       <path d={CAGE} />
-      {/* Filled with the surface behind them, so the cage lines stop at each node instead of crossing it. */}
+      {/* Filled with whatever is behind the mark, so the cage lines stop at each node instead of crossing it. */}
       {NODES.map(([cx, cy]) => (
-        <circle key={`${cx},${cy}`} cx={cx} cy={cy} r={3.2} fill="var(--bg-surface)" strokeWidth={2} />
+        <circle key={`${cx},${cy}`} cx={cx} cy={cy} r={3.2} fill="var(--logo-ground, var(--bg-surface))" strokeWidth={2} />
       ))}
       <circle cx={24} cy={24} r={5.2} fill="var(--brand)" strokeWidth={2} />
     </svg>

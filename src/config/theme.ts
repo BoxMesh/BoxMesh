@@ -140,9 +140,10 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
         triggerBg: p.bgRaised,
         triggerColor: p.text,
       },
-      // Compact sider: the selected item is a raised row with an accent icon, not a filled block.
+      // Sider sizes from the design canvas (Sider.dc.html): 40px rows, 16px inset, 14px text.
+      // The selected item stays a raised row with an accent icon rather than the canvas's filled block.
       Menu: {
-        fontSize: 13,
+        fontSize: 14,
         itemBg: 'transparent',
         itemColor: p.textSecondary,
         itemHoverColor: p.text,
@@ -150,11 +151,11 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
         itemSelectedBg: p.bgButton,
         itemSelectedColor: p.text,
         itemActiveBg: p.bgRaised,
-        itemHeight: 32,
-        itemBorderRadius: 8,
+        itemHeight: 40,
+        itemBorderRadius: 12,
         itemMarginInline: 8,
-        itemMarginBlock: 1,
-        itemPaddingInline: 12,
+        itemMarginBlock: 2,
+        itemPaddingInline: 16,
         iconSize: 16,
         iconMarginInlineEnd: 10,
         groupTitleColor: p.textDisabled,
@@ -179,7 +180,8 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
         defaultShadow: p.defaultShadow,
         dangerShadow: p.dangerShadow,
       },
-      Card: { headerFontSize: 14, headerHeight: 44, headerPadding: 16, bodyPadding: 16 },
+      // Canvas section: a 56px title row (16px text, 24px inset) over a 20/24 body; index.css sets the 20.
+      Card: { headerFontSize: 16, headerHeight: 56, headerPadding: 24, bodyPadding: 24 },
       Table: {
         headerBg: p.bgRaised,
         rowHoverBg: p.bgRaised,
@@ -188,9 +190,9 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
         borderColor: p.border,
         headerSplitColor: 'transparent',
         headerBorderRadius: 0,
-        cellFontSize: 13,
-        cellPaddingBlock: 9,
-        cellPaddingInline: 14,
+        cellFontSize: 14,
+        cellPaddingBlock: 12,
+        cellPaddingInline: 16,
       },
       Segmented: {
         trackBg: p.bgTrack,
@@ -199,7 +201,8 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
         itemSelectedColor: p.onBrand,
         trackPadding: 2,
       },
-      Statistic: { contentFontSize: 26 },
+      Statistic: { contentFontSize: 30 },
+      Alert: { defaultPadding: '9px 16px' },
       Tag: { defaultBg: p.bgRaised, defaultColor: p.textSecondary, fontSizeSM: 12 },
       Descriptions: { labelColor: p.textSecondary, itemPaddingBottom: 12 },
       Progress: { remainingColor: p.bgTrack },

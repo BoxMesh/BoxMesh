@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { Alert, Button, Divider, Form, Input } from 'antd'
 import { Navigate, useLocation, useNavigate, type Location } from 'react-router'
-import { Icon } from '../../components/Icon'
 import Logo from '../../components/Logo'
 import ThemeToggle from '../../components/ThemeToggle'
 import { useNotSupported } from '../../hooks/useNotSupported'
@@ -46,7 +45,7 @@ export default function LoginPage() {
         <div className="login-card">
           <header className="login-head">
             <h1>Sign in</h1>
-            <p>Manage your Windows and Linux fleet from one place.</p>
+            <p>Monitor and reach every machine in your fleet from one place.</p>
           </header>
 
           <Form<Fields> layout="vertical" requiredMark={false} onFinish={(values) => login.mutate(values)}>
@@ -76,20 +75,17 @@ export default function LoginPage() {
               </Form.Item>
             </div>
             <Button type="primary" htmlType="submit" block loading={login.isPending}>
-              Sign in
+              {login.isPending ? 'Signing in…' : 'Sign in'}
             </Button>
           </Form>
 
           <Divider plain>or</Divider>
 
-          <Button block icon={<Icon name="security" size={18} />} onClick={() => notSupported('Company SSO')}>
-            Continue with company SSO
-          </Button>
-          <Button block type="text" onClick={exploreDemo}>
+          {/* The canvas's secondary slot (company SSO there); BoxMesh has no SSO, so the demo takes it. */}
+          <Button block onClick={exploreDemo}>
             Explore the demo
           </Button>
         </div>
-        <p className="login-foot">Every agent connection is mTLS secured.</p>
       </main>
     </div>
   )

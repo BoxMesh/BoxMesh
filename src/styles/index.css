@@ -9,6 +9,7 @@
   --bg-raised: #151a1d;
   --border: #2a3135;
   --border-hover: #3a4247;
+  --border-control: #5f676b;
   --text: #f1efe7;
   --text-secondary: #a7adb0;
   --text-disabled: #7a8287;
@@ -35,6 +36,7 @@
   --bg-raised: #f4f5f0;
   --border: #d6dad0;
   --border-hover: #c3c8bd;
+  --border-control: #8a9188;
   --text: #101416;
   --text-secondary: #4a5256;
   --text-disabled: #6b7377;
@@ -93,10 +95,11 @@ body .app-sider .ant-menu {
   padding-bottom: 16px;
 }
 
-/* Group titles line up with the item icons (8 px margin + 12 px padding). */
+/* Group titles line up with the item icons (8 px margin + 16 px padding), as the canvas sider draws them. */
 body .app-sider .ant-menu-item-group-title {
-  padding: 16px 20px 4px;
-  font-weight: 500;
+  padding: 16px 24px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 /* No weight change on select: it would shift and clip longer labels. */
@@ -130,16 +133,15 @@ body .app-sider .ant-menu-item-selected .ant-menu-item-icon {
   color: var(--text-secondary);
 }
 
-/* Same height and bottom rule as the header, so the top band reads as one line. */
+/* Canvas sider: a 64px brand row with no rule under it, so it need not line up with the 56px header. */
 .brand {
-  height: 56px;
+  height: 64px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 0 20px;
-  border-bottom: 1px solid var(--border);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -209,18 +211,18 @@ body .user .ant-avatar {
 }
 
 /* ---------- Page ---------- */
-/* Spacing follows the sider: 12px gutters, 13px secondary text, rows the height of a menu item. */
+/* Spacing from the design canvas: 16px gutters between blocks, 14px secondary text. */
 .stack {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .page-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -234,8 +236,8 @@ body .user .ant-avatar {
 }
 
 .page-header p {
-  margin: 2px 0 0;
-  font-size: 13px;
+  margin: 4px 0 0;
+  font-size: 14px;
   color: var(--text-secondary);
 }
 
@@ -248,13 +250,13 @@ body .user .ant-avatar {
 .grid-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+  gap: 16px;
 }
 
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
-  gap: 12px;
+  gap: 16px;
 }
 
 .muted {
@@ -267,6 +269,10 @@ body .user .ant-avatar {
 }
 
 /* ---------- Cards ---------- */
+body .ant-card .ant-card-body {
+  padding: 20px 24px;
+}
+
 body .ant-card {
   min-width: 0;
   box-shadow: var(--shadow-card);
@@ -303,7 +309,7 @@ body .stat-link:hover {
 .kv {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
 }
 
 .kv-value {
@@ -313,7 +319,7 @@ body .stat-link:hover {
 }
 
 .meter + .meter {
-  margin-top: 14px;
+  margin-top: 18px;
 }
 
 .meter-label {
@@ -327,8 +333,8 @@ body .stat-link:hover {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  padding: 12px 16px;
+  gap: 12px;
+  padding: 16px 24px;
   border-bottom: 1px solid var(--border);
 }
 
@@ -353,7 +359,8 @@ body .table-card .ant-card-body:first-child {
 }
 
 body .table-card .ant-table-pagination {
-  padding: 0 16px;
+  margin: 0;
+  padding: 16px 24px;
 }
 
 .strong {
@@ -411,9 +418,9 @@ body .ant-table-wrapper .ant-table .ant-table-thead > tr > th {
 }
 
 .row-actions .icon-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
   border-color: transparent;
   background: transparent;
 }
@@ -500,19 +507,22 @@ body .icon-btn[aria-disabled='true'] {
 }
 
 /* ---------- Sign in ---------- */
-/* Lockup, card and footnote stacked over the full-window mesh (LoginBackground); theme toggle top-right.
-   Geometry from the design's SignInDark/SignInLight: 420 card, 32 padding, 20 gap, 44 controls. */
+/* Lockup and card centred over the full-window mesh (LoginBackground), theme toggle top-right.
+   Geometry from the design canvas (Login.dc.html): 420 card, 20 gap, 44 controls with 16px text. The
+   app's own controls stay 32px and 14px; this is a standalone form, sized for a first touch. */
 .login {
   position: relative;
   min-height: 100dvh;
   box-sizing: border-box;
   display: grid;
-  padding: 24px;
   overflow: hidden;
+  /* The mark's nodes sit on the page here, not on a surface. */
+  --logo-ground: var(--bg-page);
 }
 
 .login-toggle {
   position: absolute;
+  z-index: 2;
   top: 24px;
   right: 24px;
 }
@@ -520,24 +530,30 @@ body .icon-btn[aria-disabled='true'] {
 .login-toggle .icon-btn {
   width: 44px;
   height: 44px;
-  border: 1px solid var(--border-hover);
+  border: 1px solid var(--border-control);
   border-radius: 12px;
   background: var(--bg-surface);
   color: var(--text);
+  transition: border-color 150ms;
+}
+
+.login-toggle .icon-btn:hover {
+  border-color: var(--accent);
 }
 
 .login-main {
   position: relative;
+  z-index: 1;
   align-self: center;
   justify-self: center;
   box-sizing: border-box;
-  width: min(100%, 420px);
+  width: 100%;
+  max-width: 452px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  /* Sit slightly above centre, where the eye lands. */
-  padding-bottom: 32px;
+  padding: 72px 16px 32px;
 }
 
 .login .logo {
@@ -553,11 +569,15 @@ body .icon-btn[aria-disabled='true'] {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 32px;
+  padding: clamp(20px, 5vw, 32px);
   border: 1px solid var(--border);
   border-radius: 16px;
   background: var(--bg-surface);
-  box-shadow: var(--shadow-card);
+  box-shadow: inset 0 1px 0 rgba(241, 239, 231, 0.06), 0 30px 60px -20px rgba(0, 0, 0, 0.9);
+}
+
+:root[data-theme='light'] .login-card {
+  box-shadow: 0 1px 0 rgba(16, 20, 22, 0.04), 0 24px 48px -16px rgba(16, 20, 22, 0.18);
 }
 
 .login-head {
@@ -608,28 +628,74 @@ body .icon-btn[aria-disabled='true'] {
   font-weight: 500;
 }
 
-/* Named through .login-card so it outranks the 44px control rule below, not just ties with it. */
-.login-card .login-label .ant-btn {
-  height: auto;
-  padding: 0;
-}
-
-/* 44px controls through the card; the app's default height is 32. */
+/* 44px controls with 16px text through the card. */
 .login-card .ant-input,
 .login-card .ant-input-affix-wrapper,
 .login-card .ant-btn {
   height: 44px;
   border-radius: 12px;
+  font-size: 16px;
 }
 
-/* The password input sits inside a 44px wrapper, so it must not claim that height as well. */
+.login-card .ant-input,
+.login-card .ant-input-affix-wrapper {
+  padding-inline: 14px;
+  background: var(--bg-raised);
+}
+
+/* The password input sits inside a 44px wrapper, so it must not claim that height or padding as well. */
 .login-card .ant-input-affix-wrapper .ant-input {
   height: auto;
+  padding: 0;
+}
+
+.login-card .ant-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.login-card .ant-input:focus,
+.login-card .ant-input-affix-wrapper-focused {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(199, 243, 107, 0.25);
+}
+
+.login-card .ant-input-password-icon {
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+/* Named through .login-label so it outranks the 44px control rule above, not just ties with it. */
+.login-card .login-label .ant-btn {
+  height: auto;
+  padding: 0;
+  font-size: 14px;
+}
+
+.login-card .ant-btn-primary {
+  font-weight: 600;
+  box-shadow: 0 8px 24px -8px rgba(199, 243, 107, 0.55);
+  transition: filter 150ms;
+}
+
+.login-card .ant-btn-primary:not(:disabled):hover {
+  filter: brightness(1.06);
+}
+
+.login-card .ant-btn-primary:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+/* The secondary action under "or": the canvas's ghost button. */
+.login-card .ant-btn-default {
+  font-weight: 500;
+  border-color: var(--border-control);
+  background: var(--bg-raised);
+  color: var(--text);
 }
 
 .login-card .ant-form-item,
-.login-card .ant-divider,
-.login-error {
+.login-card .ant-divider {
   margin: 0;
 }
 
@@ -638,34 +704,25 @@ body .icon-btn[aria-disabled='true'] {
   font-size: 14px;
 }
 
-.login-foot {
+.login-error {
   margin: 0;
-  font-size: 14px;
-  color: var(--text-secondary);
+  padding: 10px 14px;
+  border-radius: 12px;
 }
 
 /* Laptop-height windows (e.g. 1366x657): tighter so the card fits without scrolling. */
 @media (max-height: 800px) {
-  .login {
-    padding-block: 16px;
-  }
-
   .login-main {
     gap: 16px;
-    padding-bottom: 16px;
+    padding-block: 32px 16px;
   }
 
   .login-card {
     gap: 16px;
-    padding: 24px;
   }
 }
 
 @media (max-width: 575px) {
-  .login {
-    padding: 16px;
-  }
-
   .login-toggle {
     top: 16px;
     right: 16px;
@@ -674,151 +731,46 @@ body .icon-btn[aria-disabled='true'] {
   .login .logo {
     font-size: 24px;
   }
-
-  .login-card {
-    padding: 24px 20px;
-  }
 }
 
-/* Background: boxmesh.svg (generated by scripts/generate-boxmesh.mjs), inlined by LoginBackground.tsx. It is drawn
-   in the dark palette; these rules re-map each of its colours (CSS beats SVG presentation attributes), so it follows
-   light mode without a second file. A colour added to the artwork outside this list stays as drawn. */
+/* Background: boxmesh.svg, the canvas's sign-in artwork, inlined by LoginBackground.tsx. It paints with --bm-*
+   variables; the ones the app already has point at its tokens, the rest are the canvas's own values. */
 .login-bg {
   position: absolute;
   inset: 0;
-  --lbg-nebula: #14264a;
-  --lbg-star: #dfe6ff;
-  --lbg-edge: #8ea2c8;
-  --lbg-node: #a9c4ff;
-  --lbg-node-2: #dfe8ff;
-  --lbg-core: #f2ffd6;
-  --lbg-hub: var(--accent);
+  --bm-bg: var(--bg-page);
+  --bm-node: var(--bg-surface);
+  --bm-glyph: var(--text);
+  --bm-mesh: var(--border);
+  --bm-vert: var(--border-hover);
+  --bm-route: var(--border-hover);
+  --bm-orbit: var(--border-hover);
+  --bm-nodestroke: var(--border-hover);
+  --bm-lime: #c7f36b;
+  --bm-info: #7ea2b8;
+  --bm-off: #7a8287;
+  --bm-glow: 0.14;
+  --bm-quiet: 0.9;
 }
 
-/* Light: pale-blue clouds and grey dust keep a hint of sky; nodes and links turn slate so they read on the light page. */
+/* Light: a deeper lime for hubs and packets, which the pale page would wash out. */
 :root[data-theme='light'] .login-bg {
-  --lbg-nebula: #c3d4ee;
-  --lbg-star: #6f86ab;
-  --lbg-edge: #5d7396;
-  --lbg-node: #6f86ab;
-  --lbg-node-2: #8fa1bd;
-  --lbg-core: #8fb83a;
-  --lbg-hub: #8fb83a;
-}
-
-:root[data-theme='light'] .login-bg #mesh-links {
-  stroke-opacity: 0.3;
-}
-
-:root[data-theme='light'] .login-bg #mesh-hub-links {
-  stroke-opacity: 0.45;
+  --bm-lime: #8fb83a;
+  --bm-info: #2f5f7a;
+  --bm-off: #8a9188;
+  --bm-glow: 0.32;
+  --bm-quiet: 0.85;
 }
 
 .login-bg svg {
   display: block;
   width: 100%;
   height: 100%;
-  /* The full-size overlay rects (glow, quiet zone, vignette) sit above the machines and would take the pointer. */
-  pointer-events: none;
 }
 
-.login-bg #os-nodes use {
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.login-bg #os-nodes use:hover {
-  filter: url(#node-glow);
-}
-
-.login-bg [fill='#000000'] {
-  fill: var(--bg-page);
-}
-
-.login-bg [stop-color='#000000'] {
-  stop-color: var(--bg-page);
-}
-
-.login-bg [stop-color='#14264a'] {
-  stop-color: var(--lbg-nebula);
-}
-
-.login-bg [fill='#dfe6ff'] {
-  fill: var(--lbg-star);
-}
-
-.login-bg [stroke='#8ea2c8'] {
-  stroke: var(--lbg-edge);
-}
-
-.login-bg [fill='#a9c4ff'] {
-  fill: var(--lbg-node);
-}
-
-.login-bg [fill='#dfe8ff'] {
-  fill: var(--lbg-node-2);
-}
-
-.login-bg [fill='#f2ffd6'] {
-  fill: var(--lbg-core);
-}
-
-/* Lime: glows and halos keep the brand colour; hubs, hub links and dots take the accent, which darkens in light mode. */
-.login-bg [stop-color='#c7f36b'] {
-  stop-color: var(--brand);
-}
-
-.login-bg [fill='#c7f36b'] {
-  fill: var(--lbg-hub);
-}
-
-.login-bg [stroke='#c7f36b'] {
-  stroke: var(--lbg-hub);
-}
-
-.login-bg [flood-color='#c7f36b'] {
-  flood-color: var(--lbg-hub);
-}
-
-/* One packet per node, hopping along the mesh edges to the panel at the centre: agents only ever
-   dial out. Every route is a <path pathLength="100">, so the same dash travel fits any length.
-   The global reduced-motion rule stops all of them. */
-.login-bg .ping {
-  animation-name: login-ping;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
-
-@keyframes login-ping {
-  from {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
-
-  15% {
-    opacity: 0.9;
-  }
-
-  60% {
-    opacity: 0.9;
-  }
-
-  to {
-    stroke-dashoffset: -100;
-    opacity: 0;
-  }
-}
-
-/* A click on a machine sends one larger packet at once (LoginBackground.tsx sets its duration and removes it).
-   No fade: it vanishes behind the sign-in card, where the route ends. */
-.login-bg .ping-burst {
-  stroke-width: 8;
-  animation: login-ping-burst linear forwards;
-}
-
-@keyframes login-ping-burst {
-  to {
-    stroke-dashoffset: -100;
+@media (prefers-reduced-motion: reduce) {
+  .login-bg .bm-packet {
+    display: none;
   }
 }
 
@@ -1001,7 +953,7 @@ body .terminal-host .xterm-viewport {
   align-items: center;
   gap: 8px;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .screen-spacer {
@@ -1034,7 +986,7 @@ body .terminal-host .xterm-viewport {
 }
 
 .screen-note {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .screen-taskbar {
@@ -1076,7 +1028,7 @@ body .terminal-host .xterm-viewport {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 body .row-off > td {

@@ -122,7 +122,7 @@ export default function DevicesPage() {
     <div className="stack">
       <PageHeader
         title="Devices"
-        subtitle={`${devices.length} Windows and Linux devices enrolled`}
+        subtitle={`${devices.length} devices enrolled`}
         actions={
           <>
             <Button onClick={exportCsv} disabled={rows.length === 0}>
