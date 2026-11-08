@@ -14,8 +14,8 @@
   --text: #f1efe7;
   --text-secondary: #a7adb0;
   --text-disabled: #7a8287;
-  --success-bg: #1a2210;
-  --positive: #c7f36b;
+  --success-bg: #12261a;
+  --positive: #7fd88f;
   --warning: #f5b84a;
   --error: #ff7a6b;
   --code-bg: #090b0c;
@@ -42,8 +42,8 @@
   --text: #101416;
   --text-secondary: #4a5256;
   --text-disabled: #6b7377;
-  --success-bg: #eef6dc;
-  --positive: #3f5a0a;
+  --success-bg: #e6f4ea;
+  --positive: #1f7a3a;
   --warning: #965a00;
   --error: #c4321f;
   --code-bg: #101416;
@@ -343,6 +343,11 @@ body .ant-card-head-title::before {
   border-radius: 3px;
   background: var(--dot);
   box-shadow: var(--glow-dot);
+}
+
+/* Light theme: the lime fill is 1.3:1 against white, so primary buttons get a darker lime edge (3.5:1). */
+:root[data-theme='light'] body .ant-btn-primary:not(:disabled) {
+  border-color: #6f9420;
 }
 
 body .stat-link,

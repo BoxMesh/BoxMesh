@@ -19,7 +19,9 @@ Where things live:
 
 ## 1. Color
 
-One accent only (lime). Status is never told by hue alone: always with a word, a number or an icon.
+One accent only (lime), and lime means **action**: buttons, links, the current selection. "Good" status (online,
+trusted, healthy) is a separate green, so a status never reads as a button. Status is never told by hue alone:
+always with a word, a number or an icon.
 
 ### Base palette
 
@@ -44,13 +46,14 @@ One accent only (lime). Status is never told by hue alone: always with a word, a
 | `text-disabled` | `#7a8287` | `#6b7377` | Menu group titles, offline dot |
 
 Why two lime roles: `#c7f36b` text on white is about 1.3:1, so in light the lime stays a **fill** and the
-darker `#3f5a0a` does every job where lime is text or a thin line.
+darker `#3f5a0a` does every job where lime is text or a thin line. For the same reason, light-theme primary
+buttons get a `#6f9420` edge (3.5:1 on white), or their shape disappears on a white card.
 
 ### Semantic (status) sets: background / border / text
 
 | Status | Dark | Light | Examples |
 |---|---|---|---|
-| Success | `#1a2210` / `#4a5c22` / `#c7f36b` | `#eef6dc` / `#c5df94` / `#3f5a0a` | Trusted cert, online, exit 0, selected rows |
+| Success | `#12261a` / `#2e5a3a` / `#7fd88f` | `#e6f4ea` / `#a8d5b5` / `#1f7a3a` | Online, trusted cert, exit 0, healthy resource meters (`tone.positive`) |
 | Warning | `#2a2010` / `#5c4520` / `#f5b84a` | `#fff4e0` / `#f0cf8f` / `#965a00` | Disk almost full, outdated agent, cert expiring within 30 days |
 | Error | `#2a1412` / `#5c2a24` / `#ff7a6b` | `#fdecea` / `#f2b8ae` / `#c4321f` | Revoked, High CPU/RAM, offline status, exit 1, cert expiring within 7 days |
 | Info | `#142028` / `#2c4250` / `#7ea2b8` | `#e8f2f8` / `#b3d3e6` / `#2f5f7a` | Group tag, running job |
@@ -206,7 +209,7 @@ Gotchas:
 ### Buttons
 | Variant | Look | Hover |
 |---|---|---|
-| Primary | `brand` fill, `on-brand` text, 600, lime glow in dark | `brand-hover` |
+| Primary | `brand` fill, `on-brand` text, 600; lime glow in dark, `#6f9420` edge in light | `brand-hover` |
 | Default | dark: `bg-button` fill; light: white; `border-control` border | border and text turn `accent` |
 | Danger | antd danger, for destructive actions only; always confirmed (Popconfirm) | |
 | Icon (row actions) | 28×28, transparent, `text-secondary`, `aria-label` required | `bg-strong`, `text` |
@@ -229,7 +232,7 @@ A table that ends a card is clipped to the card's bottom corners.
 
 ### Statistic card (Dashboard)
 The whole card is a link. Label (`text-secondary`) → value 26/600 → 12 px footnote.
-Value colour by meaning: lime = online, `text-secondary` = offline, error = alerts.
+Value colour by meaning: success green = online, `text-secondary` = offline, error = alerts.
 Hover: border `border-hover` and a soft shadow. No lift.
 
 ### Table
@@ -237,7 +240,7 @@ Hover: border `border-hover` and a soft shadow. No lift.
 - First column: bold link to detail, or name + 12 px secondary sub-line (Users). MAC and serial in mono `<code>`.
 - Filters live in the column headers (antd filter dropdowns), not in a bar above.
 - Devices: an offline row drops to `text-secondary`. The Status column is a small outlined button with the word
-  (Online lime, Offline red); clicking pings the agent, and it spins while waiting. The last column is three icon
+  (Online green, Offline red); clicking pings the agent, and it spins while waiting. The last column is three icon
   links (terminal, desktop, files), `aria-disabled` with a tooltip when the device is offline.
 - Users: an account that can't sign in drops to `text-secondary` (no opacity).
 - Pagination: page size 10, range text `1–10 / 12`, hidden on a single page.
@@ -258,10 +261,10 @@ Underline tabs (Device detail: Overview · Connection): active = `accent` text +
 Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with links.
 
 ### Progress (Average resources)
-Track `bg-track`; fill `accent`. Label row above: name left, value right.
+Track `bg-track`; fill success green, warning above the threshold. Label row above: name left, value right.
 
 ### Timeline (Recent activity)
-Ring per event: lime = normal, error = failure or offline. Time 12 px secondary below.
+Ring per event: success green = normal, error = failure or offline. Time 12 px secondary below.
 
 ### Drawer
 Forms open in a drawer from the right (Enroll agent, New job, Create token, Invite person). An issued secret stays on
