@@ -1,399 +1,377 @@
 # BoxMesh — Design System
 
-Source of truth: the **BoxMesh – System Design (Ant Design)** canvas
+Origin: the **BoxMesh – System Design (Ant Design)** canvas
 (https://claude.ai/artifact/5TYshytP6kBopBmewcPMv5), 15 artboards designed at 1440 px wide.
-This file records its tokens, components and screens so the UI can be built without reopening the canvas.
-If the two disagree, the canvas wins; update this file.
+The app has since moved away from the canvas in places: a light theme, a more compact spacing scale, a new
+sign-in page and logo. **This file records what the app does now.** Where the canvas and this file disagree,
+this file wins; where the code and this file disagree, fix one of them.
 
-Look in one line: **dark, near-black UI with a single lime accent**, Geist type, soft 12–16 px corners,
-deep shadows and a lime glow on primary actions. Built on **Ant Design 6** (dark algorithm) with plain antd
+Look in one line: **near-black (or warm off-white) UI with a single lime accent**, Geist type, soft 12–16 px
+corners, deep shadows and a lime glow on primary actions in dark. Built on **Ant Design 6** with plain antd
 `Layout` + `Menu` (the canvas names Ant Design 5 / ProLayout; v6 is used because it supports React 19 without a patch).
+
+Where things live:
+- `src/config/theme.ts`: both palettes and `buildTheme(mode)`, the antd theme. `tone.*` gives inline status colours.
+- `src/styles/index.css`: the same palette as CSS variables (`:root` dark, `:root[data-theme='light']`), plus
+  everything antd has no token for.
 
 ---
 
 ## 1. Color
 
+One accent only (lime). Status is never told by hue alone: always with a word, a number or an icon.
+
 ### Base palette
 
-| Token | Hex | Used for |
-|---|---|---|
-| `primary` | `#c7f36b` | Primary buttons, active menu item's icon, links, focus ring, "online", selected segment |
-| `primary-hover` | `#d8ff8a` | Primary button hover |
-| `on-primary` | `#090b0c` | Text/icons on lime; code & terminal background |
-| `bg-page` | `#000000` | Page background (layout) |
-| `bg-surface` | `#101416` | Cards, Sider, Header, inputs' parent surfaces |
-| `bg-raised` | `#151a1d` | Table header, row hover, input fill, segmented track, progress track, upload area |
-| `bg-button` | `#1b2124` | Default (secondary) button fill |
-| `border` | `#2a3135` | Card borders, table dividers, header/sider dividers |
-| `border-hover` | `#3a4247` | Card border on hover, desktop frame |
-| `border-control` | `#5f676b` | Inputs, selects, default buttons, default tags |
-| `text` | `#f1efe7` | Primary text (warm off-white) |
-| `text-secondary` | `#a7adb0` | Labels, captions, breadcrumbs, idle menu items |
-| `text-disabled` | `#7a8287` | Offline dot, dashed placeholders |
+| Token | Dark | Light | Used for |
+|---|---|---|---|
+| `brand` | `#c7f36b` | `#c7f36b` | Lime fills: primary buttons, selected segment, checkbox, avatar, step numbers |
+| `brand-hover` | `#d8ff8a` | `#b8e65a` | Primary button hover |
+| `on-brand` | `#090b0c` | `#090b0c` | Text and icons on lime |
+| `accent` | `#c7f36b` | `#3f5a0a` | Lime as **text or line**: links, active tab, pagination, focus ring, active menu icon, card-title dot. antd `colorPrimary` |
+| `bg-page` | `#000000` | `#f4f5f0` | Page background |
+| `bg-surface` | `#101416` | `#ffffff` | Cards, sider, header |
+| `bg-raised` | `#151a1d` | `#f4f5f0` | Table header, row hover, input fill, icon buttons |
+| `bg-button` | `#1b2124` | `#eef0ec` | Default button fill (dark; light buttons are white) |
+| `bg-hover` | `#1b2124` | `#eceee8` | Menu item hover |
+| `bg-strong` | `#232b2f` | `#e2e6da` | Selected menu item; hover on buttons that sit on an already-hovered row; account button hover |
+| `bg-track` | `#151a1d` | `#eceee9` | Segmented track, progress track |
+| `border` | `#2a3135` | `#d6dad0` | Card borders, table dividers, header and sider rules |
+| `border-hover` | `#3a4247` | `#c3c8bd` | Card and stat-card border on hover |
+| `border-control` | `#5f676b` | `#8a9188` | Inputs, selects, default buttons |
+| `text` | `#f1efe7` | `#101416` | Primary text |
+| `text-secondary` | `#a7adb0` | `#4a5256` | Labels, captions, breadcrumbs, idle menu items, offline rows |
+| `text-disabled` | `#7a8287` | `#6b7377` | Menu group titles, offline dot |
 
-### Semantic (status) sets — each has background / border / text
+Why two lime roles: `#c7f36b` text on white is about 1.3:1, so in light the lime stays a **fill** and the
+darker `#3f5a0a` does every job where lime is text or a thin line.
 
-| Status | Background | Border | Text / solid | Examples in design |
-|---|---|---|---|---|
-| Success | `#1a2210` | `#4a5c22` | `#c7f36b` | Valid cert, running, exit 0, bulk-selection bar bg |
-| Warning | `#2a2010` | `#5c4520` | `#f5b84a` | Disk full, outdated agent, "N days left", disk > 70 % |
-| Error | `#2a1412` | `#5c2a24` (hover `#8a3e34`) | text `#ff8a7a`, solid `#ff7a6b` | Revoked, high CPU, exit 1, timeout, alert count |
-| Info / processing | `#142028` | `#2c4250` | `#7ea2b8` | Group tag, Running job, WebSocket, terminal prompt |
-| Neutral | `#151a1d` | `#5f676b` | `#a7adb0` | Free-form tag, Heartbeat lost, View only, HTTP |
+### Semantic (status) sets: background / border / text
 
-Rules: one accent only (lime). Status is never told by hue alone — always with a word, a number or an icon.
+| Status | Dark | Light | Examples |
+|---|---|---|---|
+| Success | `#1a2210` / `#4a5c22` / `#c7f36b` | `#eef6dc` / `#c5df94` / `#3f5a0a` | Trusted cert, online, exit 0, selected rows |
+| Warning | `#2a2010` / `#5c4520` / `#f5b84a` | `#fff4e0` / `#f0cf8f` / `#965a00` | Disk almost full, outdated agent, cert expiring within 30 days |
+| Error | `#2a1412` / `#5c2a24` / `#ff7a6b` | `#fdecea` / `#f2b8ae` / `#c4321f` | Revoked, High CPU/RAM, offline status, exit 1, cert expiring within 7 days |
+| Info | `#142028` / `#2c4250` / `#7ea2b8` | `#e8f2f8` / `#b3d3e6` / `#2f5f7a` | Group tag, running job |
+| Neutral | `bg-raised` / `border-control` / `text-secondary` | same roles | Free-form tag, "Heartbeat lost", "Every group" |
 
-### Light theme (added in the app, not on the canvas)
+Light warning was `#b26b00` until it failed contrast (3.9:1 on its own tag background); `#965a00` clears 5:1.
+Every text colour above clears 4.5:1 on the surface it sits on, in both themes. Check a new one before using it.
 
-**How it switches**
-- The default follows the OS setting (`prefers-color-scheme`). The sun/moon button in the header overrides it, and the choice is saved in `localStorage` as `boxmesh-theme`.
+### Theme switching
+- The default follows the OS (`prefers-color-scheme`). The sun/moon button in the header overrides it; the choice is
+  saved in `localStorage` as `boxmesh-theme`.
 - An inline script in `index.html` sets `<html data-theme>` before the first paint, so a light visit never flashes black.
-- Switching animates: the new theme spreads as a circle from the toggle's centre (View Transitions API, 550 ms,
+- Switching animates: the new theme spreads as a circle from the toggle (View Transitions API, 550 ms,
   `cubic-bezier(0.2, 0, 0, 1)`). Browsers without the API, and reduced-motion users, switch instantly.
-- `src/config/theme.ts` `buildTheme(mode)` builds the antd theme; `src/styles/index.css` has the CSS variables under `:root[data-theme='light']`.
+- `ThemeProvider` also sets `<meta name="theme-color">` (`#101416` dark, `#ffffff` light) for the window title bar.
 
-**Two roles for lime**
-- **Fills keep the brand lime `#c7f36b` with `#090b0c` text** in both themes: primary buttons, the selected segment, checkboxes, the avatar and step numbers.
-- **Text and lines use a darker lime `#4d7c0f`** in light (5:1 on white), because `#c7f36b` text on white is about 1.3:1. This covers links, the active tab, pagination, focus rings, the active menu icon, the card-title dot and positive values. It is antd's `colorPrimary` in light mode.
-
-| Token | Light value |
-|---|---|
-| `bg-page` / `bg-surface` / `bg-raised` | `#f3f4f1` / `#ffffff` / `#f6f7f4` |
-| `border` / `border-hover` / `border-control` | `#e2e5e0` / `#c9cec7` / `#a9b0ac` |
-| `text` / `text-secondary` / `text-disabled` | `#15191b` / `#545c60` / `#6b7377` |
-| Success (bg / border / text) | `#eef6dc` / `#c5df94` / `#4d7c0f` |
-| Warning | `#fff4e0` / `#f0cf8f` / `#b26b00` |
-| Error | `#fdecea` / `#f2b8ae` / `#c4321f` |
-| Info | `#e8f2f8` / `#b3d3e6` / `#2b6c8f` |
-
-**Other differences in light**
-- Shadows are soft and offset, with no glows.
-- Code blocks stay dark (`#15191b`).
-- Tooltips are dark with white text.
-- Inline status colours in components use `tone.*` from `theme.ts` (CSS variables), never hex values.
+**Other differences in light**: shadows are soft with no glows; code blocks stay dark (`#101416`); tooltips are dark with white text.
 
 ---
 
 ## 2. Typography
 
-- UI font: **Geist** (400/500/600/700) → fallback `'Geist Fallback', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif`
-- Mono font: **Geist Mono** (400/500) → fallback `'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace`
-- Loaded from Google Fonts.
+- UI font: **Geist** (400/500/600/700) → `'Geist Fallback', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif`
+- Mono font: **Geist Mono** (400/500) → `'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace`
+- Loaded from Google Fonts. Tables use `font-variant-numeric: tabular-nums`, so dates, IPs and counts line up.
 
 | Role | Size / line-height | Weight | Notes |
 |---|---|---|---|
 | Page title (h1) | 20 / 28 | 600 | letter-spacing −0.01em |
-| Card title (h2) | 16 / 24 | 600 | prefixed by lime square dot (see Card) |
-| Body | 14 / 22 | 400 | default for everything |
-| Buttons, links | 14 | 500 (primary 600) | |
-| Statistic value | 30 / 38 | 600 | colored by meaning |
-| Secondary metric | 20 / 28 | 600 | |
-| Caption, tag, table sub-line | 12 / 16–20 | 400 | `text-secondary` |
-| Sider item | 13 / 32 | 400 | |
-| Sider group title | 12 / 16 | 500 | sentence case, `text-disabled` |
-| Inline code | 13 | 400 | Geist Mono |
-| Code block / terminal | 12 / 20 | 400 | Geist Mono |
-| Badge count | 11 / 16 | 400 | |
+| Card title | 14 | 600 | prefixed by the 8 px card-title dot |
+| Body, table cells, page subtitle | 14 / 22 | 400 | default for everything |
+| Buttons | 14 | 500 (primary 600) | |
+| Statistic value | 26 | 600 | coloured by meaning |
+| Table header | 12 | 600 | uppercase, letter-spacing 0.06em, `text-secondary`, with a 14 px icon |
+| Caption, tag, sub-line | 12 | 400 | `text-secondary` |
+| Sider item | 13 / 32 | 400 | 14 would clip "Security & Certificates" in the 216 px sider |
+| Sider group title | 12 / 16 | 400 | uppercase, letter-spacing 0.04em, `text-disabled` |
+| Inline code (MAC, serial) | 13 | 400 | Geist Mono |
+| Logo word on sign-in | 30 / 36 (24 under 576 px) | 600 | letter-spacing −0.02em |
+
+Nothing is smaller than 12 px.
 
 ---
 
 ## 3. Shape, spacing, size, elevation
 
-**Radius**
-- 12 px — buttons, inputs, selects, menu items, icon buttons, code blocks (base radius)
-- 16 px — cards/sections, alerts, statistic cards, upload area, desktop frame (large)
-- 10 px — tags, segmented items (small)
-- pill (100px) — progress bars, badges; 50 % — avatar, status dots
-- 3–4 px — card-title dot, inline code
+**Radius**: 12 px base (buttons, inputs, menu items, icon buttons, code) · 16 px large (cards, alerts, sign-in card)
+· 10 px small (tags, segmented items) · 8 px row icon buttons · 50 % avatar and dots · 3 px card-title dot.
 
-**Spacing**
-- Content padding 24; gap between blocks 16; card header `16px 24px`; card body `20px 24px`
-- Table cell `12px 16px` (compact tables, e.g. Files: `10px 16px`)
-- Grid gaps 16 (blocks) / `16px 24px` (descriptions)
+**Spacing**: one compact 4 px scale for the whole app, sign-in included.
+- Content padding 20 (16 under 576 px); gap between blocks 12.
+- Card header 44 tall, padding 16; card body 16. Tables inside cards run edge to edge (body padding 0).
+- Table cells `8px 12px`; pagination and filter bars `12px 16px`.
+- Page header: title, 2 px, subtitle; actions on the right.
 
 **Control sizes**
-- Control height **32** (buttons, inputs, selects, pagination, table icon buttons 32×32)
-- Segmented item 28; add-tag button 22; menu item 32; header 56; sider logo row 56
-- Icons: 14 in inputs, 16 in menu/tables/buttons, 18 in header, 28 logo
+- Control height **32** (buttons, inputs, selects, pagination, icon buttons 32×32; row icon buttons 28×28).
+- Menu item 32; header 56; sider logo row 56.
+- Hit area at least 24 px. Smaller antd controls (switch, table filter icon, password eye, link buttons, breadcrumb
+  links) keep their drawn size and get an invisible `::before` that extends the hit area by 6 px on each side.
 
-**Elevation & effects** (these are not Ant Design defaults — add them in theme/CSS)
-- Card: `inset 0 1px 0 rgba(241,239,231,.06), 0 24px 48px -16px rgba(0,0,0,.9)`; border → `#3a4247` on hover (200 ms)
-- Header: `0 1px 0 rgba(241,239,231,.04), 0 12px 24px -12px rgba(0,0,0,.8)`
-- Primary button glow: `0 0 0 1px rgba(199,243,107,.4), 0 8px 24px -8px rgba(199,243,107,.55)`
-- Danger solid glow: `0 8px 24px -8px rgba(255,122,107,.55)`
-- Default button: `inset 0 1px 0 rgba(241,239,231,.1), 0 4px 12px -4px rgba(0,0,0,.9)`
-- Transitions: 150 ms on background, color, border-color, opacity
-- Focus: `outline: 2px solid #c7f36b; outline-offset: 2px` on `:focus-visible`
+**Elevation and effects** (not antd defaults; they live in `theme.ts` and `index.css`)
+- Card (dark): `inset 0 1px 0 rgba(241,239,231,.06), 0 24px 48px -16px rgba(0,0,0,.9)`;
+  light: `0 1px 0 rgba(16,20,22,.04), 0 24px 48px -16px rgba(16,20,22,.18)`.
+- Header (dark): `0 1px 0 rgba(241,239,231,.04), 0 12px 24px -12px rgba(0,0,0,.8)`.
+- Primary button glow (dark): `0 0 0 1px rgba(199,243,107,.4), 0 8px 24px -8px rgba(199,243,107,.55)`.
+- Focus: `outline: 2px solid` accent, `outline-offset: 2px`, on `:focus-visible`.
+
+**Motion** (everything is switched off under `prefers-reduced-motion`)
+- Transitions 150 ms on background, colour and border colour.
+- Page enter: on every navigation the page's top-level blocks rise 8 px and fade in, 320 ms
+  `cubic-bezier(0.2, 0.8, 0.2, 1)`, 40 ms apart (capped at 160 ms). Filter and paging changes don't replay it.
+- The page spinner shows only if loading lasts longer than 150 ms.
+- Overlays (drawer, dropdown, modal) use antd's own motion.
 
 ---
 
 ## 4. Ant Design theme mapping
 
-Implemented in `src/config/theme.ts` (`theme.darkAlgorithm` + the tokens below); `src/styles/index.css` mirrors the palette as
-CSS variables and adds the effects antd has no token for (card shadow and title dot, active menu icon).
+`buildTheme(mode)` uses `darkAlgorithm` or `defaultAlgorithm` with the palette of §1.
 
-Gotchas found while building:
-- `colorTextLightSolid` is set dark (text on lime), so anything that draws it on a dark surface must be reset:
-  `Tooltip.colorTextLightSolid`, `Layout.triggerColor`.
+| Token | Value |
+|---|---|
+| `colorPrimary` / `colorLink` | `accent` |
+| `colorSuccess` / `Warning` / `Error` / `Info` (+ `Bg`, `Border`) | the semantic sets of §1 |
+| `colorTextLightSolid` | `#090b0c` dark, `#ffffff` light |
+| `colorBgLayout` / `colorBgContainer` | `bg-page` / `bg-surface` |
+| `colorBgElevated` | `bg-raised` dark, `bg-surface` light |
+| `colorBorder` / `colorBorderSecondary` | `border-control` / `border` |
+| `borderRadius` / `LG` / `SM` | 12 / 16 / 10 |
+| `controlHeight` / `fontSize` | 32 / 14 |
+| `Layout` | sider and header `bg-surface`, header 56, padding `0 24px` |
+| `Menu` | 13 px, item 32, radius 12, margin `2px 8px`, padding 12, hover `bg-hover`, selected `bg-strong` |
+| `Button` | primary = `brand` fill with `on-brand` text; default hover turns border and text `accent` |
+| `Card` | header 44 / 14 px / padding 16, body 16 |
+| `Table` | header and row hover `bg-raised`, cells 14 px `8px 12px`, selected rows `success-bg` |
+| `Segmented` | track `bg-track`, padding 2, selected `brand` with `on-brand` text |
+| `Statistic` | 26 px |
+| `Alert` | `8px 12px`, with description `12px 16px` |
+| `Tag` | default `bg-raised` / `text-secondary`, 12 px; `variant="outlined"` set once on `ConfigProvider` |
+
+Gotchas:
+- `colorTextLightSolid` is dark in dark mode (text on lime), so `Tooltip.colorTextLightSolid` and
+  `Layout.triggerColor` are reset.
 - The checkbox tick uses `colorWhite` (reset to `#090b0c`), and `Checkbox.borderRadiusSM` is 4, or the
   global 10 px turns the box into a circle.
-- antd 6 `Tag` defaults to `variant="filled"` (no border); the app sets `outlined` once on `ConfigProvider`.
-
-| Ant Design token | Value |
-|---|---|
-| `colorPrimary` / `colorSuccess` / `colorLink` | `#c7f36b` |
-| `colorTextLightSolid` (text on primary) | `#090b0c` |
-| `colorWarning` | `#f5b84a` |
-| `colorError` | `#ff7a6b` |
-| `colorInfo` | `#7ea2b8` |
-| `colorBgLayout` | `#000000` |
-| `colorBgContainer` | `#101416` |
-| `colorBgElevated` (popups — not drawn in canvas, assumed) | `#151a1d` |
-| `colorFillSecondary` | `#151a1d` |
-| `colorBorder` | `#5f676b` |
-| `colorBorderSecondary` | `#2a3135` |
-| `colorText` / `colorTextSecondary` | `#f1efe7` / `#a7adb0` |
-| `borderRadius` / `borderRadiusLG` / `borderRadiusSM` | 12 / 16 / 10 |
-| `controlHeight` / `fontSize` | 32 / 14 |
-| `fontFamily` / `fontFamilyCode` | Geist stack / Geist Mono stack |
-| `Layout`: `siderBg`, `headerBg`, `headerHeight` | `#101416`, `#101416`, 56 |
-| `Menu`: `fontSize`, `itemHeight`, `itemSelectedBg`, `itemSelectedColor` | 13, 32, `#1b2124`, `#f1efe7` (icon lime via CSS) |
-| `Table`: `headerBg`, `rowHoverBg` | `#151a1d`, `#151a1d` |
-| `Segmented`: `itemSelectedBg`, `itemSelectedColor`, `trackBg` | `#c7f36b`, `#090b0c`, `#151a1d` |
+- antd fades a loading button to 65 % opacity; the devices status button resets that, or its word fails contrast.
 
 ---
 
 ## 5. Layout
 
-**App shell** (ProLayout, side menu)
-- Sider 216 px, `bg-surface`, right border `border`. Content area takes the rest.
-- Header min-height 56, `bg-surface`, bottom border, padding `8px 24px`:
-  breadcrumb left (`BoxMesh / Page`, current page in `text`), right side: search (240 px, leading icon),
-  notification bell (36×36, red count badge `#ff7a6b` / `#090b0c`), avatar (28 px lime circle with initial) + username.
-- Page body: padding 24, vertical stack with gap 16.
+**App shell**
+- Sider 216 px, `bg-surface`, right `border`. Below 992 px it collapses to zero width; antd's trigger opens it,
+  parked in the header's left corner.
+- Header 56, `bg-surface`, bottom border: breadcrumb on the left (`BoxMesh / Page`, current page in `text`); on the right a
+  240 px search (hidden under 576 px), the theme toggle and the account button (28 px lime avatar + name; the menu holds
+  the email and "Sign out").
+- The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "BoxMesh" root is dropped.
+- Page body: padding 20, vertical stack, gap 12.
 
-**Page header**: h1 + one-line subtitle (`text-secondary`) on the left, actions on the right (wrap on narrow screens).
+**Page header**: h1 + one-line subtitle on the left, actions on the right; wraps on narrow screens.
 
-**Responsive** (pages are fluid, not fixed 1440)
-- Shell wraps: Sider stacks above content on narrow widths.
-- Card grids: `repeat(auto-fit, minmax(min(100%, 420px), 1fr))`; statistic grid `minmax(220px, 1fr)`; descriptions `minmax(240px, 1fr)`.
-- Tables scroll horizontally inside their card (`overflow-x: auto`), cells `nowrap`.
-- Toolbars and button rows wrap.
+**Responsive** (pages are fluid)
+- Card grids: `repeat(auto-fit, minmax(min(100%, 420px), 1fr))`; statistic grid `minmax(220px, 1fr)`.
+- Tables scroll horizontally inside their card.
+- Button rows wrap.
 
 ---
 
 ## 6. Components
 
-### Sider menu (compact — redesigned in the app, replaces the canvas's lime-pill version)
-- Logo row: 56 px tall with a bottom `border`, so it lines up with the header and the top band reads as one line.
-  Hexagon stroke icon (lime, 22 px) + "BoxMesh" 15/600, padding `0 20px`.
-- Group title: 12/16, weight 500, sentence case, `text-disabled`, padding `16px 20px 4px`. It is aligned with the item icons.
-- Item: 13 px text, height 32, margin `1px 8px`, padding `0 12px`, radius 8, gap 10, 16 px icon.
-  - Idle: `text-secondary`, no fill. Hover: `bg-raised` fill, `text`.
-  - Active: `bg-button` `#1b2124` fill, `text` colour, lime icon, a 1 px inset top highlight, and `aria-current="page"`.
-  - No weight change on select, so labels don't shift or clip.
-  - Unbuilt modules use `text-disabled`.
+### Logo (`src/components/Logo.tsx`)
+- `LogoMark`: a hexagonal cage drawn in strokes, 6 node rings at the corners, a lime core. Node fills use
+  `--logo-ground` (default `bg-surface`; the sign-in page sets it to `bg-page`), so the rings read as holes on any ground.
+- `Logo`: mark + "Box**Mesh**" (Mesh in `accent`). Sider uses 24 px, sign-in 40 px.
 
-### Buttons (height 32, padding `0 15px`, radius 12)
+### Favicon and app icons
+- `public/favicon.svg`: transparent, drawn for 16 px (solid nodes and heavier strokes than the logo). Its colours follow
+  the **browser's** colour scheme through a `prefers-color-scheme` rule inside the SVG, not the app's theme toggle:
+  dark mark `#101416` with core `#8fb83a` on light tab bars, cream `#f1efe7` with core `#c7f36b` on dark ones.
+- `public/pwa-192.png`, `pwa-512.png`: full-bleed `#101416` tile with the mark at 72 %, so one file serves "any" and
+  "maskable". Manifest `background_color` is `#101416`.
+
+### Sider menu
+- Logo row 56 tall with a bottom `border`, padding `0 20px`, so it lines up with the header.
+- Group title: uppercase, `text-disabled`, padding `12px 20px 4px`, aligned with the item icons.
+- Item: 13 px, height 32, radius 12, 16 px icon.
+  - Idle `text-secondary`. Hover `bg-hover`, `text`.
+  - Active: `bg-strong` fill, `text`, `accent` icon, 1 px inset highlight, `aria-current="page"`.
+  - No weight change on select, so labels don't shift or clip.
+
+### Buttons
 | Variant | Look | Hover |
 |---|---|---|
-| Primary | lime fill, `#090b0c` text, 600, lime glow | `#d8ff8a` |
-| Default | `#1b2124` fill, `#5f676b` border, `text` | border + text turn lime |
-| Danger (outline) | `#2a1412` fill, `#8a3e34` border, `#ff8a7a` text | `#3a1a16` fill, `#ff8a7a` border |
-| Danger (solid) | `#ff7a6b` fill, `#090b0c` text, 600, red glow — only for "Disconnect"-type actions | |
-| Icon (in tables) | 32×32, `#151a1d` fill, `#2a3135` border, `aria-label` required | border + icon turn lime |
-| Text link | lime text, 500 | `text` color |
+| Primary | `brand` fill, `on-brand` text, 600, lime glow in dark | `brand-hover` |
+| Default | dark: `bg-button` fill; light: white; `border-control` border | border and text turn `accent` |
+| Danger | antd danger, for destructive actions only; always confirmed (Popconfirm) | |
+| Icon (row actions) | 28×28, transparent, `text-secondary`, `aria-label` required | `bg-strong`, `text` |
+| Icon (header, back) | 32×32, `bg-raised`, `border` | |
 
-Danger actions (delete, disable, revoke, restore) are confirmed with Popconfirm.
+One primary per screen area. A row of the same destructive action (e.g. "Revoke" on every certificate) uses the
+default button; red appears only on the confirm.
 
 ### Inputs
-- Height 32, padding `0 11px` (select `0 8px`), border `#5f676b`, radius 12, fill `#151a1d`, text `text`, placeholder `text-secondary`.
-- Search inputs have a 14 px leading magnifier icon.
-- Filter labels sit inline to the left of selects (`OS`, `Group`, `Status`) in `text-secondary`; form labels sit above fields with gap 4.
+Height 32, radius 12, `border-control`; placeholder `text-secondary`. No leading icon, except the header search.
+Form labels sit above fields.
 
-### Segmented control (time range, shell, OS)
-Track `#151a1d`, padding 2, gap 2, radius 12. Items height 28, padding `0 12px`, radius 10, idle `text-secondary`.
-Selected: lime fill, `#090b0c`, 600, `aria-pressed="true"`.
+### Segmented control (time range, shell)
+Track `bg-track`, padding 2. Selected: `brand` fill, `on-brand`, 600.
 
-### Card / section
-`bg-surface`, 1 px `border`, radius 16, card shadow, hover border `#3a4247`.
-Header `16px 24px` with bottom border; title 16/600 prefixed by an 8×8 lime square (radius 3, glow `0 0 10px rgba(199,243,107,.6)`);
-optional right-side link ("All", "Audit log"). Body padding `20px 24px`.
+### Card
+`bg-surface`, 1 px `border`, radius 16, card shadow. Header 44 with bottom border; title 14/600 prefixed by an
+8×8 `accent` square (radius 3, lime glow in dark); optional link on the right ("All devices").
+A table that ends a card is clipped to the card's bottom corners.
 
-### Statistic card (Dashboard KPI)
-Whole card is a link. Padding `20px 24px`. Label (`text-secondary`) → value 30/38/600 → footnote 12 px.
-Value color by meaning: lime = good/online, `text-secondary` = offline/neutral, `#ff7a6b` = alerts.
+### Statistic card (Dashboard)
+The whole card is a link. Label (`text-secondary`) → value 26/600 → 12 px footnote.
+Value colour by meaning: lime = online, `text-secondary` = offline, error = alerts.
+Hover: border `border-hover` and a soft shadow. No lift.
 
-### Table (ProTable)
-- Header cells `#151a1d`, 600, `12px 16px`, bottom border; rows hover `#151a1d`.
-- First column: bold link to detail + 12 px secondary sub-line (alias, etc.). Technical values (MAC, serial) in mono `<code>`.
-- Status column: 6 px dot + word — Online `#c7f36b`; Offline `#7a8287` with secondary text.
-- Last column: row of 32×32 icon buttons (Terminal, Desktop, Files, `⋯` more).
-- **Bulk bar** when rows are selected: strip under the filters, bg `#1a2210`, padding `10px 24px`, "**N** devices selected" + link actions.
-- **Pagination**: right-aligned, range text `1–8 / 48` in secondary; items min 32×32 radius 12; current page has lime border + lime text.
+### Table
+- Header `bg-raised`, 12 px uppercase with an icon per column; rows hover `bg-raised`.
+- First column: bold link to detail, or name + 12 px secondary sub-line (Users). MAC and serial in mono `<code>`.
+- Filters live in the column headers (antd filter dropdowns), not in a bar above.
+- Devices: an offline row drops to `text-secondary`. The Status column is a small outlined button with the word
+  (Online lime, Offline red); clicking pings the agent, and it spins while waiting. The last column is three icon
+  links (terminal, desktop, files), `aria-disabled` with a tooltip when the device is offline.
+- Users: an account that can't sign in drops to `text-secondary` (no opacity).
+- Pagination: page size 10, range text `1–10 / 12`, hidden on a single page.
+
+### Certificate expiry (`src/components/CertExpiry.tsx`)
+The date in `dd Mon yyyy`, coloured by `certTone` (`src/utils/devices.ts`): red within 7 days, amber within 30, plain
+otherwise or when revoked. No "N days left" text in the cell; the count is in the tooltip and `aria-label`.
+Used on Security & Certificates and on Device detail. The Dashboard alert lists certificates within 30 days and turns
+red when any is within 7.
 
 ### Tag
-Padding `0 7px`, 12/20, radius 10, 1 px border, colors from the semantic sets (§1).
-"Add tag" = 22 px dashed-border button (`#5f676b`), text `+ Tag`.
+12 px, radius 10, outlined, colours from the semantic sets. "+ Tag" is a dashed default-size tag button.
 
 ### Tabs
-- **Underline tabs** (device detail, security): gap 28, item padding `10px 0`; active = lime text + 2 px lime bottom border; idle = `text`.
-- **Vertical section nav** (settings): card container padding 8, items padding `9px 16px`, radius 12; active = `#1a2210` fill + lime text.
+Underline tabs (Device detail: Overview · Connection): active = `accent` text + 2 px underline.
 
-### Alert (banner)
-`role="alert"`, warning set: bg `#2a2010`, border `#5c4520`, radius 16, padding `9px 16px`, 16 px warning icon, message, action link right.
+### Alert
+Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with links.
 
-### Progress
-Track 8 px pill `#151a1d`; fill lime; switches to `#f5b84a` above a threshold (design: disk > 70 %). Label row above: name left, value right.
-Use `role="progressbar"` with `aria-valuenow`.
+### Progress (Average resources)
+Track `bg-track`; fill `accent`. Label row above: name left, value right.
 
-### Timeline (recent activity)
-10 px ring (2 px border): lime = normal event, `#ff7a6b` = failure/offline. Text with bold entity names, time 12 px secondary below.
+### Timeline (Recent activity)
+Ring per event: lime = normal, error = failure or offline. Time 12 px secondary below.
 
-### Descriptions
-`<dl>` grid (`minmax(240px, 1fr)`, gap `16px 24px`), `dt` in `text-secondary`, `dd` margin 0.
+### Drawer
+Forms open in a drawer from the right (Enroll agent, New job, Create token, Invite person). An issued secret stays on
+screen in the drawer with a "Copy" button until the drawer closes.
 
-### Drawer / Modal
-Same surface as cards (`bg-surface`, border, radius 16). Multi-step content uses numbered steps:
-24 px lime circle with 12 px `#090b0c` number + 600 title.
-Specimens: "Drawer · Enroll new agent" (Devices), "Modal · Register web application" (Remote Service).
+### Code block and terminal
+Code block: bg `#090b0c` dark / `#101416` light, Geist Mono, radius 12. Terminal: xterm.js on the same background.
 
-### Code block & terminal
-- Code block: bg `#090b0c`, Geist Mono 12/20, radius 12, padding `12px 14px`, horizontal scroll, "Copy" default button below.
-- Terminal: xterm.js area on `#090b0c`, min-height 460; prompt in `#7ea2b8` mono; input transparent.
-- Command history list: mono command, then `user · time` left and result right — lime for `running` / `exit 0`, `#ff8a7a` for `exit 1` / `timeout`.
-- Inline code (docs): 13 px, bg `#151a1d`, border `#2a3135`, radius 4, padding `1px 5px`.
+### Date formats
+`dd Mon yyyy` (e.g. `06 Dec 2026`) and `dd Mon yyyy, HH:mm`, always two-digit days, so a column lines up.
+Relative times ("4 min ago") for last seen and activity.
 
-### Remote desktop frame
-bg `#090b0c`, border `#3a4247`, radius 16, `aspect-ratio: 16 / 9`, max-height 640,
-shadow `0 0 0 4px #101416, 0 30px 60px -20px rgba(0,0,0,.9)`.
+### Not-yet-available actions
+Actions EdgePanel has no endpoint for (update agent, disable device, edit tags, save thresholds) stay visible and
+toast "<Doing something> isn't available yet." They never fake success.
 
-### Upload (dragger)
-Label-wrapped area, column centered, padding `24px 16px`, 1 px dashed `#5f676b`, radius 16, bg `#151a1d`.
-
-### Not-yet-available features (added in the app, not on the canvas)
-Entry points to unbuilt modules stay visible but muted. There is no "Soon" badge; the owner rejected it.
-- **Menu:** items use `text-disabled` `#7a8287` (4.7:1 on the sider) and still open the module's page.
-- **Device tabs and buttons:** tabs get a muted label. Buttons are disabled with a tooltip "<Module> isn't available yet".
-- **Row icon buttons:** `aria-disabled="true"`, not `disabled`, so they stay focusable and keep their tooltip.
-- **Module page** (`src/components/NotSupported.tsx`):
-  - Shows the module's own icon in a 72 px raised circle, the title "<Module> isn't available yet", and the module's one-line summary from `src/config/nav.ts`.
-  - Its primary button is "Go to Devices"; inside a device tab it is "Back to overview" instead.
-- **Stubbed actions:** they toast "<Doing something> isn't available yet." and never fake success.
-
-### Sign-in page (added in the app, not on the canvas)
+### Sign-in page (`/login`)
 `/login` is public; every other route sends a signed-out visitor there and returns them to the page they asked for.
-- Layout: the theme pill ("Light mode / Dark mode") top-right; centred, slightly above centre: the logo mark
-  (56 px tile, lime border, glow, pulsing ring) with "BoxMesh" under it, then the form card.
-- Background: `src/assets/boxmesh.svg`, generated by `scripts/generate-boxmesh.mjs` (fixed seeds; edit the script and
-  re-run, never the SVG) and inlined full-window by `src/pages/login/LoginBackground.tsx`. A constellation graph:
-  ~95 scattered nodes, 10 lime hubs with halos and many spokes, node size by link count, faint night-blue nebulae
-  and star dust, a lime glow and a darkened quiet zone behind the card, and a vignette. 20 icons (8 Windows, 8 Linux
-  on ordinary nodes, 4 internet clouds on hubs) sit outside the quiet zone; each sends a lime packet along the
-  shortest mesh route to the panel at the centre. Hovering an icon glows it; clicking sends an extra, larger packet.
-  The artwork is drawn in the dark palette; `.login-bg` rules in `index.css` re-map each of its colours to theme
-  tokens or `--lbg-*` variables (light: pale-blue clouds, grey dust, slate nodes and links, dark-lime hubs), so light
-  mode needs no second file. Keep new artwork colours inside that list, or add a rule.
-- Card: `bg-surface`, radius 24, padding 36. h1 "Welcome back" 32/40/600, subtitle, large (40 px) fields,
-  full-width primary button with an arrow.
-- Windows under 800 px tall get a tighter card; below 576 px the page padding drops to 16.
-- The session lives in `sessionStorage`, so it ends with the browser. Signing out from the avatar menu
-  clears it and the query cache.
+- Full-window artwork (`src/assets/boxmesh.svg`, the canvas's sign-in art, inlined by `LoginBackground.tsx`): a mesh
+  lattice, lime hubs, OS tiles with status dots, and packets travelling along routes to the panel (SMIL, hidden under
+  reduced motion). It paints with `--bm-*` variables defined on `.login-bg`, mapped to theme tokens, so one file
+  serves both themes.
+- Theme toggle top-right. Centred: the 40 px logo lockup, then a 400 px card (padding 16, gap 12) on the same scale as
+  the rest of the app: 32 px controls, 14 px text.
+- Card: "Sign in" + "Manage all your devices in one place.", Email, Password with "Forgot password?" on its label row,
+  primary "Sign in" ("Signing in…" while sending), a divider "or", and a default "Explore the demo" button.
+- "Forgot password?" turns the same card into "Reset password": the password row and the demo block fold away
+  (250 ms height and fade), the heading fades in, the button reads "Send reset link", and "Back to sign in" folds in.
+  Folded blocks are `inert`. Success shows "Check your inbox" without saying whether the account exists.
+- The session lives in `sessionStorage`, so it ends with the browser tab.
+
+### Already open (`src/components/AlreadyOpen.tsx`)
+A second tab or window shows a full-page notice with the logo mark instead of the app, until the first one closes
+(Web Lock in `src/utils/singleInstance.ts`).
 
 ### Icons
-Inline stroke icons: 24 viewBox, stroke 2, round caps and joins, `currentColor`. No emoji.
-Set used by the menu: dashboard, devices (monitor), terminal (prompt), desktop (pointer), files (folder),
-web (globe), jobs (checklist), security (shield-check), users, audit (document), settings (gear).
+Inline stroke icons in `src/components/Icon.tsx`: 24 viewBox, stroke 2, round caps and joins, `currentColor`.
+Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 
 ---
 
-## 7. Accessibility rules (as drawn)
+## 7. Accessibility rules
 
 - Real `<button>`, `<a href>`, `<input>` + `<label>`; no clickable divs.
-- Every icon-only control has `aria-label` (e.g. "Terminal PC-001", "Notifications, 3 new").
-- `aria-current="page"` on active menu item, tab and pagination page; `aria-pressed` on segmented items.
-- Decorative SVG `aria-hidden="true"`.
-- Visible lime focus ring on `:focus-visible`.
+- Every icon-only control has an `aria-label` (e.g. "Open a terminal on ACC-PC-01").
+- `aria-current="page"` on the active menu item; decorative SVG `aria-hidden="true"`.
+- Visible focus ring on `:focus-visible`.
+- Text at least 4.5:1 in both themes; status never by colour alone; hit areas at least 24 px.
+- Disabled-looking controls that must still explain themselves use `aria-disabled` + tooltip, not `disabled`.
 
 ---
 
-## 8. Navigation & screens
+## 8. Navigation and screens
 
-**Roles**: Admin · Operator · Viewer (plus per-device permissions: `terminal`, `desktop`; per-app access for web apps).
+**Roles**: Admin · Operator · Viewer (plus per-device permissions for terminal and desktop).
 
 **Sider groups**
-- Overview — Dashboard, Devices
-- Remote — Remote Terminal, Remote Desktop, Remote Files, Remote Service
-- Operations — Command & Jobs, Audit & Alerts
-- Admin — Security & Certificates, Users & Access, System Settings
+- Overview: Dashboard, Devices
+- Remote: Remote Terminal, Remote Desktop, Remote Files, Remote Service
+- Operations: Command & Jobs, Audit
+- Admin: Security & Certificates, Users & Access, System Settings
 
-| # | Module | Route | Key Ant Design components | Minimum access |
-|---|---|---|---|---|
-| 1 | Dashboard | `/dashboard` | Statistic, Card, Progress, Table, Timeline, Alert | Viewer |
-| 2 | Devices | `/devices`, `/devices/:id` | Table + filters, Tag, Badge, Drawer (enroll), Descriptions, Tabs | Viewer reads · Operator tags/groups · Admin deletes/disables/updates agents |
-| 3 | Remote Terminal | `/remote-terminal`, per device `/devices/:id?tab=terminal` | Segmented (PowerShell/CMD/Bash), xterm.js in Card, timeout InputNumber, cancel Button, history List | `terminal` on device |
-| 4 | Remote Desktop | `/remote-desktop`, per device `/devices/:id?tab=desktop` | Canvas stream, resolution Select, clipboard Switch, disconnect Popconfirm, session Table | `desktop` on device |
-| 5 | Remote Files | `/remote-files`, per device `/devices/:id?tab=files` | Breadcrumb, Table, Upload.Dragger, Progress, rename Modal, delete Popconfirm | Viewer browses · Operator writes |
-| 6 | Remote Service | `/remote-services`, per device `/devices/:id?tab=web`; EdgePanel proxy `/web/:agent/:app/*` | App Table, register Modal, copyable URL, session Table, revoke Popconfirm | Per-app access |
-| 7 | Metrics | `/devices/:id?tab=metrics` | Card + charts, time-range Segmented, threshold InputNumber | Viewer |
-| 8 | Command & Jobs | `/jobs`, `/jobs/:id` | Table, status Badge, Form, agent/group Select, DatePicker + cron, Progress | Operator |
-| 9 | Agent tunnel | `/devices/:id?tab=connection` | Latency/session Descriptions, connection history Table | Viewer |
-| 10 | Security & Certificates | `/security/certificates`, `/security/tokens` | Tabs, Table, expiry Tag, token Modal, revoke Popconfirm | Admin |
-| 11 | Users & Access | `/users`, `/roles` | Table, Checkbox matrix (Admin/Operator/Viewer), device/group Transfer | Admin |
-| 12 | Audit & Notifications | `/audit`, `/notifications` | Tabs, Table + RangePicker, notification List, Badge | Admin (Operator sees own) |
-| 13 | System Settings | `/settings` | Section nav, Form, InputNumber, Switch, health-check Table, backup Button | Admin |
-
-Device detail tabs (as drawn): Overview · Terminal · Desktop · Files · Web Apps · Connection.
-The sitemap also lists a Metrics tab (`?tab=metrics`) that is not in the drawn tab bar.
-
-Security tabs: Agent certificates · Enrollment tokens · Certificate Authority · Sign-in sessions.
+| Screen | Route | What is on it |
+|---|---|---|
+| Sign in | `/login` | Sign-in card, password reset, demo entry |
+| Dashboard | `/dashboard` | Time range; cert alert; Total / Online / Offline stat cards; Average resources; Connection status; Devices needing attention; Recent activity |
+| Devices | `/devices` | Table with header filters, ping status, row remote actions; Export CSV; Enroll agent drawer |
+| Device detail | `/devices/:id` | Back, name, alias, status, group; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); tabs Overview (device information, connection card, alert thresholds) and Connection |
+| Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
+| Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
+| Remote Files | `/remote-files?host=` | Device picker, file table, upload |
+| Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
+| Command & Jobs | `/jobs` | Job table (click a row for per-host results), New job drawer |
+| Audit | `/audit` | Searchable log |
+| Security & Certificates | `/security/certificates` | Agent certificates (expiry, revoke), Enrollment tokens, Create token drawer |
+| Users & Access | `/users` | Role cards; people table with role select, reach, last sign-in, active switch; Invite drawer |
+| System Settings | `/settings` | Agents and retention, Panel health, Backup and restore |
 
 ---
 
-## 9. Backend contract the UI expects (proposed in the canvas — owned by EdgePanel, not implemented yet)
+## 9. Backend contract
 
-| Method | Endpoint | Purpose |
-|---|---|---|
-| GET | `/api/devices` | List, filter by OS / group / tag / status |
-| PATCH | `/api/devices/{id}` | Rename, tag, group, disable |
-| POST | `/api/devices/{id}/agent-update` | Remote agent update |
-| POST | `/api/enrollment-tokens` | Create enrollment token |
-| GET | `/api/devices/{id}/metrics?range=1h` | CPU / RAM / Disk / Network history |
-| GET · PUT · DELETE | `/api/devices/{id}/fs?path=` | Browse, rename, delete |
-| POST | `/api/jobs`, `/api/jobs/{id}/cancel`, `/retry` | Jobs |
-| CRUD | `/api/web-apps` | Web apps on agents |
-| POST | `/api/certificates/{serial}/revoke` | Revoke certificate |
-| GET | `/api/audit` | Paginated audit log |
+EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
+(all under `VITE_API_URL`, default `/api`): `/log-in`, `/log-out`, `/forgot-password` (placeholder name), `/devices`
+and `/devices/{host}` with `/connections`, `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
+`/enrollment-tokens`, `/certificates`, `/metrics/summary`, `/sessions/summary`, `/jobs`, `/audit`, `/users`,
+`/settings`, `/health`. EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
 
-Realtime: `/ws/events` (online/offline, alerts, job status), `/ws/terminal/{sessionId}`, `/ws/desktop/{sessionId}`,
-`/ws/metrics/{deviceId}`; chunked upload `/api/devices/{id}/fs/upload`; reverse proxy `/web/{agent}/{app}/*`.
-
-EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure.
+Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, `/ws/desktop/{id}`); internal web apps go
+through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
 
 ---
 
 ## 10. Frontend stack
 
-Canvas suggestion: React + TypeScript · Ant Design 5 · @ant-design/pro-components (ProLayout, ProTable) ·
-React Router · TanStack Query · xterm.js · @ant-design/charts.
+Vite + React 19 + TypeScript · Ant Design 6 · React Router · axios + TanStack Query · xterm.js · vite-plugin-pwa ·
+Vitest · oxlint.
 
-In use now: Vite + React 19 + TypeScript · Ant Design 6 · React Router · axios + TanStack Query · vite-plugin-pwa ·
-Vitest. Add xterm.js with the terminal, charts with the metrics tab.
+Data flow: page → `services/queries.ts` (query keys) → `services/*Service.ts` (axios) → EdgePanel.
+Demo mode (`services/demo.ts`) swaps the axios adapter for one that answers every endpoint from `demoData.ts`, so
+no screen has a demo-only branch.
 
-Data flow: page → `services/queries.ts` (TanStack Query keys) → `services/*Service.ts` (axios) → EdgePanel `/api`.
-There is no mock data: endpoints EdgePanel doesn't serve yet surface as the page's error state.
-
-PWA: installable (`manifest` in `vite.config.ts`), one window at a time — `launch_handler: focus-existing` for the
-installed app, plus a Web Lock (`src/utils/singleInstance.ts`) that blocks a second browser tab until the first closes.
+PWA: installable (manifest in `vite.config.ts`), one window at a time: `launch_handler: focus-existing` for the
+installed app, plus the Web Lock for browser tabs.
 
 ---
 
 ## 11. Open points
 
 1. Architecture artboard says "EdgeAgent (Go)"; the repo's EdgeAgent is C# / .NET.
-2. Storage is marked "PostgreSQL? – TBD"; the repo uses PostgreSQL + Redis.
-3. Some UI copy mixes Vietnamese into English ("Reconnect trong 24h", "CPU cao", "multiplex qua tunnel") — pick one language.
-4. Popup surfaces (dropdown, popconfirm, tooltip) are not drawn; `colorBgElevated #151a1d` is an assumption.
-5. Charts (Metrics tab) are named but not drawn — colors for series still to define.
-6. Icons: the canvas's stroke paths live in `src/components/Icon.tsx`; add new ones there in the same style
-   (24 viewBox, stroke 2, round caps) rather than mixing in Ant Design's icon set.
+2. Charts (a Metrics tab) are named in the canvas but not drawn or built; series colours are still to define.
+3. No translation layer yet (PRODUCT.md, Language).
+4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with a lime icon.

@@ -91,6 +91,8 @@ export default function JobsPage() {
           scroll={{ x: 'max-content' }}
           expandable={{
             rowExpandable: (j) => j.results.length > 0,
+            // The whole row toggles it: antd's plus button alone is a 17px target.
+            expandRowByClick: true,
             expandedRowRender: (j) => (
               <div className="job-results">
                 {j.results.map((r) => (

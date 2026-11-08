@@ -19,7 +19,7 @@ export default function ConnectionCard({ device: d }: { device: Device }) {
 
   return (
     <Card title="Tunnel and connection history" styles={{ body: { padding: 0 } }}>
-      <div className="kv" style={{ padding: '20px 24px' }}>
+      <div className="kv" style={{ padding: 16 }}>
         <div>
           <div className="muted">Latency</div>
           <div className="kv-value">{d.online ? `${d.latencyMs} ms` : '—'}</div>

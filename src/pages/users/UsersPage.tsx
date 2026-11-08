@@ -13,8 +13,6 @@ const ROLES: { value: Role; label: string; help: string }[] = [
   { value: 'Operator', label: 'Operator', help: 'Runs commands and opens remote sessions' },
   { value: 'Viewer', label: 'Viewer', help: 'Read-only' },
 ]
-const ROLE_COLOR: Record<Role, string> = { Admin: 'error', Operator: 'processing', Viewer: 'default' }
-
 export default function UsersPage() {
   const [{ data: accounts }, { data: devices }] = useSuspenseQueries({ queries: [usersQuery, devicesQuery] })
   const { message } = App.useApp()
@@ -72,7 +70,7 @@ export default function UsersPage() {
       key: 'scope',
       render: (_, a) =>
         a.scope.length === 0 ? (
-          <Tag color={ROLE_COLOR[a.role]}>Every group</Tag>
+          <Tag>Every group</Tag>
         ) : (
           a.scope.map((g) => <Tag key={g}>{g}</Tag>)
         ),

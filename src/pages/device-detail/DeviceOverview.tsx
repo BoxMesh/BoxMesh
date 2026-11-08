@@ -1,13 +1,13 @@
 import { Button, Card, Descriptions, Form, InputNumber, Tag, type DescriptionsProps } from 'antd'
+import CertExpiry from '../../components/CertExpiry'
 import { useNotSupported } from '../../hooks/useNotSupported'
 import type { Device } from '../../types/device'
 import { THRESHOLDS } from '../../utils/devices'
-import { daysLeft, daysLeftLabel, formatDate, formatDateTime } from '../../utils/time'
+import { formatDateTime } from '../../utils/time'
 import ConnectionCard from './ConnectionCard'
 
 export default function DeviceOverview({ device: d }: { device: Device }) {
   const notSupported = useNotSupported()
-  const certDays = daysLeft(d.certExpires)
   const info: DescriptionsProps['items'] = [
     { key: 'host', label: 'Hostname', children: d.host },
     { key: 'os', label: 'Operating system', children: `${d.os} ${d.osVersion} · ${d.osArchitecture}` },
@@ -31,7 +31,7 @@ export default function DeviceOverview({ device: d }: { device: Device }) {
       label: 'Certificate',
       children: (
         <>
-          Expires {formatDate(d.certExpires)} {certDays <= 14 ? <Tag color="warning">{daysLeftLabel(certDays)}</Tag> : null}
+          Expires{' '}<CertExpiry iso={d.certExpires} />
         </>
       ),
     },

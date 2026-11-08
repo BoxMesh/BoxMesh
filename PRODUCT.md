@@ -8,7 +8,7 @@ web
 
 ## Users
 
-The internal IT team of a single company. They self-host EdgePanel on the company's own VPS and use BoxMesh to look after the company's office PCs and servers (Windows and Linux), which sit behind NAT and firewalls across departments and sites.
+The internal IT team of a single company. They self-host EdgePanel on the company's own VPS and use BoxMesh to look after the company's office PCs and servers (Windows, Linux and macOS), which sit behind NAT and firewalls across departments and sites.
 
 Roles:
 - **Admin**: everything, plus users and access, certificates, enrollment and system settings.
@@ -19,7 +19,7 @@ Their job: know which machines are healthy, find the ones that need attention, r
 
 ## Product Purpose
 
-EdgeTunnel lets a company's IT team monitor and remotely operate its own fleet of Windows and Linux machines from one web portal. BoxMesh is that portal, and it talks only to EdgePanel.
+EdgeTunnel lets a company's IT team monitor and remotely operate its own fleet of machines from one web portal. BoxMesh is that portal, and it talks only to EdgePanel.
 
 Success means an operator can:
 - see the fleet's health at a glance;
@@ -42,8 +42,11 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 1. An admin creates an enrollment token.
 2. EdgeAgent is installed on the machine with that token.
 3. The agent generates its private key and a CSR.
-4. An admin approves the request.
+4. An admin approves the request (or the token approves automatically).
 5. EdgePanel signs the certificate and the mTLS tunnel opens.
+
+**Certificates**
+- Expiry is flagged the same way on every screen: amber within 30 days, red within 7. A revoked certificate is never flagged.
 
 **Remote access and usage**
 - Internal web apps on agent machines (e.g. Grafana, in-house dashboards) are reached through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
@@ -52,31 +55,38 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 ## Capabilities and Constraints
 
 **Built in BoxMesh**
-- Dashboard, the Devices list, and Device detail (overview and connection history).
-- Every screen calls the real EdgePanel API; there is no mock-data mode. EdgePanel serves only sign-in so far, so the other screens show an error until their endpoints exist.
+- Every module has a screen: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Desktop, Remote Files, Remote Service, Command & Jobs, Audit, Security & Certificates, Users & Access, System Settings.
+- Sign-in with email and password, and a "Forgot password?" form that requests a reset email.
+- Dark and light themes: the OS setting by default, switchable in the header.
 
-**Planned modules** (shown in the UI as not yet available)
-- Remote Terminal (PowerShell, CMD, Bash), Remote Desktop, Remote Files, Remote Service (web apps).
-- Metrics, Command & Jobs, Security & Certificates, Users & Access (RBAC), Audit & Notifications, System Settings.
+**What works end to end**
+- EdgePanel serves only sign-in and sign-out (`POST /log-in`, `POST /log-out`) so far. Every other screen calls its real endpoint and shows that screen's error state until EdgePanel has it.
+- The password-reset request posts to `/forgot-password`, a route EdgePanel does not have yet; the name is a placeholder.
+- Remote Desktop has no video stream yet; the frame says so.
+- A few actions are stubbed (updating or disabling a device, editing tags, saving thresholds): they say "<action> isn't available yet." and never fake success.
+
+**Demo mode**
+- "Explore the demo" on the sign-in page runs the whole console against a sample fleet of 12 machines, with no backend. It swaps the shared HTTP adapter, so the demo runs the same screens and services as the real panel.
+- Changes made in the demo live in memory and are gone on reload. The demo ends with the browser tab or on sign-out.
 
 **EdgePanel API**
 - REST under `/api`. Responses are wrapped as `{ data }` on success and `{ error }` on failure.
-- Realtime runs over WebSocket (`/ws/events`, `/ws/terminal/{id}`, …).
+- Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, …).
 - The product owner builds EdgeAgent and EdgePanel. BoxMesh work must not change them.
 
 **Language**
-- The UI ships in English and Vietnamese, switchable by the user, with English as the default.
+- The goal: the UI ships in English and Vietnamese, switchable by the user, with English as the default.
+- Today it is English only, with copy written straight into the components; there is no translation layer yet.
 - Technical terms (agent, heartbeat, mTLS, CSR, token) may stay in English in both languages.
 
 **Undecided**
-- How users sign in.
 - Where metrics history is stored.
 - Licensing and distribution.
 
 ## Brand Commitments
 
 - Names: EdgeTunnel (the platform), EdgeAgent, EdgePanel, BoxMesh.
-- The owner's design canvas pins the visual direction, and `Design.md` records it.
+- The owner's design canvas set the visual direction; `Design.md` records it and every change made since.
 
 ## Evidence on Hand
 
@@ -90,4 +100,4 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 2. **Every remote action goes through the agent tunnel and respects roles and per-device permissions.** Trust decisions (approving an agent, revoking a certificate) show enough identity to decide on, and ask for confirmation.
 3. **Show the true state.** Unbuilt features, offline machines and stale data are labelled as such, and success is never faked.
 4. **Built for fleets of hundreds.** Finding, filtering and acting on many machines at once is the normal case, not the exception.
-5. **Every string is translatable.** English and Vietnamese ship together, with no hard-coded copy.
+5. **Every string is translatable.** English and Vietnamese ship together, with no hard-coded copy. (Not met yet: see Language above.)

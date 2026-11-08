@@ -7,6 +7,7 @@
   --bg-page: #000000;
   --bg-surface: #101416;
   --bg-raised: #151a1d;
+  --bg-strong: #232b2f;
   --border: #2a3135;
   --border-hover: #3a4247;
   --border-control: #5f676b;
@@ -34,6 +35,7 @@
   --bg-page: #f4f5f0;
   --bg-surface: #ffffff;
   --bg-raised: #f4f5f0;
+  --bg-strong: #e2e6da;
   --border: #d6dad0;
   --border-hover: #c3c8bd;
   --border-control: #8a9188;
@@ -42,7 +44,7 @@
   --text-disabled: #6b7377;
   --success-bg: #eef6dc;
   --positive: #3f5a0a;
-  --warning: #b26b00;
+  --warning: #965a00;
   --error: #c4321f;
   --code-bg: #101416;
   --code-text: #f1efe7;
@@ -164,7 +166,31 @@ body .app-header {
   box-shadow: var(--shadow-header);
 }
 
+/* The trail stays on one line: a long last crumb is cut with an ellipsis instead of wrapping. */
+body .app-header .ant-breadcrumb {
+  min-width: 0;
+}
+
+body .app-header .ant-breadcrumb ol {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+body .app-header .ant-breadcrumb li:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Narrow headers drop the "BoxMesh" root crumb; the logo already says it. */
+@media (max-width: 700px) {
+  body .app-header .ant-breadcrumb li:nth-child(-n + 2) {
+    display: none;
+  }
+}
+
 .header-tools {
+  flex: none;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -191,7 +217,7 @@ body .header-search {
 
 .user:hover,
 .user[aria-expanded='true'] {
-  background: var(--bg-raised);
+  background: var(--bg-strong);
 }
 
 .user-name {
@@ -325,14 +351,13 @@ body .stat-link:hover {
   color: inherit;
 }
 
-/* The stat cards are links: lift on hover so they read as clickable. */
+/* The stat cards are links: a stronger edge and shadow on hover so they read as clickable. */
 .stat-link .ant-card {
-  transition: border-color 150ms, transform 150ms, box-shadow 150ms;
+  transition: border-color 150ms, box-shadow 150ms;
 }
 
 .stat-link:hover .ant-card {
   border-color: var(--border-hover);
-  transform: translateY(-2px);
   box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.35);
 }
 
@@ -388,6 +413,13 @@ body .table-card .ant-card-body:first-child {
   overflow: hidden;
 }
 
+/* A table that ends a titled card would square off its bottom corners; clip it to the card's. */
+body .ant-card-body:last-child:has(.ant-table-wrapper) {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+  overflow: hidden;
+}
+
 /* .ant-pagination too: antd's own margin rule carries three classes and would win over two. */
 /* Even-width figures, so dates, IPs and counts line up down a column. */
 body .ant-table {
@@ -423,11 +455,34 @@ body .table-card .ant-table-pagination.ant-pagination {
 }
 
 body .ant-table-wrapper .ant-table .ant-table-thead > tr > th {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-secondary);
+}
+
+/* A row's status button spins while it waits; antd also fades a loading button, which drops the word
+   below readable contrast. The spinner already says "waiting". */
+body .status-btn.ant-btn-loading {
+  opacity: 1;
+}
+
+/* Small antd controls keep their drawn size; an invisible ::before widens what can be hit to 24px or more. */
+body .ant-input-password-icon,
+body .login-label .ant-btn,
+body .app-header .ant-breadcrumb a {
+  position: relative;
+}
+
+body .ant-table-filter-trigger::before,
+body .ant-switch::before,
+body .ant-input-password-icon::before,
+body .login-label .ant-btn::before,
+body .app-header .ant-breadcrumb a::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
 }
 
 /* The devices table has no Status column: an online row reads at full strength, an offline one
@@ -465,8 +520,9 @@ body .row-actions .icon-btn {
   color: var(--text-secondary);
 }
 
+/* The row under it is already --bg-raised on hover, so the button steps up once more. */
 .row-actions .icon-btn:hover {
-  background: var(--bg-raised);
+  background: var(--bg-strong);
 }
 
 body .row-actions .icon-btn:hover {
@@ -1071,6 +1127,8 @@ body .terminal-host .xterm-viewport {
   font-size: 14px;
 }
 
-body .row-off > td {
-  opacity: 0.55;
+/* An account that can't sign in steps back to the secondary text colour: readable (7:1), just quieter. */
+body .row-off > td,
+body .row-off > td .strong {
+  color: var(--text-secondary);
 }

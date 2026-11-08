@@ -1,6 +1,12 @@
 import type { Device, DeviceFilter, Issue, OsFamily } from '../types/device'
 import { daysLeft, MINUTE } from './time'
 
+// Certificate expiry bands, the same on every screen: red within a week, amber within a month.
+export const CERT_SOON_DAYS = 30
+export function certTone(days: number): 'error' | 'warning' | undefined {
+  return days <= 7 ? 'error' : days <= CERT_SOON_DAYS ? 'warning' : undefined
+}
+
 // Default per-device alert thresholds (percent), as drawn on the device detail screen.
 export const THRESHOLDS = { cpu: 90, ram: 90, disk: 85 }
 
@@ -38,7 +44,7 @@ export function summarize(list: Device[], now = Date.now()) {
     staleOffline: list.filter((d) => !d.online && now - Date.parse(d.lastSeen) > 10 * MINUTE).length,
     attention,
     expiringCerts: list
-      .filter((d) => daysLeft(d.certExpires, now) <= 14)
+      .filter((d) => daysLeft(d.certExpires, now) <= CERT_SOON_DAYS)
       .toSorted((a, b) => Date.parse(a.certExpires) - Date.parse(b.certExpires)),
     avgLatency: online.length ? Math.round(online.reduce((sum, d) => sum + d.latencyMs, 0) / online.length) : 0,
   }

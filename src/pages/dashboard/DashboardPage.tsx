@@ -8,7 +8,7 @@ import { tone } from '../../config/theme'
 import { devicesQuery, recentActivityQuery, remoteSessionsQuery, resourceUsageQuery } from '../../services/queries'
 import type { TimeRange } from '../../types/dashboard'
 import type { Device, Issue } from '../../types/device'
-import { summarize } from '../../utils/devices'
+import { CERT_SOON_DAYS, certTone, summarize } from '../../utils/devices'
 import { ago, daysLeft, daysLeftLabel } from '../../utils/time'
 
 type AttentionRow = Issue & { device: Device }
@@ -60,14 +60,14 @@ export default function DashboardPage() {
 
       {certs.length > 0 ? (
         <Alert
-          type="warning"
+          type={certs.some((d) => certTone(daysLeft(d.certExpires)) === 'error') ? 'error' : 'warning'}
           showIcon
           icon={<Icon name="warning" />}
           title={
             <>
               {certs.length === 1
-                ? 'An agent certificate expires within 14 days: '
-                : `${certs.length} agent certificates expire within 14 days: `}
+                ? `An agent certificate expires within ${CERT_SOON_DAYS} days: `
+                : `${certs.length} agent certificates expire within ${CERT_SOON_DAYS} days: `}
               {certs.slice(0, CERT_NAMES_SHOWN).map((d, i) => (
                 <Fragment key={d.host}>
                   {i > 0 ? ', ' : null}

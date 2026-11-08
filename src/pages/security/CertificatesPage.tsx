@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
-import { Alert, App, Button, Card, Checkbox, Drawer, Form, Popconfirm, Select, Table, Tag, Tooltip, type TableProps } from 'antd'
+import { Alert, App, Button, Card, Checkbox, Drawer, Form, Popconfirm, Select, Table, Tag, type TableProps } from 'antd'
 import { useState } from 'react'
+import CertExpiry from '../../components/CertExpiry'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
-import { tone } from '../../config/theme'
 import { createToken, revokeCertificate, type NewToken } from '../../services/adminService'
 import { certificatesQuery, devicesQuery, tokensQuery } from '../../services/queries'
 import type { Certificate, EnrollmentToken } from '../../types/admin'
-import { daysLeft, daysLeftLabel, formatDate } from '../../utils/time'
+import { daysLeft, formatDate } from '../../utils/time'
 
 const LIFETIMES = [
   { value: '1h', label: '1 hour' },
@@ -52,20 +52,7 @@ export default function CertificatesPage() {
     {
       title: <Th icon="clock" label="Expires" />,
       key: 'expires',
-      render: (_, c) => {
-        const days = daysLeft(c.expiresAt)
-        // A revoked certificate's expiry no longer matters, so it is never flagged.
-        const color = c.revoked ? undefined : days <= 7 ? tone.error : days <= 30 ? tone.warning : undefined
-        if (!color) return formatDate(c.expiresAt)
-        // Colour is the only mark in the cell, so the count rides along for hover and screen readers.
-        return (
-          <Tooltip title={daysLeftLabel(days)}>
-            <span style={{ color }} aria-label={`${formatDate(c.expiresAt)}, ${daysLeftLabel(days)}`}>
-              {formatDate(c.expiresAt)}
-            </span>
-          </Tooltip>
-        )
-      },
+      render: (_, c) => <CertExpiry iso={c.expiresAt} revoked={c.revoked} />,
     },
     {
       title: <Th icon="pulse" label="Status" />,
@@ -83,7 +70,8 @@ export default function CertificatesPage() {
           okButtonProps={{ danger: true }}
           onConfirm={() => revoke.mutate(c.host)}
         >
-          <Button size="small" danger disabled={c.revoked}>
+          {/* Neutral in the row so ten red buttons don't outshout the dates; red stays on the confirm. */}
+          <Button size="small" disabled={c.revoked}>
             Revoke
           </Button>
         </Popconfirm>

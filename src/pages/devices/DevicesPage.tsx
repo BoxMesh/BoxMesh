@@ -207,6 +207,7 @@ function StatusButton({ device }: { device: Device }) {
         loading={waiting || ping.isPending}
         onClick={() => ping.mutate()}
         aria-label={waiting ? `Waiting for ${device.host} to report in` : `${state} — ping ${device.host}`}
+        className="status-btn"
         style={{ color, borderColor: color }}
       >
         {state}

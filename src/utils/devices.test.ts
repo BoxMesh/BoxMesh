@@ -9,7 +9,7 @@ const iso = (offsetMs: number) => fromNow(offsetMs, NOW)
 const base: Device = {
   host: 'PC-001', alias: 'Front desk', os: 'Windows 11 Pro', osVersion: '24H2', osArchitecture: 'x64', osFamily: 'Windows',
   ip: '192.168.1.11', mac: 'AA:BB:CC:00:00:01', online: true, agentVersion: 'v1.4.2', agentOutdated: false,
-  group: 'Office', tag: 'floor 1', lastSeen: iso(-5_000), enrolledAt: iso(-DAY), certExpires: iso(30 * DAY),
+  group: 'Office', tag: 'floor 1', lastSeen: iso(-5_000), enrolledAt: iso(-DAY), certExpires: iso(90 * DAY),
   cpu: 10, ram: 10, disk: 10, latencyMs: 20,
   hardware: { cpu: '', ram: '', disk: '', uptime: '' },
 }

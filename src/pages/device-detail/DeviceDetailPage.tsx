@@ -1,5 +1,5 @@
 import { usePrefetchQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { Alert, Button, Result, Tabs, Tag } from 'antd'
+import { Alert, Button, Dropdown, Result, Tabs, Tag } from 'antd'
 import { Link, useParams, useSearchParams } from 'react-router'
 import { Icon } from '../../components/Icon'
 import Status from '../../components/Status'
@@ -48,17 +48,31 @@ export default function DeviceDetailPage() {
           <Tag color="processing">{device.group}</Tag>
         </div>
         <div className="page-actions">
-          {REMOTE.map((feature) => (
+          {/* The terminal is what people open a device for, so it leads; rare actions wait in the menu. */}
+          {REMOTE.map((feature, i) => (
             <Link key={feature.path} to={`${feature.path}?host=${encodeURIComponent(device.host)}`}>
-              <Button icon={<Icon name={feature.icon} size={14} />} disabled={!device.online}>
+              <Button
+                type={i === 0 ? 'primary' : 'default'}
+                icon={<Icon name={feature.icon} size={14} />}
+                disabled={!device.online}
+              >
                 {feature.label.replace('Remote ', '')}
               </Button>
             </Link>
           ))}
-          <Button onClick={() => notSupported('Updating agents')}>Update agent</Button>
-          <Button danger onClick={() => notSupported('Disabling devices')}>
-            Disable
-          </Button>
+          <Dropdown
+            trigger={['click']}
+            placement="bottomRight"
+            menu={{
+              items: [
+                { key: 'update', label: 'Update agent' },
+                { key: 'disable', label: 'Disable', danger: true },
+              ],
+              onClick: ({ key }) => notSupported(key === 'update' ? 'Updating agents' : 'Disabling devices'),
+            }}
+          >
+            <Button icon={<Icon name="more" size={14} />} aria-label="More actions" />
+          </Dropdown>
         </div>
       </div>
 
