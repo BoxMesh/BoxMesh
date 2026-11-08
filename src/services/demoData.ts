@@ -201,7 +201,14 @@ export const rootFor = (host: string) => (devices.find((d) => d.host === host)?.
 export function listFiles(host: string, path: string): FileListing {
   const windows = devices.find((d) => d.host === host)?.osFamily === 'Windows'
   const tree = windows ? WINDOWS_TREE : LINUX_TREE
-  return { path, entries: tree[path] ?? [] }
+  // Machines of one OS share a tree; a per-host twist (older copy, or missing) gives "Compare folders" something to find.
+  const entries = (tree[path] ?? []).flatMap((entry) => {
+    if (entry.kind === 'folder') return [entry]
+    const twist = [...host + entry.name].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) % 3
+    if (twist === 2) return []
+    return [twist === 1 ? { ...entry, modified: new Date(Date.parse(entry.modified) - 2 * DAY).toISOString() } : entry]
+  })
+  return { path, entries }
 }
 
 const SERVICES: Record<string, RemoteService[]> = {

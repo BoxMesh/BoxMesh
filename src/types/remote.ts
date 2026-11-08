@@ -16,6 +16,28 @@ export interface FileEntry {
   modified: string
 }
 
+export type ConflictChoice = 'replace' | 'keep-both' | 'skip'
+
+export interface FileLocation {
+  host: string
+  path: string
+}
+
+/** A copy of files from a folder on one device to a folder on another, relayed by the panel. */
+export interface NewFileTransfer {
+  from: FileLocation
+  to: FileLocation
+  /** What to do when the target folder already has a file of that name. */
+  items: { name: string; onConflict: ConflictChoice }[]
+}
+
+export interface FileTransfer {
+  id: string
+  from: FileLocation
+  to: FileLocation
+  items: { name: string; size: number; copied: number; state: 'copying' | 'done' | 'skipped' | 'cancelled' | 'failed' }[]
+}
+
 export interface FileListing {
   path: string
   entries: FileEntry[]

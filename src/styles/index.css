@@ -17,6 +17,7 @@
   --success-bg: #12261a;
   --positive: #7fd88f;
   --warning: #f5b84a;
+  --warning-bg: #2a2010;
   --error: #ff7a6b;
   --code-bg: #090b0c;
   --code-text: #f1efe7;
@@ -45,6 +46,7 @@
   --success-bg: #e6f4ea;
   --positive: #1f7a3a;
   --warning: #965a00;
+  --warning-bg: #fff4e0;
   --error: #c4321f;
   --code-bg: #101416;
   --code-text: #f1efe7;
@@ -1099,6 +1101,180 @@ body .terminal-host .xterm-viewport {
   background: var(--bg-surface);
   font-size: 12px;
   color: var(--text-secondary);
+}
+
+/* ---------- Remote Files: two devices ---------- */
+/* Two file panes with the copy arrows between them; below 1200px they stack and the arrows turn to point down/up. */
+.files-duo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.files-mid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 104px;
+}
+
+body .files-arrow {
+  min-width: 44px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1199px) {
+  .files-duo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .files-mid {
+    flex-direction: row;
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  body .files-arrow svg {
+    transform: rotate(90deg);
+  }
+}
+
+/* Drag and drop: file rows can be picked up; the other pane shows where they will land. */
+.files-pane {
+  position: relative;
+}
+
+body .files-draggable {
+  cursor: grab;
+}
+
+.files-drop {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  border: 2px dashed var(--accent);
+  border-radius: inherit;
+  background: color-mix(in srgb, var(--bg-surface) 80%, transparent);
+  color: var(--text);
+  text-align: center;
+  pointer-events: none;
+  transition: background-color 150ms;
+}
+
+.files-drop span {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-card);
+  font-weight: 500;
+}
+
+.files-pane.is-over .files-drop {
+  background: color-mix(in srgb, var(--success-bg) 85%, transparent);
+}
+
+.files-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+body .files-head .ant-select {
+  min-width: 0 !important;
+  flex: 1 1 260px;
+  max-width: 320px;
+}
+
+.files-picked {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 16px;
+  background: var(--success-bg);
+  border-bottom: 1px solid var(--border);
+}
+
+/* The Compare toggle reads as pressed while it is on. */
+body .ant-btn.is-pressed {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.files-conflict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px 16px;
+  background: var(--warning-bg);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+
+.files-conflict > svg {
+  flex: none;
+  color: var(--warning);
+}
+
+.files-conflict p {
+  flex: 1 1 320px;
+  margin: 0;
+}
+
+.files-conflict-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.files-transfer + .files-transfer {
+  border-top: 1px solid var(--border);
+}
+
+.files-transfer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px 4px;
+}
+
+.files-transfer-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(80px, 1fr) 120px;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 16px;
+}
+
+.files-transfer-row:last-child {
+  padding-bottom: 12px;
+}
+
+.files-transfer-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.files-transfer-state {
+  text-align: right;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.files-transfer-state.error {
+  color: var(--error);
 }
 
 /* ---------- Files, jobs, users ---------- */

@@ -4,7 +4,7 @@ import { getCertificates, getHealth, getSettings, getTokens, getUsers } from './
 import { getRecentActivity, getRemoteSessions, getResourceUsage } from './dashboardService'
 import { getConnectionHistory, getDevice, getDevices, getPendingEnrollments } from './deviceService'
 import { getAuditLog, getJobs } from './opsService'
-import { getFiles, getServices } from './remoteService'
+import { getFiles, getServices, getTransfer } from './remoteService'
 
 // Shared query keys, so every screen reading the same data hits the same cache entry.
 
@@ -49,3 +49,11 @@ export const usersQuery = queryOptions({ queryKey: ['users'], queryFn: getUsers 
 export const settingsQuery = queryOptions({ queryKey: ['settings'], queryFn: getSettings })
 
 export const healthQuery = queryOptions({ queryKey: ['health'], queryFn: getHealth })
+
+// Polled once a second while any file is still copying, then left alone.
+export const transferQuery = (id: string) =>
+  queryOptions({
+    queryKey: ['file-transfers', id],
+    queryFn: () => getTransfer(id),
+    refetchInterval: (query) => (query.state.data?.items.some((i) => i.state === 'copying') ? 1000 : false),
+  })

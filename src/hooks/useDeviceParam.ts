@@ -14,6 +14,16 @@ export function useDeviceParam() {
     devices,
     host,
     device: devices.find((d) => d.host === host) ?? null,
-    setHost: (next: string) => setParams(next ? { host: next } : {}, { replace: true }),
+    // Other params stay: Remote Files keeps its second device in `?with=`.
+    setHost: (next: string) =>
+      setParams(
+        (current) => {
+          const params = new URLSearchParams(current)
+          if (next) params.set('host', next)
+          else params.delete('host')
+          return params
+        },
+        { replace: true },
+      ),
   }
 }

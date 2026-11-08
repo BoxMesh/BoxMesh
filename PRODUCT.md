@@ -62,6 +62,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 **What works end to end**
 - EdgePanel serves only sign-in and sign-out (`POST /log-in`, `POST /log-out`) so far. Every other screen calls its real endpoint and shows that screen's error state until EdgePanel has it.
 - The password-reset request posts to `/forgot-password`, a route EdgePanel does not have yet; the name is a placeholder.
+- Remote Files can open a second device and copy or one-way sync files between the two. It calls `/file-transfers`, another placeholder name EdgePanel does not have yet; only the demo runs it.
 - Remote Desktop has no video stream yet; the frame says so.
 - A few actions are stubbed (updating or disabling a device, editing tags, saving thresholds): they say "<action> isn't available yet." and never fake success.
 

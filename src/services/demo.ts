@@ -2,7 +2,7 @@ import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from '
 import type { Settings } from '../types/admin'
 import type { TimeRange } from '../types/dashboard'
 import type { JobState } from '../types/ops'
-import type { Shell } from '../types/remote'
+import type { FileEntry, FileTransfer, NewFileTransfer, Shell } from '../types/remote'
 import { MINUTE, fromNow } from '../utils/time'
 import * as seed from './demoData'
 import { http } from './http'
@@ -44,6 +44,62 @@ const state = {
   accounts: structuredClone(seed.accounts),
   settings: structuredClone(seed.settings),
   pending: structuredClone(seed.pendingEnrollments),
+  // Files copied in the demo, by "host|path", shown on top of the seeded listing.
+  copied: {} as Record<string, FileEntry[]>,
+  transfers: {} as Record<string, { transfer: FileTransfer; startedAt: number; cancelledAt?: number }>,
+}
+
+// A demo copy runs at about 1 MB/s, at least 1.5 s per file, so the progress bars have something to show.
+const copyMs = (size: number) => Math.max(1500, size / 1000)
+
+function listWithCopies(host: string, path: string) {
+  const listing = seed.listFiles(host, path)
+  const extra = state.copied[`${host}|${path}`] ?? []
+  const names = new Set(extra.map((e) => e.name))
+  return { ...listing, entries: [...listing.entries.filter((e) => !names.has(e.name)), ...extra] }
+}
+
+/** "report.xlsx" → "report (copy).xlsx", then "(copy 2)", until the name is free. */
+function freeName(name: string, taken: Set<string>) {
+  const dot = name.lastIndexOf('.')
+  const [stem, ext] = dot > 0 ? [name.slice(0, dot), name.slice(dot)] : [name, '']
+  for (let n = 1; ; n++) {
+    const candidate = `${stem} (copy${n > 1 ? ` ${n}` : ''})${ext}`
+    if (!taken.has(candidate)) return candidate
+  }
+}
+
+function startDemoTransfer(input: NewFileTransfer): FileTransfer {
+  const source = listWithCopies(input.from.host, input.from.path).entries
+  const taken = new Set(listWithCopies(input.to.host, input.to.path).entries.map((e) => e.name))
+  const key = `${input.to.host}|${input.to.path}`
+  const items = input.items.map(({ name, onConflict }) => {
+    const entry = source.find((e) => e.name === name && e.kind === 'file')
+    if (!entry) return { name, size: 0, copied: 0, state: 'failed' as const }
+    if (taken.has(name) && onConflict === 'skip') return { name, size: entry.size, copied: 0, state: 'skipped' as const }
+    const target = taken.has(name) && onConflict === 'keep-both' ? freeName(name, taken) : name
+    taken.add(target)
+    state.copied[key] = [...(state.copied[key] ?? []).filter((e) => e.name !== target), { ...entry, name: target, modified: new Date().toISOString() }]
+    return { name: target, size: entry.size, copied: 0, state: 'copying' as const }
+  })
+  const transfer = { id: `ft-${id()}`, from: input.from, to: input.to, items }
+  state.transfers[transfer.id] = { transfer, startedAt: Date.now() }
+  return transfer
+}
+
+function readDemoTransfer(transferId: string): FileTransfer | null {
+  const record = state.transfers[transferId]
+  if (!record) return null
+  const now = record.cancelledAt ?? Date.now()
+  return {
+    ...record.transfer,
+    items: record.transfer.items.map((item) => {
+      if (item.state !== 'copying') return item
+      const share = Math.min(1, (now - record.startedAt) / copyMs(item.size))
+      if (share >= 1) return { ...item, copied: item.size, state: 'done' as const }
+      return { ...item, copied: Math.round(item.size * share), state: record.cancelledAt ? ('cancelled' as const) : item.state }
+    }),
+  }
 }
 
 type Handler = (m: RegExpMatchArray, config: InternalAxiosRequestConfig) => unknown
@@ -81,7 +137,18 @@ const routes: Route[] = [
     /^\/devices\/([^/]+)\/files$/,
     (m, c) => {
       const host = decodeURIComponent(m[1])
-      return seed.listFiles(host, param(c, 'path') || seed.rootFor(host))
+      return listWithCopies(host, param(c, 'path') || seed.rootFor(host))
+    },
+  ],
+  ['post', /^\/file-transfers$/, (_m, c) => startDemoTransfer(body<NewFileTransfer>(c))],
+  ['get', /^\/file-transfers\/([^/]+)$/, (m) => readDemoTransfer(decodeURIComponent(m[1]))],
+  [
+    'delete',
+    /^\/file-transfers\/([^/]+)$/,
+    (m) => {
+      const record = state.transfers[decodeURIComponent(m[1])]
+      if (record && !record.cancelledAt) record.cancelledAt = Date.now()
+      return readDemoTransfer(decodeURIComponent(m[1]))
     },
   ],
   ['get', /^\/devices\/([^/]+)\/services$/, (m) => seed.servicesOn(decodeURIComponent(m[1]))],

@@ -266,6 +266,24 @@ Track `bg-track`; fill success green, warning above the threshold. Label row abo
 ### Timeline (Recent activity)
 Ring per event: success green = normal, error = failure or offline. Time 12 px secondary below.
 
+### Remote Files: two devices
+- "Add a second device" (default button beside the picker) opens a second pane; the URL keeps it in `?with=`.
+  Each pane has its own device picker and path; the second pane has a close button.
+- Files (not folders) get checkboxes. Ticking on one side clears the other, so only one arrow is primary.
+- Two compact arrow buttons sit between the panes (→ and ←, with the ticked count). They carry no words, so the tooltip
+  and `aria-label` say what a click does ("Copy 2 files to SRV-BAK-01"). Below 1200 px the panes stack and the arrows
+  turn to point down and up.
+- Drag and drop: a file row can be dragged to the other pane (a ticked row carries the whole ticked group). While dragging,
+  the target pane shows a dashed `accent` frame with "Drop to copy N files to HOST · path"; dropping runs the same copy as
+  the arrow. The arrows stay for keyboard, screen-reader and touch users.
+- A name that already exists on the target never gets overwritten silently: a warning row in Transfers says which copy
+  is newer, and offers Replace (primary) / Keep both / Skip, with "Apply to all" and "Cancel copy".
+- "Compare folders" (pressed state: accent border and text) adds a Compared column to both panes: Newer here (warning),
+  Only here (info), Older here / Same / Different size (neutral), and hides the per-row actions so the panes fit.
+  The arrows then sync: they copy newer and missing files one way and delete nothing (said in their tooltip).
+- Transfers card: one group per copy ("Copying 2 files to HOST" + target path, Cancel while running), one row per file
+  with a progress bar (success green) and its state. The target folder reloads when a copy finishes.
+
 ### Drawer
 Forms open in a drawer from the right (Enroll agent, New job, Create token, Invite person). An issued secret stays on
 screen in the drawer with a "Copy" button until the drawer closes.
@@ -335,7 +353,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Device detail | `/devices/:id` | Back, name, alias, status, group; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); tabs Overview (device information, connection card, alert thresholds) and Connection |
 | Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
 | Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
-| Remote Files | `/remote-files?host=` | Device picker, file table, upload |
+| Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload. Two devices: two panes, copy and sync between them, Transfers |
 | Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
 | Command & Jobs | `/jobs` | Job table (click a row for per-host results), New job drawer |
 | Audit | `/audit` | Searchable log |
@@ -351,7 +369,7 @@ EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }`
 (all under `VITE_API_URL`, default `/api`): `/log-in`, `/log-out`, `/forgot-password` (placeholder name), `/devices`
 and `/devices/{host}` with `/connections`, `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
 `/enrollment-tokens`, `/certificates`, `/metrics/summary`, `/sessions/summary`, `/jobs`, `/audit`, `/users`,
-`/settings`, `/health`. EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
+`/settings`, `/health`, `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, `/ws/desktop/{id}`); internal web apps go
 through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
