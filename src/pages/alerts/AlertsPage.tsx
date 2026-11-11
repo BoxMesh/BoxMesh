@@ -303,7 +303,7 @@ function AlertDialog({
                   <span className="choice-title">
                     <ChannelIcon kind={c.kind} />
                     {c.name}
-                    <Tag>{KIND_LABEL[c.kind]}</Tag>
+                    <Tag>{KIND_LABEL()[c.kind]}</Tag>
                   </span>
                   <span className="choice-desc mono">{destinationOf(c)}</span>
                 </Checkbox>

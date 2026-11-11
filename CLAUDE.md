@@ -62,3 +62,6 @@ src/
   is the key. Add the Japanese for every new key to the area's file in `src/i18n/ja/`. `src/i18n/i18n.test.ts` fails
   on a key with no translation, a dropped `{placeholder}` or a key built at run time. Data (host names, user input,
   demo data) is never translated.
+- The language switches in place, without a reload, so call `t()` only while rendering or handling an event. A label
+  table or column list outside a component is a function (`const STATUS = () => ({ … })`, used as `STATUS()[s]`);
+  `src/i18n/moduleLoad.test.ts` fails if any file translates something as it loads.

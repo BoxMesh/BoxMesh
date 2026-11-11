@@ -23,7 +23,7 @@ interface FieldsProps {
 }
 
 type Part = 'groupIds' | 'hosts'
-const WORDS: Record<Part, { search: string; add: string; remove: string; one: string; many: string }> = {
+const WORDS = (): Record<Part, { search: string; add: string; remove: string; one: string; many: string }> => ({
   groupIds: {
     search: t('Search groups'),
     add: t('Add the checked groups'),
@@ -38,7 +38,7 @@ const WORDS: Record<Part, { search: string; add: string; remove: string; one: st
     one: t('device'),
     many: t('devices'),
   },
-}
+})
 interface Item {
   key: string
   title: string
@@ -60,7 +60,7 @@ export function AccessFields({ value = NONE, onChange = () => {}, groups, device
           return { key: g.id, title: g.name, description: size === 1 ? t('{n} device', { n: size }) : t('{n} devices', { n: size }) }
         })
       : devices.map((d) => ({ key: d.host, title: d.host, description: d.alias }))
-  const words = WORDS[part]
+  const words = WORDS()[part]
 
   return (
     <div className="access-fields">

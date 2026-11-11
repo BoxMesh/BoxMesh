@@ -8,7 +8,7 @@ import HealthBar from './HealthBar'
 
 const devicesOf = (g: GroupHealth) => `/devices?group=${encodeURIComponent(g.group.id)}`
 
-const columns: TableProps<GroupHealth>['columns'] = [
+const columns = (): TableProps<GroupHealth>['columns'] => [
   {
     title: <Th icon="tag" label={t('Group')} />,
     key: 'group',
@@ -81,7 +81,7 @@ export default function GroupHealthCard({ devices, groups }: { devices: Device[]
     <Card title={t('Health by group')} extra={<Link to="/groups">{t('Groups')}</Link>} styles={{ body: { padding: 0 } }}>
       <Table<GroupHealth>
         className="group-health"
-        columns={columns}
+        columns={columns()}
         dataSource={groupHealth(devices, groups)}
         rowKey={(g) => g.group.id}
         pagination={{ pageSize: 10, hideOnSinglePage: true }}

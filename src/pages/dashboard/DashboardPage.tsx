@@ -13,11 +13,11 @@ import GroupHealthCard from './GroupHealthCard'
 import HealthBar from './HealthBar'
 import TopUsageCard from './TopUsageCard'
 
-const SEVERITY_LABEL: Record<Severity, string> = {
+const SEVERITY_LABEL = (): Record<Severity, string> => ({
   critical: t('Critical'),
   warning: t('Warning'),
   offline: t('Offline'),
-}
+})
 
 // The queue is one table: each severity opens with a header row that spans every column.
 type QueueRow = TriageRow | { group: Severity; count: number }
@@ -25,16 +25,16 @@ const isGroup = (r: QueueRow): r is { group: Severity; count: number } => 'group
 const COLUMN_COUNT = 6
 const spanGroup = (r: QueueRow) => (isGroup(r) ? { colSpan: 0 } : {})
 
-const queueColumns: TableProps<QueueRow>['columns'] = [
+const queueColumns = (): TableProps<QueueRow>['columns'] => [
   {
     key: 'severity',
     width: 4,
     onCell: (r) => (isGroup(r) ? { colSpan: COLUMN_COUNT, className: 'queue-group' } : { className: 'queue-stripe-cell' }),
     render: (_, r) =>
       isGroup(r) ? (
-        `${SEVERITY_LABEL[r.group]} · ${r.count}`
+        `${SEVERITY_LABEL()[r.group]} · ${r.count}`
       ) : (
-        <span className={`queue-stripe ${r.severity}`} aria-label={SEVERITY_LABEL[r.severity]} />
+        <span className={`queue-stripe ${r.severity}`} aria-label={SEVERITY_LABEL()[r.severity]} />
       ),
   },
   {
@@ -181,7 +181,7 @@ export default function DashboardPage() {
 
       <Card title={t('Alert')} extra={<Link to="/devices">{t('All devices')}</Link>} styles={{ body: { padding: 0 } }}>
         <Table<QueueRow>
-          columns={queueColumns}
+          columns={queueColumns()}
           dataSource={queue}
           rowKey={(r) => (isGroup(r) ? `group-${r.group}` : r.device.host)}
           pagination={false}

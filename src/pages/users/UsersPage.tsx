@@ -11,7 +11,7 @@ import { t } from '../../i18n'
 import { ago } from '../../utils/time'
 import { AccessFields, AccessTags, RoleName } from './Access'
 
-const ROLES: { value: Role; label: string; help: string }[] = [
+const ROLES = (): { value: Role; label: string; help: string }[] => [
   { value: 'Admin', label: t('Admin'), help: t('Everything, plus managing users') },
   { value: 'Operator', label: t('Operator'), help: t('Runs commands and opens remote sessions') },
 ]
@@ -98,7 +98,7 @@ export default function UsersPage() {
       />
 
       <div className="grid-stats">
-        {ROLES.map((r) => (
+        {ROLES().map((r) => (
           <Card key={r.value}>
             <div className="muted">{r.label}</div>
             <div className="kv-value">{accounts.filter((a) => a.role === r.value).length}</div>

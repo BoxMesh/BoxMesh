@@ -9,7 +9,7 @@ import { THRESHOLDS } from '../../utils/devices'
 
 type Metric = 'cpu' | 'ram' | 'disk'
 
-const METRICS: { value: Metric; label: string }[] = [
+const METRICS = (): { value: Metric; label: string }[] => [
   { value: 'cpu', label: 'CPU' },
   { value: 'ram', label: 'RAM' },
   { value: 'disk', label: t('Disk') },
@@ -18,7 +18,7 @@ const METRICS: { value: Metric; label: string }[] = [
 /** The five online devices using the most of one resource. Offline ones are left out: their numbers are stale. */
 export default function TopUsageCard({ devices }: { devices: Device[] }) {
   const [metric, setMetric] = useState<Metric>('cpu')
-  const label = METRICS.find((m) => m.value === metric)!.label
+  const label = METRICS().find((m) => m.value === metric)!.label
   const top = devices
     .filter((d) => d.online)
     .toSorted((a, b) => b[metric] - a[metric])
@@ -27,7 +27,7 @@ export default function TopUsageCard({ devices }: { devices: Device[] }) {
   return (
     <Card
       title={t('Top usage')}
-      extra={<Segmented<Metric> size="small" aria-label={t('Resource')} options={METRICS} value={metric} onChange={setMetric} />}
+      extra={<Segmented<Metric> size="small" aria-label={t('Resource')} options={METRICS()} value={metric} onChange={setMetric} />}
       styles={{ body: { padding: 0 } }}
     >
       {top.length ? (

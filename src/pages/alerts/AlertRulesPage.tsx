@@ -13,12 +13,12 @@ const METRICS: AlertMetric[] = ['cpu', 'ram', 'disk', 'offline']
 const DEFAULT_THRESHOLD: Record<AlertMetric, number> = { cpu: 90, ram: 90, disk: 85, offline: 0 }
 const EMPTY: NewAlertRule = { name: '', metric: 'cpu', threshold: 90, minutes: 5 }
 const METRIC_ICON: Record<AlertMetric, IconName> = { cpu: 'chip', ram: 'columns', disk: 'box', offline: 'pulse' }
-const METRIC_HINT: Record<AlertMetric, string> = {
+const METRIC_HINT = (): Record<AlertMetric, string> => ({
   cpu: t('Processor load'),
   ram: t('Memory in use'),
   disk: t('Space used'),
   offline: t('No heartbeat'),
-}
+})
 
 export default function AlertRulesPage() {
   const [{ data: rules }, { data: alerts }] = useSuspenseQueries({ queries: [alertRulesQuery, alertsQuery] })
@@ -159,9 +159,9 @@ function RuleDialog({ rule, onClose }: { rule: AlertRule | 'new' | null; onClose
                 <Radio key={m} value={m} className="choice-card">
                   <span className="choice-title">
                     <Icon name={METRIC_ICON[m]} size={14} />
-                    {METRIC_LABEL[m]}
+                    {METRIC_LABEL()[m]}
                   </span>
-                  <span className="choice-desc">{METRIC_HINT[m]}</span>
+                  <span className="choice-desc">{METRIC_HINT()[m]}</span>
                 </Radio>
               ))}
             </Radio.Group>

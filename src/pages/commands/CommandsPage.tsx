@@ -15,7 +15,7 @@ import { blockedBy, regexError } from '../../utils/commands'
 import { scopeOf, type Scope } from '../../utils/devices'
 
 const SHELLS: Shell[] = ['PowerShell', 'CMD', 'Bash']
-const MATCHES: { value: CommandMatch; label: string; short: string; help: string }[] = [
+const MATCHES = (): { value: CommandMatch; label: string; short: string; help: string }[] => [
   {
     value: 'starts',
     label: t('Starts with'),
@@ -30,7 +30,7 @@ const MATCHES: { value: CommandMatch; label: string; short: string; help: string
   },
   { value: 'regex', label: t('Regex'), short: t('A regular expression'), help: t('A regular expression, not case-sensitive.') },
 ]
-const matchLabel = (m: CommandMatch) => MATCHES.find((x) => x.value === m)!.label
+const matchLabel = (m: CommandMatch) => MATCHES().find((x) => x.value === m)!.label
 const EMPTY: NewCommandRule = { pattern: '', match: 'starts', shells: [], reason: '', groupIds: [], hosts: [] }
 
 // Records only show; adding and changing a rule happen in the rule dialog, like users.
@@ -200,7 +200,7 @@ interface DialogProps {
 
 type Fields = NewCommandRule & { scope: Scope }
 
-const MATCH_VERB: Record<CommandMatch, string> = { starts: t('starts with'), contains: t('contains'), regex: t('matches') }
+const MATCH_VERB = (): Record<CommandMatch, string> => ({ starts: t('starts with'), contains: t('contains'), regex: t('matches') })
 
 function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
   const { message } = App.useApp()
@@ -245,7 +245,7 @@ function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
         ? n ? (n === 1 ? t('on {n} device', { n }) : t('on {n} devices', { n })) : t('on the devices you pick')
         : t('on every device')
   const sentence = t('Blocks any command that {verb} "{pattern}", in {shells}, {where}.', {
-    verb: MATCH_VERB[match],
+    verb: MATCH_VERB()[match],
     pattern: pattern.trim() || '…',
     shells: shells.length ? shells.join(', ') : t('every shell'),
     where,
@@ -302,9 +302,9 @@ function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
               autoComplete="off"
             />
           </Form.Item>
-          <Form.Item name="match" label={t('Match')} extra={MATCHES.find((m) => m.value === match)?.help}>
+          <Form.Item name="match" label={t('Match')} extra={MATCHES().find((m) => m.value === match)?.help}>
             <Radio.Group className="choice-cards">
-              {MATCHES.map((m) => (
+              {MATCHES().map((m) => (
                 <Radio key={m.value} value={m.value} className="choice-card">
                   <span className="choice-title">{m.label}</span>
                   <span className="choice-desc">{m.short}</span>

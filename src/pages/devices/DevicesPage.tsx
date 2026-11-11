@@ -14,9 +14,9 @@ import type { Device, DeviceFilter } from '../../types/device'
 import { filterDevices } from '../../utils/devices'
 import EnrollDrawer from './EnrollDrawer'
 
-const ALL = { value: '', label: t('All') }
-const OS_OPTIONS = [ALL, { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }, { value: 'macOS', label: 'macOS' }]
-const STATUS_OPTIONS = [ALL, { value: 'online', label: t('Online') }, { value: 'offline', label: t('Offline') }]
+const ALL = () => ({ value: '', label: t('All') })
+const OS_OPTIONS = () => [ALL(), { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }, { value: 'macOS', label: 'macOS' }]
+const STATUS_OPTIONS = () => [ALL(), { value: 'online', label: t('Online') }, { value: 'offline', label: t('Offline') }]
 const REMOTE_ACTIONS = [
   { path: '/remote-terminal', label: (host: string) => t('Open a terminal on {host}', { host }) },
   { path: '/remote-desktop', label: (host: string) => t('Open remote desktop on {host}', { host }) },
@@ -85,10 +85,10 @@ export default function DevicesPage() {
     {
       title: <Th icon="tag" label={t('Groups')} />,
       key: 'groups',
-      ...choice([ALL, ...groups.map((g) => ({ value: g.id, label: g.name }))], 'group'),
+      ...choice([ALL(), ...groups.map((g) => ({ value: g.id, label: g.name }))], 'group'),
       render: (_, d) => <DeviceGroups device={d} groups={groups} />,
     },
-    { title: <Th icon="desktop" label="OS" />, dataIndex: 'os', ...choice(OS_OPTIONS, 'os') },
+    { title: <Th icon="desktop" label="OS" />, dataIndex: 'os', ...choice(OS_OPTIONS(), 'os') },
     { title: <Th icon="tag" label={t('Version')} />, dataIndex: 'osVersion' },
     { title: <Th icon="chip" label={t('Arch')} />, dataIndex: 'osArchitecture' },
     { title: <Th icon="web" label="IP" />, dataIndex: 'ip' },
@@ -101,7 +101,7 @@ export default function DevicesPage() {
     {
       title: <Th icon="pulse" label={t('Status')} />,
       key: 'status',
-      ...choice(STATUS_OPTIONS, 'status'),
+      ...choice(STATUS_OPTIONS(), 'status'),
       render: (_, d) => <StatusButton device={d} />,
     },
     { title: <Th icon="more" label={t('Actions')} />, key: 'actions', render: (_, d) => <RowActions device={d} /> },

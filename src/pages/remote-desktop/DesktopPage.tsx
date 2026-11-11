@@ -12,13 +12,13 @@ import type { Device } from '../../types/device'
 import type { DesktopSession } from '../../types/remote'
 import { ago } from '../../utils/time'
 
-const QUALITY_LABEL: Record<DesktopSession['quality'], string> = {
+const QUALITY_LABEL = (): Record<DesktopSession['quality'], string> => ({
   auto: t('auto'),
   high: t('high'),
   balanced: t('balanced'),
   low: t('low'),
-}
-const QUALITY = Object.entries(QUALITY_LABEL).map(([value, label]) => ({ value: value as DesktopSession['quality'], label }))
+})
+const QUALITY = () => Object.entries(QUALITY_LABEL()).map(([value, label]) => ({ value: value as DesktopSession['quality'], label }))
 
 export default function DesktopPage() {
   const { devices, host, device, setHost } = useDeviceParam()
@@ -89,7 +89,7 @@ function Viewer({ device }: { device: Device }) {
       styles={{ body: { padding: 0 } }}
     >
       <div className="screen-bar">
-        <Segmented<DesktopSession['quality']> aria-label={t('Quality')} options={QUALITY} value={quality} onChange={setQuality} />
+        <Segmented<DesktopSession['quality']> aria-label={t('Quality')} options={QUALITY()} value={quality} onChange={setQuality} />
         <label className="screen-toggle">
           <Switch size="small" checked={clipboard} onChange={setClipboard} />
           {t('Clipboard sync')}
@@ -131,8 +131,8 @@ function Viewer({ device }: { device: Device }) {
           <span>{device.alias}</span>
           <span>
             {clipboard
-              ? t('{quality} quality · clipboard on', { quality: QUALITY_LABEL[quality] })
-              : t('{quality} quality · clipboard off', { quality: QUALITY_LABEL[quality] })}
+              ? t('{quality} quality · clipboard on', { quality: QUALITY_LABEL()[quality] })
+              : t('{quality} quality · clipboard off', { quality: QUALITY_LABEL()[quality] })}
           </span>
         </div>
       </div>

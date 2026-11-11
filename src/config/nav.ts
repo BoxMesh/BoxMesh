@@ -1,8 +1,8 @@
 import type { NavGroup } from '../types/nav'
 import { t } from '../i18n'
 
-// Menu groups from the design's Sider.
-export const navGroups: NavGroup[] = [
+// Menu groups from the design's Sider. Functions, so the labels follow the current language.
+export const navGroups = (): NavGroup[] => [
   {
     title: t('Overview'),
     items: [{ icon: 'dashboard', label: t('Dashboard'), path: '/dashboard' }],
@@ -41,6 +41,6 @@ export const navGroups: NavGroup[] = [
   },
 ]
 
-export const navItems = navGroups.flatMap((g) => g.items)
+export const navItems = () => navGroups().flatMap((g) => g.items)
 
-export const navItem = (path: string) => navItems.find((i) => i.path === path)!
+export const navItem = (path: string) => navItems().find((i) => i.path === path)!

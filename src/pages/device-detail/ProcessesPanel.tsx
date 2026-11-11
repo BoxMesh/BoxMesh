@@ -8,11 +8,11 @@ import { userMessage } from '../../services/http'
 import { processesQuery } from '../../services/queries'
 import type { Device, DeviceProcess, ProcessStatus } from '../../types/device'
 
-const STATUS: Record<ProcessStatus, { label: string; color: string }> = {
+const STATUS = (): Record<ProcessStatus, { label: string; color: string }> => ({
   running: { label: t('Running'), color: 'success' },
   suspended: { label: t('Suspended'), color: 'default' },
   'not-responding': { label: t('Not responding'), color: 'warning' },
-}
+})
 
 const memory = (mb: number) => (mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb.toFixed(1)} MB`)
 
@@ -45,7 +45,7 @@ export default function ProcessesPanel({ device }: { device: Device }) {
     {
       title: <Th icon="check" label={t('Status')} />,
       dataIndex: 'status',
-      render: (status: ProcessStatus) => <Tag color={STATUS[status].color}>{STATUS[status].label}</Tag>,
+      render: (status: ProcessStatus) => <Tag color={STATUS()[status].color}>{STATUS()[status].label}</Tag>,
     },
     { title: <Th icon="users" label={t('User')} />, dataIndex: 'user' },
     {

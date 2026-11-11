@@ -14,7 +14,7 @@ const install = (os: OsFamily, token: string) =>
     ? 'boxagent.exe install `\n  --server https://[VPS_DOMAIN] `\n  --token ' + token
     : 'sudo ./boxagent install \\\n  --server https://[VPS_DOMAIN] \\\n  --token ' + token
 
-const LIFETIMES = [
+const LIFETIMES = () => [
   { value: '1h', label: t('1 hour') },
   { value: '24h', label: t('24 hours') },
   { value: '7d', label: t('7 days') },
@@ -86,7 +86,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
               style={{ width: '100%' }}
             >
               <Form.Item name="lifetime" label={t('Token lifetime')}>
-                <Select options={LIFETIMES} />
+                <Select options={LIFETIMES()} />
               </Form.Item>
               <Form.Item name="group" label={t('Default group')}>
                 <Select options={groups.map((g) => ({ value: g, label: g }))} />

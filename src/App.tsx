@@ -17,7 +17,7 @@ import ServicesPage from './pages/remote-services/ServicesPage'
 import TokensPage from './pages/tokens/TokensPage'
 import UserPage from './pages/users/UserPage'
 import UsersPage from './pages/users/UsersPage'
-import { t } from './i18n'
+import { t, useLang } from './i18n'
 import { getSession } from './services/authService'
 
 // xterm is a third of the bundle and only this screen needs it; AppLayout's Suspense covers the wait.
@@ -30,8 +30,10 @@ function RequireAuth() {
 }
 
 export default function App() {
+  // A language switch mounts every screen again, so each label is worked out afresh. The router, query cache and
+  // demo data sit above this and carry on: no reload, no refetch.
   return (
-    <Routes>
+    <Routes key={useLang()}>
       <Route path="login" element={<LoginPage />} />
       <Route element={<RequireAuth />}>
         <Route index element={<Navigate to="/dashboard" replace />} />

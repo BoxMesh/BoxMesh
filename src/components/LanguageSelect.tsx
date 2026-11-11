@@ -16,7 +16,7 @@ const options = LANGS.map(({ value, label }) => ({
   ),
 }))
 
-/** English or Japanese. Switching reloads the app in the chosen language. */
+/** English or Japanese. Switching redraws the app in place, with no reload. */
 export default function LanguageSelect() {
   return (
     <Select

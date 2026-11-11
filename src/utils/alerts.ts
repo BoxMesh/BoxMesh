@@ -1,19 +1,19 @@
 import { t } from '../i18n'
 import type { AlertChannel, AlertMetric, AlertRule, ChannelKind } from '../types/alert'
 
-export const METRIC_LABEL: Record<AlertMetric, string> = { cpu: 'CPU', ram: 'RAM', disk: t('Disk'), offline: t('Offline') }
-export const KIND_LABEL: Record<ChannelKind, string> = { telegram: 'Telegram', discord: 'Discord', email: t('Email') }
+export const METRIC_LABEL = (): Record<AlertMetric, string> => ({ cpu: 'CPU', ram: 'RAM', disk: t('Disk'), offline: t('Offline') })
+export const KIND_LABEL = (): Record<ChannelKind, string> => ({ telegram: 'Telegram', discord: 'Discord', email: t('Email') })
 
 export function conditionOf({ metric, threshold, minutes }: Pick<AlertRule, 'metric' | 'threshold' | 'minutes'>) {
   if (metric === 'offline') return minutes > 0 ? t('Offline for {minutes} min', { minutes }) : t('Offline')
-  const vars = { metric: METRIC_LABEL[metric], threshold, minutes }
+  const vars = { metric: METRIC_LABEL()[metric], threshold, minutes }
   return minutes > 0 ? t('{metric} above {threshold}% for {minutes} min', vars) : t('{metric} above {threshold}%', vars)
 }
 
 /** The condition as the end of a sentence: "Sends a message when …". */
 export function sentenceOf({ metric, threshold, minutes }: Pick<AlertRule, 'metric' | 'threshold' | 'minutes'>) {
   if (metric === 'offline') return minutes > 0 ? t('a device is offline for {minutes} min', { minutes }) : t('a device is offline')
-  const vars = { metric: METRIC_LABEL[metric], threshold, minutes }
+  const vars = { metric: METRIC_LABEL()[metric], threshold, minutes }
   return minutes > 0 ? t('{metric} stays above {threshold}% for {minutes} min', vars) : t('{metric} goes above {threshold}%', vars)
 }
 

@@ -41,7 +41,7 @@ export default function ChannelsPage() {
     { title: <Th icon="tag" label={t('Type')} />, dataIndex: 'kind', render: (kind: ChannelKind) => (
         <span className="channel-kind">
           <ChannelIcon kind={kind} />
-          {KIND_LABEL[kind]}
+          {KIND_LABEL()[kind]}
         </span>
       ),
     },
@@ -124,16 +124,11 @@ export default function ChannelsPage() {
   )
 }
 
-const KIND_HINT: Record<ChannelKind, string> = {
-  telegram: t('A bot posts in a chat, group or channel.'),
-  discord: t('A webhook posts in a server channel.'),
-  email: t('Gmail or any SMTP server sends an email.'),
-}
-const SETUP: Record<ChannelKind, string> = {
+const SETUP = (): Record<ChannelKind, string> => ({
   telegram: t('Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.'),
   discord: t('In Discord: channel settings → Integrations → Webhooks → New webhook → Copy webhook URL.'),
   email: t('For Gmail: turn on 2-Step Verification, then create an app password for this account.'),
-}
+})
 
 function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | null; onClose: () => void }) {
   const { message } = App.useApp()
@@ -198,9 +193,8 @@ function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | n
               <Radio key={k} value={k} className="choice-card">
                 <span className="choice-title">
                   <ChannelIcon kind={k} />
-                  {KIND_LABEL[k]}
+                  {KIND_LABEL()[k]}
                 </span>
-                <span className="choice-desc">{KIND_HINT[k]}</span>
               </Radio>
             ))}
           </Radio.Group>
@@ -214,7 +208,7 @@ function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | n
 
         <section className="form-section">
           <h3>{kind === 'email' ? t('Recipients and sender') : t('Connection')}</h3>
-          <p className="section-hint">{SETUP[kind]}</p>
+          <p className="section-hint">{SETUP()[kind]}</p>
 
           {kind === 'telegram' ? (
             <>

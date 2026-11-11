@@ -11,13 +11,13 @@ import type { FileEntry } from '../../types/remote'
 import { formatSize, joinPath, parentOf, rootOf, sepOf, type Comparison } from '../../utils/files'
 import { ago } from '../../utils/time'
 
-const COMPARED: Record<Comparison, { color: string; label: string }> = {
+const COMPARED = (): Record<Comparison, { color: string; label: string }> => ({
   newer: { color: 'warning', label: t('Newer here') },
   only: { color: 'processing', label: t('Only here') },
   older: { color: 'default', label: t('Older here') },
   same: { color: 'default', label: t('Same') },
   differs: { color: 'default', label: t('Different size') },
-}
+})
 
 interface Props {
   device: Device
@@ -94,7 +94,7 @@ export default function FileBrowser({
             key: 'compared',
             render: (_: unknown, e: FileEntry) => {
               const c = comparison.get(e.name)
-              return c ? <Tag color={COMPARED[c].color}>{COMPARED[c].label}</Tag> : <span className="muted">—</span>
+              return c ? <Tag color={COMPARED()[c].color}>{COMPARED()[c].label}</Tag> : <span className="muted">—</span>
             },
           },
         ]

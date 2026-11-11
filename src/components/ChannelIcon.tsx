@@ -14,7 +14,7 @@ export default function ChannelIcon({ kind, size = 16, named = false }: { kind: 
       src={SRC[kind]}
       width={size}
       height={size}
-      alt={named ? KIND_LABEL[kind] : ''}
+      alt={named ? KIND_LABEL()[kind] : ''}
       aria-hidden={named ? undefined : true}
     />
   )

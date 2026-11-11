@@ -171,7 +171,7 @@ Gotchas:
 - Sider 216 px, `bg-surface`, right `border`. Below 992 px it collapses to zero width; antd's trigger opens it,
   parked in the header's left corner.
 - Header 56, `bg-surface`, bottom border: breadcrumb on the left (`BoxMesh / Page`, current page in `text`); on the right a
-  240 px search (hidden under 576 px), the language select (128 px: a 20 × 14 flag from `src/assets/flags` + English / 日本語; switching reloads the page),
+  240 px search (hidden under 576 px), the language select (128 px: a 20 × 14 flag from `src/assets/flags` + English / 日本語; switching redraws every screen in place, no reload),
   the theme toggle and the account button (28 px orange avatar + name; the menu holds
   the email and "Sign out").
 - The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "BoxMesh" root is dropped.
@@ -436,7 +436,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
 | Alerts | `/alerts` | Table (alert, rules, applies to, send to with channel icons) with Edit and Delete; dialog sections: Rules (ticked cards), Devices (`ScopeFields`: all, groups or devices), Send to (channel cards), Message (template with insertable {device} {alias} {rule} {condition} {value} {groups} {time} and a live preview from a real device in scope). Add alert waits until a rule and a channel exist |
 | Rules | `/alert-rules` | Table (rule, condition, used by which alerts) with Edit and Delete; dialog: name and a Condition section (CPU / RAM / Disk / Offline cards, limit %, for at least N min, live sentence) |
-| Channels | `/alert-channels` | Table (channel, type with its brand icon, used by N alerts, Test with a Send test button, Actions with Edit and Delete); dialog: type (Telegram / Discord / Email, fixed once saved), name, then per type: bot token + chat ID; webhook URL; recipients, Gmail sender + app password, SMTP server and port (smtp.gmail.com:587). Secrets are write-only: on edit, an empty field keeps the saved one |
+| Channels | `/alert-channels` | Table (channel, type with its brand icon, used by N alerts, Test with a Send test button, Actions with Edit and Delete); dialog: type (cards with the brand icon and name only, Telegram / Discord / Email, fixed once saved), name, then per type: bot token + chat ID; webhook URL; recipients, Gmail sender + app password, SMTP server and port (smtp.gmail.com:587). Secrets are write-only: on edit, an empty field keeps the saved one |
 | Enrollment tokens | `/enrollment-tokens` | Create token (opens the Enroll new agent drawer); table: last four characters, Active / Expired, default group, expires, approval, used by (device links), Revoke with a confirm |
 | Command rules | `/commands` | Test a command (shell + command, live Blocked / Allowed answer); read-only rules table (command, match, shells, applies to, reason) with Edit and Delete; Add rule / edit dialog |
 | Users & Access | `/users` | Role cards (Admin, Operator); a read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Invite dialog (email, what they can reach; joins as Operator) |

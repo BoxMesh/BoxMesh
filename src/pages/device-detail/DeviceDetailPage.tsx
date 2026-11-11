@@ -11,7 +11,7 @@ import PerformancePanel from './PerformancePanel'
 import ProcessesPanel from './ProcessesPanel'
 
 // Each remote screen takes the device in `?host=`, so these open straight onto this machine.
-const REMOTE = [
+const REMOTE = () => [
   { path: '/remote-terminal', short: t('Terminal') },
   { path: '/remote-desktop', short: t('Desktop') },
   { path: '/remote-files', short: t('Files') },
@@ -55,7 +55,7 @@ export default function DeviceDetailPage() {
         </div>
         <div className="page-actions">
           {/* The terminal is what people open a device for, so it leads. */}
-          {REMOTE.map((feature, i) => (
+          {REMOTE().map((feature, i) => (
             <Link key={feature.path} to={`${feature.path}?host=${encodeURIComponent(device.host)}`}>
               <Button
                 type={i === 0 ? 'primary' : 'default'}

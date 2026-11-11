@@ -110,9 +110,6 @@ const ja: Record<string, string> = {
     'アラートメッセージの送信先です（Telegram のチャット、Discord のチャンネル、またはメール）。ボットトークン、Webhook URL、パスワードは EdgePanel に保管され、再表示されることはありません。',
   'Add channel': 'チャンネルを追加',
   'No channels yet. Add one, then send a test.': 'チャンネルはまだありません。追加してから、テスト送信してください。',
-  'A bot posts in a chat, group or channel.': 'ボットがチャット、グループ、またはチャンネルに投稿します。',
-  'A webhook posts in a server channel.': 'Webhook がサーバーのチャンネルに投稿します。',
-  'Gmail or any SMTP server sends an email.': 'Gmail または任意の SMTP サーバーからメールを送信します。',
   'Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.':
     '@BotFather でボットを作成してチャットに追加し、そのトークンとチャット ID を貼り付けてください。',
   'In Discord: channel settings → Integrations → Webhooks → New webhook → Copy webhook URL.':

@@ -13,16 +13,17 @@ import { getSession, logOut } from '../services/authService'
 import { isDemo } from '../services/demo'
 import { usersQuery } from '../services/queries'
 
-const menuItems: MenuProps['items'] = navGroups.map((g) => ({
-  type: 'group',
-  key: g.title,
-  label: g.title,
-  children: g.items.map((i) => ({
-    key: i.path,
-    icon: <Icon name={i.icon} />,
-    label: <Link to={i.path}>{i.label}</Link>,
-  })),
-}))
+const menuItems = (): MenuProps['items'] =>
+  navGroups().map((g) => ({
+    type: 'group',
+    key: g.title,
+    label: g.title,
+    children: g.items.map((i) => ({
+      key: i.path,
+      icon: <Icon name={i.icon} />,
+      label: <Link to={i.path}>{i.label}</Link>,
+    })),
+  }))
 
 export default function AppLayout() {
   const { pathname } = useLocation()
@@ -33,7 +34,7 @@ export default function AppLayout() {
   const { data: accounts } = useQuery({ ...usersQuery, enabled: Boolean(userMatch) })
   const detail = deviceMatch?.params.id ?? (userMatch && (accounts?.find((a) => a.id === userMatch.params.id)?.name ?? userMatch.params.id))
   const { reset } = useQueryErrorResetBoundary()
-  const active = navItems.find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
+  const active = navItems().find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
   const queryClient = useQueryClient()
   const user = getSession()
 
@@ -62,7 +63,7 @@ export default function AppLayout() {
         <Link to="/dashboard" className="brand">
           <Logo size={24} />
         </Link>
-        <Menu mode="inline" selectedKeys={active ? [active.path] : []} items={menuItems} />
+        <Menu mode="inline" selectedKeys={active ? [active.path] : []} items={menuItems()} />
       </Layout.Sider>
       <Layout>
         <Layout.Header className="app-header">

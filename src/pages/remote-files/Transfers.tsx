@@ -29,7 +29,7 @@ interface Props {
   onClear: (ids: string[]) => void
 }
 
-const CHOICES: { value: ConflictChoice; label: string }[] = [
+const CHOICES = (): { value: ConflictChoice; label: string }[] => [
   { value: 'replace', label: t('Replace') },
   { value: 'keep-both', label: t('Keep both') },
   { value: 'skip', label: t('Skip') },
@@ -101,7 +101,7 @@ function Conflicts({ pending, onResolve, onAbandon }: Pick<Props, 'onResolve' | 
           : null}
       </p>
       <div className="files-conflict-actions">
-        {CHOICES.map((c, i) => (
+        {CHOICES().map((c, i) => (
           <Button key={c.value} size="small" type={i === 0 ? 'primary' : 'default'} onClick={() => choose(c.value)}>
             {c.label}
           </Button>
@@ -135,12 +135,12 @@ function standingLine(standing: Comparison, vars: Record<string, string>) {
   }
 }
 
-const STATE_LABEL = {
+const STATE_LABEL = () => ({
   done: t('Done'),
   skipped: t('Skipped'),
   cancelled: t('Cancelled'),
   failed: t('Failed'),
-}
+})
 
 function TransferGroup({ id }: { id: string }) {
   const { message } = App.useApp()
@@ -198,7 +198,7 @@ function TransferGroup({ id }: { id: string }) {
             <span className={item.state === 'failed' ? 'files-transfer-state error' : 'files-transfer-state'}>
               {item.state === 'copying'
                 ? `${percent}%${item.copied ? ` · ${formatSize(item.copied)}` : ''}`
-                : STATE_LABEL[item.state]}
+                : STATE_LABEL()[item.state]}
             </span>
           </div>
         )

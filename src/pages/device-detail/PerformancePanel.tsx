@@ -15,7 +15,7 @@ const RANGES: { value: TimeRange; label: string }[] = [
   { value: '7d', label: '7d' },
 ]
 
-const RESOURCES = [
+const RESOURCES = () => [
   { key: 'cpu', label: 'CPU' },
   { key: 'ram', label: 'RAM' },
   { key: 'disk', label: t('Disk') },
@@ -52,7 +52,7 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
         <span className="muted">{t("Usage history didn't load.")} {userMessage(metrics.error)}</span>
       ) : (
         <>
-          {RESOURCES.map(({ key, label }) => {
+          {RESOURCES().map(({ key, label }) => {
             const now = latest?.[key] ?? d[key]
             const high = now >= THRESHOLDS[key]
             return (
