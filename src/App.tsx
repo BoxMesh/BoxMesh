@@ -9,6 +9,7 @@ import LoginPage from './pages/login/LoginPage'
 import DesktopPage from './pages/remote-desktop/DesktopPage'
 import FilesPage from './pages/remote-files/FilesPage'
 import ServicesPage from './pages/remote-services/ServicesPage'
+import UserPage from './pages/users/UserPage'
 import UsersPage from './pages/users/UsersPage'
 import { getSession } from './services/authService'
 
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="remote-files" element={<FilesPage />} />
         <Route path="remote-services" element={<ServicesPage />} />
         <Route path="users" element={<UsersPage />} />
+        <Route path="users/:id" element={<UserPage />} />
         <Route
           path="*"
           element={<Result status="404" title="Page not found" subTitle="Check the address, or pick a page from the menu." />}

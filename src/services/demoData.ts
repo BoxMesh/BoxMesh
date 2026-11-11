@@ -1,6 +1,6 @@
 import type { Account, Certificate, EnrollmentToken, Health, Settings } from '../types/admin'
 import type { ActivityEvent, RemoteSessions, ResourceUsage, TimeRange } from '../types/dashboard'
-import type { ConnectionEvent, Device, OsFamily, PendingEnrollment } from '../types/device'
+import type { ConnectionEvent, Device, DeviceGroup, OsFamily, PendingEnrollment } from '../types/device'
 import type { AuditEntry, Job } from '../types/ops'
 import type { DesktopSession, FileEntry, FileListing, RemoteService, Shell } from '../types/remote'
 import { DAY, MINUTE, SECOND, fromNow } from '../utils/time'
@@ -25,6 +25,19 @@ const SEEDS: Seed[] = [
   ['WH-PC-01', 'Warehouse terminal', 'Warehouse', 'kiosk', 28, 47, 66, '1.3.9'],
   ['WH-PC-02', 'Warehouse office', 'Warehouse', 'desktop', 19, 44, 57, '1.4.2'],
 ]
+
+// Groups by id; a seed's department becomes its first group. "Critical systems" overlaps the others, so the
+// demo shows a device in more than one group.
+export const groups: DeviceGroup[] = [
+  { id: 'g-accounting', name: 'Accounting' },
+  { id: 'g-cad-workshop', name: 'CAD Workshop' },
+  { id: 'g-hr', name: 'HR' },
+  { id: 'g-server', name: 'Server' },
+  { id: 'g-warehouse', name: 'Warehouse' },
+  { id: 'g-critical', name: 'Critical systems' },
+]
+const CRITICAL = ['SRV-DB-01', 'SRV-WEB-01', 'ACC-PC-01']
+const groupIdOf = (name: string) => groups.find((g) => g.name === name)!.id
 
 const LATEST_AGENT = '1.4.2'
 
@@ -89,7 +102,7 @@ export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, 
     mac: `AA:BB:CC:${(16 + i).toString(16).toUpperCase().padStart(2, '0')}:0${i % 10}:${(32 + i).toString(16).toUpperCase()}`,
     agentVersion,
     agentOutdated: agentVersion !== LATEST_AGENT,
-    group,
+    groups: [groupIdOf(group), ...(CRITICAL.includes(host) ? ['g-critical'] : [])],
     tag,
     enrolledAt: fromNow(-(90 + i * 11) * DAY),
     certExpires: fromNow(CERT_DAYS[i] * DAY),
@@ -358,11 +371,11 @@ export const enrollmentTokens: EnrollmentToken[] = [
 ]
 
 export const accounts: Account[] = [
-  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'Admin', lastSignIn: fromNow(-40 * MINUTE), disabled: false },
-  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'Operator', lastSignIn: fromNow(-4 * MINUTE), disabled: false },
-  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'Operator', lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false },
-  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'Viewer', lastSignIn: fromNow(-2 * DAY), disabled: false },
-  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Viewer', lastSignIn: fromNow(-21 * DAY), disabled: true },
+  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'Admin', lastSignIn: fromNow(-40 * MINUTE), disabled: false, access: { groupIds: [], hosts: [] } },
+  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'Operator', lastSignIn: fromNow(-4 * MINUTE), disabled: false, access: { groupIds: ['g-accounting', 'g-hr'], hosts: [] } },
+  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'Operator', lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false, access: { groupIds: ['g-server'], hosts: ['CAD-WS-01'] } },
+  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'Operator', lastSignIn: fromNow(-2 * DAY), disabled: false, access: { groupIds: [], hosts: ['WH-PC-01', 'WH-PC-02'] } },
+  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Operator', lastSignIn: fromNow(-21 * DAY), disabled: true, access: { groupIds: [], hosts: [] } },
 ]
 
 export const settings: Settings = {

@@ -1,4 +1,4 @@
-import type { Account, Certificate, EnrollmentToken, Health, Role, Settings } from '../types/admin'
+import type { Account, Certificate, DeviceAccess, EnrollmentToken, Health, Role, Settings } from '../types/admin'
 import { http } from './http'
 
 export async function getCertificates() {
@@ -33,14 +33,18 @@ export async function getUsers() {
   return data
 }
 
-export async function inviteUser(input: { email: string; role: Role }) {
+export async function inviteUser(input: { email: string; role: Role; access: DeviceAccess }) {
   const { data } = await http.post<Account>('/users', input)
   return data
 }
 
-export async function updateUser(id: string, patch: Partial<Pick<Account, 'role' | 'disabled'>>) {
+export async function updateUser(id: string, patch: Partial<Pick<Account, 'disabled' | 'access'>>) {
   const { data } = await http.patch<Account>(`/users/${id}`, patch)
   return data
+}
+
+export async function deleteUser(id: string) {
+  await http.delete(`/users/${encodeURIComponent(id)}`)
 }
 
 export async function getSettings() {

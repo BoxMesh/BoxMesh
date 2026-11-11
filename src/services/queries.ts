@@ -2,12 +2,14 @@ import { queryOptions } from '@tanstack/react-query'
 import type { TimeRange } from '../types/dashboard'
 import { getUsers } from './adminService'
 import { getRecentActivity, getRemoteSessions, getResourceUsage } from './dashboardService'
-import { getConnectionHistory, getDevice, getDevices, getPendingEnrollments } from './deviceService'
+import { getConnectionHistory, getDevice, getDevices, getGroups, getPendingEnrollments } from './deviceService'
 import { getFiles, getServices, getTransfer } from './remoteService'
 
 // Shared query keys, so every screen reading the same data hits the same cache entry.
 
 export const devicesQuery = queryOptions({ queryKey: ['devices'], queryFn: getDevices })
+
+export const groupsQuery = queryOptions({ queryKey: ['groups'], queryFn: getGroups })
 
 export const deviceQuery = (host: string) => queryOptions({ queryKey: ['devices', host], queryFn: () => getDevice(host) })
 

@@ -14,15 +14,13 @@ export default defineConfig({
       manifest: {
         name: 'BoxMesh',
         short_name: 'BoxMesh',
-        description: 'Manage and reach EdgeAgent devices through EdgePanel.',
+        description: 'Manage and reach BoxAgent devices through EdgePanel.',
         start_url: '/dashboard',
         scope: '/',
         display: 'standalone',
         // The splash draws the icon over this colour; matching the icon's tile keeps it from showing as a box.
         background_color: '#101416',
         theme_color: '#101416',
-        // Launching the installed app again focuses the open window instead of opening a second one.
-        launch_handler: { client_mode: ['focus-existing', 'auto'] },
         // "any" icons are rounded with transparent corners (desktop installs show them as they are); the maskable one
         // is full-bleed, because Android cuts it to the launcher's own shape and baked-in corners would show gaps.
         icons: [

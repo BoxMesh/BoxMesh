@@ -2,13 +2,15 @@ import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-q
 import { App, Button, Card, Input, Radio, Table, Tooltip, type TableProps } from 'antd'
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import DeviceGroups from '../../components/DeviceGroups'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { navItem } from '../../config/nav'
-import { devicesQuery } from '../../services/queries'
+import { devicesQuery, groupsQuery } from '../../services/queries'
 import type { Device, DeviceFilter } from '../../types/device'
 import { filterDevices } from '../../utils/devices'
 import EnrollDrawer from './EnrollDrawer'
+import GroupsDrawer from './GroupsDrawer'
 
 const ALL = { value: '', label: 'All' }
 const OS_OPTIONS = [ALL, { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }, { value: 'macOS', label: 'macOS' }]
@@ -22,13 +24,15 @@ const REMOTE_ACTIONS = [
 export default function DevicesPage() {
   const [params, setParams] = useSearchParams()
   const [enrollOpen, setEnrollOpen] = useState(false)
+  const [groupsOpen, setGroupsOpen] = useState(false)
   const { data: devices } = useSuspenseQuery(devicesQuery)
-  const groups = [...new Set(devices.map((d) => d.group))].sort()
+  const { data: groups } = useSuspenseQuery(groupsQuery)
 
   const filter: DeviceFilter = {
     q: params.get('q') ?? '',
     os: params.get('os') ?? '',
     status: params.get('status') ?? '',
+    group: params.get('group') ?? '',
   }
   const rows = filterDevices(devices, filter)
   const filtered = Object.values(filter).some(Boolean)
@@ -46,7 +50,7 @@ export default function DevicesPage() {
 
   // The column headings are the only filter UI. antd draws the trigger and the panel; the URL still
   // owns the value, so the app header's search and the dashboard's "Agents online" link land filtered.
-  const choice = (options: { value: string; label: string }[], key: 'os' | 'status') => ({
+  const choice = (options: { value: string; label: string }[], key: 'os' | 'status' | 'group') => ({
     filteredValue: filter[key] ? [filter[key]] : null,
     filterDropdown: () => (
       <Radio.Group className="filter-panel" value={filter[key]} options={options} onChange={(e) => setFilter(key, e.target.value)} />
@@ -76,6 +80,12 @@ export default function DevicesPage() {
           {d.host}
         </Link>
       ),
+    },
+    {
+      title: <Th icon="tag" label="Groups" />,
+      key: 'groups',
+      ...choice([ALL, ...groups.map((g) => ({ value: g.id, label: g.name }))], 'group'),
+      render: (_, d) => <DeviceGroups device={d} groups={groups} />,
     },
     { title: <Th icon="desktop" label="OS" />, dataIndex: 'os', ...choice(OS_OPTIONS, 'os') },
     { title: <Th icon="tag" label="Version" />, dataIndex: 'osVersion' },
@@ -113,9 +123,14 @@ export default function DevicesPage() {
         title="Devices"
         subtitle={`${devices.length} devices enrolled`}
         actions={
-          <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEnrollOpen(true)}>
-            Enroll agent
-          </Button>
+          <>
+            <Button icon={<Icon name="tag" size={14} />} onClick={() => setGroupsOpen(true)}>
+              Manage groups
+            </Button>
+            <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEnrollOpen(true)}>
+              Enroll agent
+            </Button>
+          </>
         }
       />
 
@@ -145,7 +160,8 @@ export default function DevicesPage() {
         />
       </Card>
 
-      <EnrollDrawer open={enrollOpen} onClose={() => setEnrollOpen(false)} groups={groups} />
+      <EnrollDrawer open={enrollOpen} onClose={() => setEnrollOpen(false)} groups={groups.map((g) => g.name)} />
+      <GroupsDrawer open={groupsOpen} onClose={() => setGroupsOpen(false)} groups={groups} devices={devices} />
     </div>
   )
 }

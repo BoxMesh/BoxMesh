@@ -1,4 +1,4 @@
-import { useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
+import { useQuery, useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
 import { Avatar, Breadcrumb, Dropdown, Input, Layout, Menu, Spin, type MenuProps } from 'antd'
 import { Suspense } from 'react'
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
@@ -9,6 +9,7 @@ import ThemeToggle from '../components/ThemeToggle'
 import { navGroups, navItems } from '../config/nav'
 import { getSession, logOut } from '../services/authService'
 import { isDemo } from '../services/demo'
+import { usersQuery } from '../services/queries'
 
 const menuItems: MenuProps['items'] = navGroups.map((g) => ({
   type: 'group',
@@ -25,6 +26,10 @@ export default function AppLayout() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const deviceMatch = useMatch('/devices/:id')
+  const userMatch = useMatch('/users/:id')
+  // A user's crumb is their name; the page loads the same list, so this adds no request.
+  const { data: accounts } = useQuery({ ...usersQuery, enabled: Boolean(userMatch) })
+  const detail = deviceMatch?.params.id ?? (userMatch && (accounts?.find((a) => a.id === userMatch.params.id)?.name ?? userMatch.params.id))
   const { reset } = useQueryErrorResetBoundary()
   const active = navItems.find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
   const queryClient = useQueryClient()
@@ -45,8 +50,8 @@ export default function AppLayout() {
 
   const crumbs = [
     { title: 'BoxMesh' },
-    ...(active ? [{ title: deviceMatch ? <Link to={active.path}>{active.label}</Link> : active.label }] : []),
-    ...(deviceMatch ? [{ title: deviceMatch.params.id }] : []),
+    ...(active ? [{ title: detail ? <Link to={active.path}>{active.label}</Link> : active.label }] : []),
+    ...(detail ? [{ title: detail }] : []),
   ]
 
   return (

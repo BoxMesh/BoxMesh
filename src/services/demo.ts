@@ -44,6 +44,7 @@ const state = {
   accounts: structuredClone(seed.accounts),
   settings: structuredClone(seed.settings),
   pending: structuredClone(seed.pendingEnrollments),
+  groups: structuredClone(seed.groups),
   // Files copied in the demo, by "host|path", shown on top of the seeded listing.
   copied: {} as Record<string, FileEntry[]>,
   transfers: {} as Record<string, { transfer: FileTransfer; startedAt: number; cancelledAt?: number }>,
@@ -124,6 +125,48 @@ const routes: Route[] = [
 
   // ---- Fleet ----
   ['get', /^\/devices$/, () => seed.fleet()],
+
+  // ---- Groups ----
+  ['get', /^\/groups$/, () => state.groups],
+  [
+    'post',
+    /^\/groups$/,
+    (_m, c) => {
+      const group = { id: `g-${id()}`, name: body<{ name: string }>(c).name }
+      state.groups.push(group)
+      return group
+    },
+  ],
+  [
+    'patch',
+    /^\/groups\/([^/]+)$/,
+    (m, c) => {
+      const group = state.groups.find((g) => g.id === decodeURIComponent(m[1]))
+      if (group) group.name = body<{ name: string }>(c).name
+      return group ?? null
+    },
+  ],
+  [
+    'delete',
+    /^\/groups\/([^/]+)$/,
+    (m) => {
+      const gone = decodeURIComponent(m[1])
+      state.groups = state.groups.filter((g) => g.id !== gone)
+      // The devices stay; they only leave the deleted group.
+      seed.devices.forEach((d, i) => (seed.devices[i] = { ...d, groups: d.groups.filter((g) => g !== gone) }))
+      return null
+    },
+  ],
+  [
+    'put',
+    /^\/devices\/([^/]+)\/groups$/,
+    (m, c) => {
+      const i = seed.devices.findIndex((d) => d.host === decodeURIComponent(m[1]))
+      if (i < 0) return null
+      seed.devices[i] = { ...seed.devices[i], groups: body<{ groupIds: string[] }>(c).groupIds }
+      return seed.devices[i]
+    },
+  ],
   ['get', /^\/devices\/([^/]+)$/, (m) => seed.devices.find((d) => d.host === decodeURIComponent(m[1])) ?? null],
   ['get', /^\/devices\/([^/]+)\/connections$/, (m) => seed.connectionHistory(decodeURIComponent(m[1]))],
   ['get', /^\/metrics\/summary$/, (_m, c) => seed.resourceUsage((param(c, 'range') || '24h') as TimeRange)],
@@ -176,7 +219,11 @@ const routes: Route[] = [
         results: input.schedule
           ? []
           : seed.devices
-              .filter((d) => input.targets.includes(d.group) || input.targets.includes(d.host))
+              .filter(
+                (d) =>
+                  input.targets.includes(d.host) ||
+                  d.groups.some((g) => input.targets.includes(state.groups.find((x) => x.id === g)?.name ?? '')),
+              )
               .map((d) => ({
                 host: d.host,
                 state: (d.online ? 'done' : 'failed') as 'done' | 'failed',
@@ -235,7 +282,7 @@ const routes: Route[] = [
     'post',
     /^\/users$/,
     (_m, c) => {
-      const input = body<{ email: string; role: string }>(c)
+      const input = body<{ email: string; role: string; access?: { groupIds: string[]; hosts: string[] } }>(c)
       const account = {
         id: `u-${state.accounts.length + 1}`,
         email: input.email,
@@ -243,6 +290,7 @@ const routes: Route[] = [
         role: input.role as (typeof state.accounts)[number]['role'],
         lastSignIn: '',
         disabled: false,
+        access: input.access ?? { groupIds: [], hosts: [] },
       }
       state.accounts = [...state.accounts, account]
       return account
@@ -255,6 +303,14 @@ const routes: Route[] = [
       const account = state.accounts.find((a) => a.id === m[1])
       if (account) Object.assign(account, body<Partial<typeof account>>(c))
       return account ?? null
+    },
+  ],
+  [
+    'delete',
+    /^\/users\/([^/]+)$/,
+    (m) => {
+      state.accounts = state.accounts.filter((a) => a.id !== decodeURIComponent(m[1]))
+      return null
     },
   ],
   ['get', /^\/settings$/, () => state.settings],

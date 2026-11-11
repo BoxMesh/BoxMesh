@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 BoxMesh is the web console of EdgeTunnel: a company's IT team uses it to monitor and remotely operate its own
-machines. Each machine runs EdgeAgent, which dials out over gRPC + mTLS to the company's self-hosted EdgePanel.
+machines. Each machine runs BoxAgent, which dials out over gRPC + mTLS to the company's self-hosted EdgePanel.
 BoxMesh talks only to EdgePanel. See [README.md](README.md) for setup, configuration and the API table.
 
 ## Read before any UI or design work

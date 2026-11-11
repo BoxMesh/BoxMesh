@@ -1,24 +1,31 @@
-import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { App, Button, Card, Drawer, Form, Input, Select, Switch, Table, type TableProps } from 'antd'
+import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
+import { App, Button, Card, Form, Input, Modal, Table, Tag, Tooltip, type TableProps } from 'antd'
+import { Link } from 'react-router'
 import { useState } from 'react'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
-import { inviteUser, updateUser } from '../../services/adminService'
-import { usersQuery } from '../../services/queries'
-import type { Account, Role } from '../../types/admin'
+import { inviteUser } from '../../services/adminService'
+import { devicesQuery, groupsQuery, usersQuery } from '../../services/queries'
+import type { Account, DeviceAccess, Role } from '../../types/admin'
 import { ago } from '../../utils/time'
+import { AccessFields, AccessTags } from './Access'
 
 const ROLES: { value: Role; label: string; help: string }[] = [
   { value: 'Admin', label: 'Admin', help: 'Everything, plus managing users' },
   { value: 'Operator', label: 'Operator', help: 'Runs commands and opens remote sessions' },
-  { value: 'Viewer', label: 'Viewer', help: 'Read-only' },
 ]
+
+// The table only shows; every change happens on the person's own page (/users/:id). There is exactly one Admin, so roles are not
+// edited: everyone invited joins as an Operator, and the Admin can't be turned off or deleted, or the console
+// would be left with nobody to manage it.
 export default function UsersPage() {
-  const { data: accounts } = useSuspenseQuery(usersQuery)
+  const [{ data: accounts }, { data: groups }, { data: devices }] = useSuspenseQueries({
+    queries: [usersQuery, groupsQuery, devicesQuery],
+  })
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
-  const [form] = Form.useForm<{ email: string; role: Role }>()
+  const [form] = Form.useForm<{ email: string; access: DeviceAccess }>()
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['users'] })
 
@@ -33,36 +40,31 @@ export default function UsersPage() {
     onError: (error) => message.error(error.message),
   })
 
-  const change = useMutation({
-    mutationFn: ({ id, patch }: { id: string; patch: Partial<Account> }) => updateUser(id, patch),
-    onSuccess: () => refresh(),
-    onError: (error) => message.error(error.message),
-  })
-
   const columns: TableProps<Account>['columns'] = [
     {
-      title: <Th icon="users" label="Person" />,
-      key: 'person',
+      title: <Th icon="users" label="Name" />,
+      key: 'name',
       render: (_, a) => (
-        <>
-          <span className="strong">{a.name}</span>
-          <div className="sub">{a.email}</div>
-        </>
+        <Link to={`/users/${a.id}`} className="strong">
+          {a.name}
+        </Link>
       ),
     },
+    { title: <Th icon="mail" label="Email" />, key: 'email', render: (_, a) => a.email },
     {
       title: <Th icon="security" label="Role" />,
       key: 'role',
-      render: (_, a) => (
-        <Select
-          value={a.role}
-          size="small"
-          style={{ minWidth: 120 }}
-          aria-label={`Role for ${a.email}`}
-          options={ROLES.map((r) => ({ value: r.value, label: r.label }))}
-          onChange={(role) => change.mutate({ id: a.id, patch: { role } })}
-        />
-      ),
+      render: (_, a) => <Tag color={a.role === 'Admin' ? 'processing' : 'default'}>{a.role}</Tag>,
+    },
+    ...(['groups', 'hosts'] as const).map((part) => ({
+      title: part === 'groups' ? <Th icon="tag" label="Groups" /> : <Th icon="devices" label="Devices" />,
+      key: part,
+      render: (_: unknown, a: Account) => <AccessTags account={a} part={part} groups={groups} />,
+    })),
+    {
+      title: <Th icon="pulse" label="Status" />,
+      key: 'status',
+      render: (_, a) => (a.disabled ? <Tag>Disabled</Tag> : <Tag color="success">Active</Tag>),
     },
     {
       title: <Th icon="clock" label="Last sign-in" />,
@@ -70,15 +72,14 @@ export default function UsersPage() {
       render: (_, a) => (a.lastSignIn ? ago(a.lastSignIn) : <span className="muted">Never</span>),
     },
     {
-      title: <Th icon="pulse" label="Active" />,
-      key: 'active',
+      title: <Th icon="more" label="Actions" />,
+      key: 'actions',
       render: (_, a) => (
-        <Switch
-          size="small"
-          checked={!a.disabled}
-          aria-label={`${a.email} can sign in`}
-          onChange={(on) => change.mutate({ id: a.id, patch: { disabled: !on } })}
-        />
+        <Tooltip title={`Open ${a.name}`}>
+          <Link to={`/users/${a.id}`} className="icon-btn" aria-label={`Open ${a.name}`}>
+            <Icon name="edit" size={14} />
+          </Link>
+        </Tooltip>
       ),
     },
   ]
@@ -87,7 +88,7 @@ export default function UsersPage() {
     <div className="stack">
       <PageHeader
         title="Users & Access"
-        subtitle="Who can sign in and what they may do."
+        subtitle="Who can sign in, what they may do, and which devices each Operator can reach."
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setOpen(true)}>
             Invite person
@@ -116,17 +117,32 @@ export default function UsersPage() {
         />
       </Card>
 
-      <Drawer title="Invite a person" open={open} onClose={() => setOpen(false)} size={480}>
+      <Modal
+        title="Invite a person"
+        open={open}
+        onCancel={() => setOpen(false)}
+        width={880}
+        footer={
+          <div className="drawer-footer">
+            <span className="screen-spacer" />
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="primary" loading={invite.isPending} onClick={() => form.submit()}>
+              Send invitation
+            </Button>
+          </div>
+        }
+      >
         <Form
           form={form}
           layout="vertical"
           requiredMark={false}
-          initialValues={{ role: 'Viewer' }}
-          onFinish={(values) => invite.mutate(values)}
+          initialValues={{ access: { groupIds: [], hosts: [] } }}
+          onFinish={(values) => invite.mutate({ email: values.email, role: 'Operator', access: values.access })}
         >
           <Form.Item
             name="email"
             label="Work email"
+            extra="They join as an Operator: they can run commands and open remote sessions."
             normalize={(v: string) => v.trim()}
             rules={[
               { required: true, message: 'Enter their email.' },
@@ -135,14 +151,13 @@ export default function UsersPage() {
           >
             <Input prefix={<Icon name="mail" />} autoComplete="off" />
           </Form.Item>
-          <Form.Item name="role" label="Role">
-            <Select options={ROLES.map((r) => ({ value: r.value, label: `${r.label} — ${r.help}` }))} />
+          <Form.Item name="access" label="What they can reach">
+            {/* Form.Item passes value and onChange; until something is picked they reach no device. */}
+            <AccessFields groups={groups} devices={devices} />
           </Form.Item>
-          <Button type="primary" htmlType="submit" loading={invite.isPending}>
-            Send invitation
-          </Button>
         </Form>
-      </Drawer>
+      </Modal>
+
     </div>
   )
 }

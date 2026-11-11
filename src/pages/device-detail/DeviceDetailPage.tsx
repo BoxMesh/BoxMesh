@@ -1,11 +1,12 @@
 import { usePrefetchQuery, useSuspenseQuery } from '@tanstack/react-query'
-import { Alert, Button, Dropdown, Result, Tabs, Tag } from 'antd'
+import { Alert, Button, Dropdown, Result, Tabs } from 'antd'
 import { Link, useParams, useSearchParams } from 'react-router'
+import DeviceGroups from '../../components/DeviceGroups'
 import { Icon } from '../../components/Icon'
 import Status from '../../components/Status'
 import { navItem } from '../../config/nav'
 import { useNotSupported } from '../../hooks/useNotSupported'
-import { connectionHistoryQuery, deviceQuery } from '../../services/queries'
+import { connectionHistoryQuery, deviceQuery, groupsQuery } from '../../services/queries'
 import { ago } from '../../utils/time'
 import ConnectionCard from './ConnectionCard'
 import DeviceOverview from './DeviceOverview'
@@ -20,6 +21,7 @@ export default function DeviceDetailPage() {
   // Start the history request alongside the device request instead of after it.
   usePrefetchQuery(connectionHistoryQuery(id))
   const { data: device } = useSuspenseQuery(deviceQuery(id))
+  const { data: groups } = useSuspenseQuery(groupsQuery)
 
   if (!device) {
     return (
@@ -45,7 +47,7 @@ export default function DeviceDetailPage() {
           <h1 style={{ margin: 0 }}>{device.host}</h1>
           <span className="muted">{device.alias}</span>
           <Status online={device.online} />
-          <Tag color="processing">{device.group}</Tag>
+          <DeviceGroups device={device} groups={groups} />
         </div>
         <div className="page-actions">
           {/* The terminal is what people open a device for, so it leads; rare actions wait in the menu. */}

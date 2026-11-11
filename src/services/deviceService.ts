@@ -1,5 +1,5 @@
 import { isAxiosError } from 'axios'
-import type { ConnectionEvent, Device, PendingEnrollment } from '../types/device'
+import type { ConnectionEvent, Device, DeviceGroup, PendingEnrollment } from '../types/device'
 import { http } from './http'
 
 // Endpoints follow the canvas's proposed EdgePanel API; /connections and /enrollments are not in it yet.
@@ -33,4 +33,32 @@ export async function getPendingEnrollments() {
 /** Approve or reject an agent waiting for its certificate. */
 export async function decideEnrollment(host: string, outcome: 'approve' | 'reject') {
   await http.post(`/enrollments/${encodeURIComponent(host)}/${outcome}`, {})
+}
+
+// ---- Groups ----
+
+export async function getGroups() {
+  const { data } = await http.get<DeviceGroup[]>('/groups')
+  return data
+}
+
+export async function createGroup(name: string) {
+  const { data } = await http.post<DeviceGroup>('/groups', { name })
+  return data
+}
+
+export async function renameGroup(id: string, name: string) {
+  const { data } = await http.patch<DeviceGroup>(`/groups/${encodeURIComponent(id)}`, { name })
+  return data
+}
+
+/** Deletes the group only; its devices stay, they just leave it. */
+export async function deleteGroup(id: string) {
+  await http.delete(`/groups/${encodeURIComponent(id)}`)
+}
+
+/** Replaces the device's groups with exactly these. */
+export async function setDeviceGroups(host: string, groupIds: string[]) {
+  const { data } = await http.put<Device>(`/devices/${encodeURIComponent(host)}/groups`, { groupIds })
+  return data
 }

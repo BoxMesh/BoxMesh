@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { createToken } from './adminService'
+import { createToken, deleteUser, getUsers } from './adminService'
 import { install } from './demo'
-import { getDevices } from './deviceService'
+import { createGroup, deleteGroup, getDevices, getGroups, setDeviceGroups } from './deviceService'
 import { createJob } from './opsService'
 import { runCommand } from './remoteService'
 
@@ -35,9 +35,24 @@ describe('demo mode', () => {
     expect(job.state).toBe('running')
     // Every targeted device gets a row: offline ones a failure rather than a missing result.
     const { devices } = await import('./demoData')
-    const expected = devices.filter((d) => d.group === 'Accounting').map((d) => [d.host, d.online ? 'done' : 'failed'])
+    const expected = devices.filter((d) => d.groups.includes('g-accounting')).map((d) => [d.host, d.online ? 'done' : 'failed'])
     expect(expected).toHaveLength(3)
     expect(job.results.map((r) => [r.host, r.state])).toEqual(expected)
+  })
+
+  it('deletes a user', async () => {
+    const [, gone] = await getUsers()
+    await deleteUser(gone.id)
+    expect((await getUsers()).map((a) => a.id)).not.toContain(gone.id)
+  })
+
+  it('puts a device in several groups and drops a deleted group from it', async () => {
+    const group = await createGroup('Night shift')
+    await setDeviceGroups('HR-PC-01', ['g-hr', group.id])
+    expect((await getDevices()).find((d) => d.host === 'HR-PC-01')?.groups).toEqual(['g-hr', group.id])
+    await deleteGroup(group.id)
+    expect((await getDevices()).find((d) => d.host === 'HR-PC-01')?.groups).toEqual(['g-hr'])
+    expect((await getGroups()).map((g) => g.id)).not.toContain(group.id)
   })
 
   it('turns an unknown route into a message for people', async () => {

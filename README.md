@@ -4,10 +4,10 @@
 
 **BoxMesh** is the web console of EdgeTunnel, used by a company's IT team to monitor and remotely operate its Windows and Linux machines.
 
-Each machine runs **EdgeAgent**, which dials out to the company's self-hosted **EdgePanel** over gRPC + mTLS, so machines need no public IP, inbound ports or VPN. BoxMesh talks only to EdgePanel.
+Each machine runs **BoxAgent**, which dials out to the company's self-hosted **EdgePanel** over gRPC + mTLS, so machines need no public IP, inbound ports or VPN. BoxMesh talks only to EdgePanel.
 
 ```text
-Browser ── BoxMesh ──HTTPS / WebSocket──► EdgePanel (VPS) ◄──gRPC + mTLS── EdgeAgent (each machine)
+Browser ── BoxMesh ──HTTPS / WebSocket──► EdgePanel (VPS) ◄──gRPC + mTLS── BoxAgent (each machine)
 ```
 
 ## Status
@@ -47,7 +47,7 @@ branch to drift out of step.
 - Ant Design 6, with dark and light themes (follows the OS setting; switch in the header)
 - React Router
 - axios + TanStack Query
-- vite-plugin-pwa (installable; one window at a time)
+- vite-plugin-pwa (installable)
 - Vitest for tests, oxlint for linting
 
 ## Getting started
@@ -111,6 +111,9 @@ These are the endpoints the app calls today:
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
 | GET | `/api/devices/{host}/connections` |
+| PUT | `/api/devices/{host}/groups` (`{ groupIds }`, replaces the device's groups) |
+| GET · POST | `/api/groups` (`{ name }` to create) |
+| PATCH · DELETE | `/api/groups/{id}` (rename with `{ name }`; delete keeps the devices) |
 | GET | `/api/enrollments?status=pending` |
 | GET | `/api/metrics/summary?range=1h\|24h\|7d` |
 | GET | `/api/sessions/summary` |
@@ -140,7 +143,7 @@ Pick one way to reach EdgePanel:
 - **EdgePanel on its own domain.** Build with `VITE_API_URL=https://panel.company.com`. The portal sends requests with credentials so EdgePanel's HttpOnly JWT cookies cross origins, which needs on EdgePanel's side:
   - a CORS policy that allows the portal's exact origin **with credentials** (`AllowCredentials`; a `*` origin is refused by browsers);
   - the portal and EdgePanel on the **same site** (same registrable domain, e.g. `portal.company.com` and `panel.company.com`), because the cookies are `SameSite=Strict`. Different domains need `SameSite=None` on EdgePanel.
-- **HTTPS is required.** Without it the app can't be installed as a PWA, and the one-window rule (it uses a Web Lock) is not enforced.
+- **HTTPS is required.** Without it the app can't be installed as a PWA.
 
 ## CI/CD
 

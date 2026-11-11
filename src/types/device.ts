@@ -22,7 +22,8 @@ export interface Device {
   agentVersion: string
   /** Server compares agentVersion with the latest agent release. */
   agentOutdated: boolean
-  group: string
+  /** Ids of the groups this device belongs to; a device can be in several, or none. */
+  groups: string[]
   tag: string
   /** ISO 8601 timestamps */
   lastSeen: string
@@ -36,7 +37,7 @@ export interface Device {
   hardware: DeviceHardware
 }
 
-export type IssueKind = 'cpu' | 'ram' | 'disk' | 'offline'
+export type IssueKind = 'cpu' | 'ram' | 'disk' | 'cert' | 'agent' | 'offline'
 
 export interface Issue {
   kind: IssueKind
@@ -50,6 +51,14 @@ export interface DeviceFilter {
   q: string
   os: string
   status: string
+  /** A group id. */
+  group: string
+}
+
+/** A named set of devices, managed on the Devices page. */
+export interface DeviceGroup {
+  id: string
+  name: string
 }
 
 export interface ConnectionEvent {

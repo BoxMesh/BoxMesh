@@ -11,9 +11,8 @@ web
 The internal IT team of a single company. They self-host EdgePanel on the company's own VPS and use BoxMesh to look after the company's office PCs and servers (Windows, Linux and macOS), which sit behind NAT and firewalls across departments and sites.
 
 Roles:
-- **Admin**: everything, plus users and access, certificates, enrollment and system settings.
-- **Operator**: runs commands and jobs, groups and tags devices, opens remote sessions where permitted.
-- **Viewer**: read-only.
+- **Admin**: everything, plus managing users. There is exactly one Admin.
+- **Operator**: runs commands and opens remote sessions, but only on the devices the Admin gives them: whole groups (including devices added to those groups later) and/or single devices. An Operator with nothing assigned reaches no device. Everyone invited joins as an Operator.
 
 Their job: know which machines are healthy, find the ones that need attention, reach any machine without a VPN or inbound ports, and keep every agent's certificate trusted and current.
 
@@ -28,7 +27,7 @@ Success means an operator can:
 
 ## Positioning
 
-Agents only dial out. Each machine runs one EdgeAgent, which opens a persistent, two-way gRPC stream over mTLS to the company's own EdgePanel. Machines therefore need no public IP, no inbound ports and no VPN.
+Agents only dial out. Each machine runs one BoxAgent, which opens a persistent, two-way gRPC stream over mTLS to the company's own EdgePanel. Machines therefore need no public IP, no inbound ports and no VPN.
 
 The control plane is self-hosted on the company's VPS, not in a vendor's cloud. Every remote action (terminal, desktop, files, internal web apps) travels through that agent tunnel.
 
@@ -36,11 +35,11 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 **Fleet**
 - A deployment manages 100 to 1,000 machines. Lists need sorting, filtering by OS, group, tag and status, real bulk actions, and summaries by group; at the upper end, paging has to happen on the server.
-- Machines are organised into groups (departments or sites, e.g. Accounting, Server, CAD Workshop) and free-form tags.
+- Machines are organised into groups (departments, sites or any set, e.g. Accounting, Server, Critical systems) and free-form tags. A machine can be in several groups, or none. Groups are created, renamed and deleted on the Devices page; deleting a group never deletes its machines.
 
 **Enrollment**
 1. An admin creates an enrollment token.
-2. EdgeAgent is installed on the machine with that token.
+2. BoxAgent is installed on the machine with that token.
 3. The agent generates its private key and a CSR.
 4. An admin approves the request (or the token approves automatically).
 5. EdgePanel signs the certificate and the mTLS tunnel opens.
@@ -50,7 +49,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 **Remote access and usage**
 - Internal web apps on agent machines (e.g. Grafana, in-house dashboards) are reached through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
-- BoxMesh is used mainly in desktop browsers. It can be installed as a PWA, and only one window may be open at a time.
+- BoxMesh is used mainly in desktop browsers. It can be installed as a PWA, and can be open in several tabs or windows at once.
 
 ## Capabilities and Constraints
 
@@ -73,7 +72,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 **EdgePanel API**
 - REST under `/api`. Responses are wrapped as `{ data }` on success and `{ error }` on failure.
 - Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, …).
-- The product owner builds EdgeAgent and EdgePanel. BoxMesh work must not change them.
+- The product owner builds BoxAgent and EdgePanel. BoxMesh work must not change them.
 
 **Language**
 - The goal: the UI ships in English and Vietnamese, switchable by the user, with English as the default.
@@ -86,13 +85,13 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 ## Brand Commitments
 
-- Names: EdgeTunnel (the platform), EdgeAgent, EdgePanel, BoxMesh.
+- Names: EdgeTunnel (the platform), BoxAgent, EdgePanel, BoxMesh.
 - The owner's design canvas set the visual direction; `Design.md` records it and every change made since.
 
 ## Evidence on Hand
 
 - Design canvas, 15 artboards: https://claude.ai/artifact/5TYshytP6kBopBmewcPMv5
-- `../EdgeAgent/README.md`: the agent's purpose and architecture.
+- `../BoxAgent/README.md`: the agent's purpose and architecture.
 - There are no customers, testimonials, benchmarks or production metrics.
 
 ## Product Principles

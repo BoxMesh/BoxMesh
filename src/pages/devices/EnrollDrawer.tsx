@@ -10,8 +10,8 @@ import type { OsFamily } from '../../types/device'
 
 const install = (os: OsFamily, token: string) =>
   os === 'Windows'
-    ? 'edgeagent.exe install `\n  --server https://[VPS_DOMAIN] `\n  --token ' + token
-    : 'sudo ./edgeagent install \\\n  --server https://[VPS_DOMAIN] \\\n  --token ' + token
+    ? 'boxagent.exe install `\n  --server https://[VPS_DOMAIN] `\n  --token ' + token
+    : 'sudo ./boxagent install \\\n  --server https://[VPS_DOMAIN] \\\n  --token ' + token
 
 const LIFETIMES = [
   { value: '1h', label: '1 hour' },
@@ -96,7 +96,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
         </li>
         <li>
           <h3>
-            <span className="step-num">2</span>Install EdgeAgent on the device
+            <span className="step-num">2</span>Install BoxAgent on the device
           </h3>
           <Segmented<OsFamily> aria-label="Operating system" options={['Windows', 'Linux', 'macOS']} value={os} onChange={setOs} />
           <pre className="code">{command}</pre>

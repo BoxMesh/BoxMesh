@@ -16,7 +16,16 @@ export interface EnrollmentToken {
   usedBy: string[]
 }
 
-export type Role = 'Admin' | 'Operator' | 'Viewer'
+export type Role = 'Admin' | 'Operator'
+
+/**
+ * The devices an Operator may act on: every device in these groups (including ones added to a group later), plus
+ * these single devices. An Admin reaches every device, so an Admin's access is ignored.
+ */
+export interface DeviceAccess {
+  groupIds: string[]
+  hosts: string[]
+}
 
 export interface Account {
   id: string
@@ -25,6 +34,7 @@ export interface Account {
   role: Role
   lastSignIn: string
   disabled: boolean
+  access: DeviceAccess
 }
 
 export interface Settings {

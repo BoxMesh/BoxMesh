@@ -18,6 +18,7 @@
   --positive: #7fd88f;
   --warning: #facc15;
   --warning-bg: #2a2410;
+  --warning-fill: #facc15;
   --error: #ff6b81;
   --code-bg: #090b0c;
   --code-text: #f1efe7;
@@ -48,6 +49,7 @@
   --positive: #1f7a3a;
   --warning: #854d0e;
   --warning-bg: #fefce8;
+  --warning-fill: #eab308;
   --error: #be123c;
   --code-bg: #101416;
   --code-text: #f1efe7;
@@ -352,20 +354,179 @@ body .ant-card-head-title::before {
   border-color: #ea580c;
 }
 
-body .stat-link,
-body .stat-link:hover {
+/* ---------- Dashboard ---------- */
+/* Health strip: fleet health (with a stacked bar) and three numbers, side by side; 2 + 2 below 1200px, a column on phones. */
+.health-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+}
+
+.health-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px;
+  min-width: 0;
+}
+
+.health-cell + .health-cell {
+  border-left: 1px solid var(--border);
+}
+
+.health-big {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.health-unit {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.health-bar {
+  display: flex;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-raised);
+}
+
+.health-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.health-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.health-legend i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.health-bar .healthy,
+.health-legend .healthy {
+  background: var(--positive);
+}
+
+.health-bar .warning,
+.health-legend .warning {
+  background: var(--warning-fill);
+}
+
+.health-bar .critical,
+.health-legend .critical {
+  background: var(--error);
+}
+
+.health-bar .offline,
+.health-legend .offline {
+  background: var(--text-disabled);
+}
+
+@media (max-width: 1199px) {
+  .health-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .health-cell:nth-child(3) {
+    border-left: 0;
+  }
+
+  .health-cell:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 575px) {
+  .health-strip {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .health-cell + .health-cell {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* Queue on the left, resources and activity on the right; one column below 1200px. */
+.dash-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.dash-side {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+@media (max-width: 1199px) {
+  .dash-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+body .ant-table-wrapper td.queue-group {
+  background: var(--bg-raised);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding-block: 6px;
+}
+
+body .ant-table-wrapper td.queue-stripe-cell {
+  padding-inline: 12px 0;
+}
+
+.queue-stripe {
   display: block;
-  color: inherit;
+  width: 4px;
+  height: 22px;
+  border-radius: 2px;
 }
 
-/* The stat cards are links: a stronger edge and shadow on hover so they read as clickable. */
-.stat-link .ant-card {
-  transition: border-color 150ms, box-shadow 150ms;
+.queue-stripe.critical {
+  background: var(--error);
 }
 
-.stat-link:hover .ant-card {
-  border-color: var(--border-hover);
-  box-shadow: 0 8px 20px -12px rgba(0, 0, 0, 0.35);
+.queue-stripe.warning {
+  background: var(--warning-fill);
+}
+
+.queue-stripe.offline {
+  background: var(--text-disabled);
+}
+
+/* Only the issue tags wrap; host names, times and column titles stay on one line. */
+.dash-cols .ant-table-thead th,
+.queue-nowrap {
+  white-space: nowrap;
+}
+
+.queue-tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.queue-tags .ant-tag {
+  margin: 0;
 }
 
 .kv {
@@ -542,6 +703,91 @@ body .app-header .ant-breadcrumb a::before {
   gap: 2px;
 }
 
+/* A device's groups: tags that wrap, then a small edit button that opens the multi-select. */
+.device-groups {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.device-groups .ant-tag {
+  margin: 0;
+}
+
+body .icon-btn.device-groups-edit {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+body .icon-btn.device-groups-edit:hover {
+  background: var(--bg-strong);
+  color: var(--text);
+}
+
+.device-groups-select {
+  width: 280px;
+  max-width: 70vw;
+}
+
+/* Access editor: two labelled multi-selects and a live count. */
+.access-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Two-list access picker (Available â‡„ Chosen). Lists share the width; on a phone they stack and the arrows turn
+   to point down and up. */
+.access-transfer .ant-transfer-section {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+  height: 420px;
+}
+
+.access-item {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+@media (max-width: 575px) {
+  .access-transfer {
+    flex-direction: column;
+  }
+
+  .access-transfer .ant-transfer-section {
+    height: 320px;
+  }
+
+  .access-transfer .ant-transfer-actions {
+    flex-direction: row;
+    margin: 8px 0;
+  }
+
+  .access-transfer .ant-transfer-actions svg {
+    transform: rotate(90deg);
+  }
+}
+
+.access-count {
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* Dialog footer: a destructive action on the left, Cancel and Save on the right. */
+.drawer-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .row-actions .icon-btn {
   width: 28px;
   height: 28px;
@@ -615,10 +861,6 @@ body .icon-btn[aria-disabled='true'] {
   justify-content: center;
   padding: 16px;
   box-sizing: border-box;
-}
-
-.brand-mark {
-  color: var(--accent);
 }
 
 /* Lockup: mark plus wordmark, "Mesh" in the accent (design's Logo.html). */
@@ -815,7 +1057,7 @@ body .icon-btn[aria-disabled='true'] {
   gap: 12px;
 }
 
-/* Sign in ⇄ reset: the blocks one mode does not use fold to zero height and fade, so the card shrinks
+/* Sign in â‡„ reset: the blocks one mode does not use fold to zero height and fade, so the card shrinks
    and grows instead of jumping. The -12px takes back the flex gap a folded block would still hold. */
 .login-fold {
   display: grid;

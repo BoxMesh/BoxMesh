@@ -39,7 +39,7 @@ always with a word, a number or an icon.
 | `bg-strong` | `#232b2f` | `#e2e6da` | Selected menu item; hover on buttons that sit on an already-hovered row; account button hover |
 | `bg-track` | `#151a1d` | `#eceee9` | Segmented track, progress track |
 | `border` | `#2a3135` | `#d6dad0` | Card borders, table dividers, header and sider rules |
-| `border-hover` | `#3a4247` | `#c3c8bd` | Card and stat-card border on hover |
+| `border-hover` | `#3a4247` | `#c3c8bd` | Card border on hover |
 | `border-control` | `#5f676b` | `#8a9188` | Inputs, selects, default buttons |
 | `text` | `#f1efe7` | `#101416` | Primary text |
 | `text-secondary` | `#a7adb0` | `#4a5256` | Labels, captions, breadcrumbs, idle menu items, offline rows |
@@ -234,10 +234,18 @@ Track `bg-track`, padding 2. Selected: `brand` fill, `on-brand`, 600.
 8×8 `accent` square (radius 3, orange glow in dark); optional link on the right ("All devices").
 A table that ends a card is clipped to the card's bottom corners.
 
-### Statistic card (Dashboard)
-The whole card is a link. Label (`text-secondary`) → value 26/600 → 12 px footnote.
-Value colour by meaning: success green = online, `text-secondary` = offline, error = alerts.
-Hover: border `border-hover` and a soft shadow. No lift.
+### Dashboard (triage first)
+- **Health strip** (one card, four cells split by `border` rules; 2 + 2 below 1200 px, one column on phones):
+  Fleet health ("7 of 12 online", 28/34 600) with a stacked bar and a legend in words (healthy `positive`,
+  warning `warning-fill`, critical `error`, offline `text-disabled`); Needs attention now (critical count, red when
+  above 0); Certificates within 30 days (warning colour, soonest named); Average latency (tunnels and reconnects).
+- **Needs attention** queue (left, about 63 %): one table grouped Critical → Warning → Offline by `triage()` in
+  `utils/devices.ts` (any red issue is critical; a certificate within 7 days is red, within 30 a warning; an outdated
+  agent is a warning). Each group opens with a header row; each device has a 4 px severity stripe, all its issue tags
+  (they wrap), values, last seen and a next step: Terminal for a machine running hot, Open otherwise.
+- **Right column**: Average resources (meters, warning fill above 70 %) and Recent activity.
+- `--warning-fill` (`#facc15` dark, `#eab308` light) is the bright yellow for bars and stripes; `--warning` stays the
+  text colour.
 
 ### Table
 - Header `bg-raised`, 12 px uppercase with an icon per column; rows hover `bg-raised`.
@@ -252,8 +260,8 @@ Hover: border `border-hover` and a soft shadow. No lift.
 ### Certificate expiry (`src/components/CertExpiry.tsx`)
 The date in `dd Mon yyyy`, coloured by `certTone` (`src/utils/devices.ts`): red within 7 days, amber within 30, plain
 otherwise or when revoked. No "N days left" text in the cell; the count is in the tooltip and `aria-label`.
-Used on Device detail. The Dashboard alert lists certificates within 30 days and turns
-red when any is within 7.
+Used on Device detail. On the Dashboard, certificates join the Needs attention queue (critical within 7 days, a
+warning within 30).
 
 ### Tag
 12 px, radius 10, outlined, colours from the semantic sets. "+ Tag" is a dashed default-size tag button.
@@ -288,6 +296,36 @@ Ring per event: success green = normal, error = failure or offline. Time 12 px s
 - Transfers card: one group per copy ("Copying 2 files to HOST" + target path, Cancel while running), one row per file
   with a progress bar (success green) and its state. The target folder reloads when a copy finishes.
 
+### Device groups (`src/components/DeviceGroups.tsx`, `pages/devices/GroupsDrawer.tsx`)
+- A device belongs to any number of groups (`device.groups`, a list of group ids; names come from `/groups`).
+- Shown as info-coloured tags that wrap, then a 24 px edit button. With no group, a dashed "+ Add to group" button
+  takes their place and opens the same picker.
+- The picker is a popover with a multi-select; each change saves at once (no Save button). Used on the Devices table
+  and the Device detail header.
+- "Manage groups" (default button beside Enroll agent) opens a drawer: add a group (name required, at most 40
+  characters, unique ignoring case), a table of groups with their device count, rename in place (Enter saves, Esc
+  cancels) and delete with a confirm that says how many devices leave the group. Devices are never deleted with it.
+- The Groups column header filters the table by one group (`?group=` in the URL).
+
+### Users table and user page (`pages/users/UsersPage.tsx`, `UserPage.tsx`, `Access.tsx`)
+- The table only shows; nothing is edited on a row. Groups (info tags) and Devices (neutral tags) show at most
+  three then "+N" (the rest in a tooltip), "—" when empty; the Admin reads "All groups" / "All devices". Status is a
+  tag: Active (success) or Disabled (neutral).
+- The name links to the person's page, `/users/:id`; Actions holds one 28 px Edit button that opens the same page.
+  The breadcrumb reads Users & Access / <name>.
+- The user page, like device detail: back button, name, role tag and status tag in the title row, Delete user (danger,
+  with a confirm) on the right. Then an Account card (email, role, last sign-in, devices reached, and the "Can sign
+  in" switch), a "What they can reach" card with the access picker, and Discard changes / Save changes under them.
+  Nothing saves until Save changes. Last, a "Devices they reach (N)" table from what is saved: device (links to its
+  page), status, groups, and whether it is reached through a group or as a single device.
+- The Admin's page and your own can't be turned off or deleted: the switch is disabled and the header explains why
+  instead of offering Delete. The Admin's page has no Save row: they reach every device.
+- Inviting is an 880 px dialog: email, the access picker, then Cancel and Send invitation in the footer.
+- The access picker is a Segmented switch, Groups (n) | Single devices (n), over an antd `Transfer`: Available and
+  Chosen lists 420 px tall, each with search and a select-all checkbox, moved with two 32 px arrow buttons (like
+  Django's two-list picker). No drag and drop: on a phone it fights the scroll. Below 576 px the lists stack, 320 px
+  each, and the arrows turn to point down and up.
+
 ### Drawer
 Forms open in a drawer from the right (Enroll agent, New job, Create token, Invite person). An issued secret stays on
 screen in the drawer with a "Copy" button until the drawer closes.
@@ -318,10 +356,6 @@ toast "<Doing something> isn't available yet." They never fake success.
   Folded blocks are `inert`. Success shows "Check your inbox" without saying whether the account exists.
 - The session lives in `sessionStorage`, so it ends with the browser tab.
 
-### Already open (`src/components/AlreadyOpen.tsx`)
-A second tab or window shows a full-page notice with the logo mark instead of the app, until the first one closes
-(Web Lock in `src/utils/singleInstance.ts`).
-
 ### Icons
 Inline stroke icons in `src/components/Icon.tsx`: 24 viewBox, stroke 2, round caps and joins, `currentColor`.
 Add new ones there in the same style; don't mix in antd's icon set. No emoji.
@@ -341,7 +375,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 
 ## 8. Navigation and screens
 
-**Roles**: Admin · Operator · Viewer (plus per-device permissions for terminal and desktop).
+**Roles**: Admin (exactly one) · Operator (everyone invited).
 
 **Sider groups**
 - Overview: Dashboard, Devices
@@ -351,14 +385,14 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Screen | Route | What is on it |
 |---|---|---|
 | Sign in | `/login` | Sign-in card, password reset, demo entry |
-| Dashboard | `/dashboard` | Time range; cert alert; Total / Online / Offline stat cards; Average resources; Connection status; Devices needing attention; Recent activity |
-| Devices | `/devices` | Table with header filters, ping status, row remote actions; Enroll agent drawer |
-| Device detail | `/devices/:id` | Back, name, alias, status, group; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); tabs Overview (device information, connection card, alert thresholds) and Connection |
+| Dashboard | `/dashboard` | Time range; health strip (fleet health bar, needs attention now, certificates within 30 days, latency); Needs attention queue grouped Critical / Warning / Offline; Average resources; Recent activity |
+| Devices | `/devices` | Table with header filters (incl. Groups), group tags with an edit picker, ping status, row remote actions; Manage groups drawer; Enroll agent drawer |
+| Device detail | `/devices/:id` | Back, name, alias, status, group tags with the edit picker; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); tabs Overview (device information, connection card, alert thresholds) and Connection |
 | Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
 | Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
 | Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload. Two devices: two panes, copy and sync between them, Transfers |
 | Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
-| Users & Access | `/users` | Role cards; people table with role select, last sign-in, active switch; Invite drawer (email, role) |
+| Users & Access | `/users` | Role cards (Admin, Operator); a read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Invite dialog (email, what they can reach; joins as Operator) |
 
 ---
 
@@ -367,7 +401,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
 (all under `VITE_API_URL`, default `/api`): `/log-in`, `/log-out`, `/forgot-password` (placeholder name), `/devices`
 and `/devices/{host}` with `/connections`, `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
-`/enrollment-tokens`, `/certificates`, `/metrics/summary`, `/sessions/summary`, `/jobs`, `/audit`, `/users`,
+`/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/certificates`, `/metrics/summary`, `/sessions/summary`, `/jobs`, `/audit`, `/users`,
 `/settings`, `/health`, `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, `/ws/desktop/{id}`); internal web apps go
@@ -384,14 +418,13 @@ Data flow: page → `services/queries.ts` (query keys) → `services/*Service.ts
 Demo mode (`services/demo.ts`) swaps the axios adapter for one that answers every endpoint from `demoData.ts`, so
 no screen has a demo-only branch.
 
-PWA: installable (manifest in `vite.config.ts`), one window at a time: `launch_handler: focus-existing` for the
-installed app, plus the Web Lock for browser tabs.
+PWA: installable (manifest in `vite.config.ts`). Any number of tabs or windows may be open at once.
 
 ---
 
 ## 11. Open points
 
-1. Architecture artboard says "EdgeAgent (Go)"; the repo's EdgeAgent is C# / .NET.
+1. Architecture artboard says "BoxAgent (Go)"; the repo's BoxAgent is C# / .NET.
 2. Charts (a Metrics tab) are named in the canvas but not drawn or built; series colours are still to define.
 3. No translation layer yet (PRODUCT.md, Language).
 4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with an accent icon.
