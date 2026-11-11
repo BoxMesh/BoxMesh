@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createChannel, deleteAlertRule, deleteChannel, getAlerts, getChannels } from './alertService'
 import { createToken, deleteUser, getTokens, getUsers, revokeToken } from './adminService'
 import { install } from './demo'
-import { createGroup, deleteGroup, getDeviceMetrics, getDevices, getGroups, getProcesses, setDeviceGroups } from './deviceService'
+import { createGroup, deleteGroup, getDeviceMetrics, getDevices, getDiskForecast, getGroups, getProcesses, setDeviceGroups } from './deviceService'
 import { runCommand } from './remoteService'
 
 // The demo answers through the real axios instance and its interceptor, so these also prove the
@@ -15,6 +15,13 @@ describe('demo mode', () => {
     expect(devices).toHaveLength(12)
     // Which agents are up is random per load; the addresses are always on the office LAN.
     expect(devices.every((d) => /^192\.168\.\d+\.\d+$/.test(d.ip))).toBe(true)
+  })
+
+  it('forecasts filling disks, soonest full first', async () => {
+    const forecast = await getDiskForecast()
+    expect(forecast.length).toBeLessThanOrEqual(5)
+    expect(forecast.every((f) => f.perDay > 0 && f.daysLeft > 0)).toBe(true)
+    expect(forecast.map((f) => f.daysLeft)).toEqual(forecast.map((f) => f.daysLeft).toSorted((a, b) => a - b))
   })
 
   it('answers a known command and refuses an unknown one', async () => {

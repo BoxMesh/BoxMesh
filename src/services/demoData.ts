@@ -1,7 +1,7 @@
 import type { Alert, AlertChannel, AlertRule } from '../types/alert'
 import type { Account, CommandRule, EnrollmentToken } from '../types/admin'
 import type { RemoteSessions, TimeRange } from '../types/dashboard'
-import type { Device, DeviceGroup, DeviceProcess, MetricPoint, OsFamily, PendingEnrollment, ProcessStatus } from '../types/device'
+import type { Device, DeviceGroup, DeviceProcess, DiskForecast, MetricPoint, OsFamily, PendingEnrollment, ProcessStatus } from '../types/device'
 import type { DesktopSession, FileEntry, FileListing, RemoteService, Shell } from '../types/remote'
 import { DAY, MINUTE, SECOND, fromNow } from '../utils/time'
 
@@ -166,6 +166,24 @@ export function deviceMetrics(host: string, range: TimeRange): MetricPoint[] {
     netIn: mbps(netIn[i]),
     netOut: mbps(netOut[i]),
   }))
+}
+
+/** Fits a line through each online device's 7 days of disk use and keeps the five that fill up soonest. */
+export function diskForecast(): DiskForecast[] {
+  return devices
+    .filter((d) => d.online)
+    .flatMap((d) => {
+      const points = deviceMetrics(d.host, '7d')
+      const xs = points.map((p) => Date.parse(p.at) / DAY)
+      const ys = points.map((p) => p.disk)
+      const mx = xs.reduce((a, b) => a + b, 0) / xs.length
+      const my = ys.reduce((a, b) => a + b, 0) / ys.length
+      const perDay = xs.reduce((sum, x, i) => sum + (x - mx) * (ys[i] - my), 0) / xs.reduce((sum, x) => sum + (x - mx) ** 2, 0)
+      if (!(perDay > 0.05)) return []
+      return [{ host: d.host, disk: d.disk, perDay: Math.round(perDay * 10) / 10, daysLeft: (100 - d.disk) / perDay }]
+    })
+    .toSorted((a, b) => a.daysLeft - b.daysLeft)
+    .slice(0, 5)
 }
 
 type ProcessSeed = [name: string, user: string, cpu: number, memoryMb: number, status?: ProcessStatus]

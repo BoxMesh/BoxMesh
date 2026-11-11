@@ -353,10 +353,10 @@ body .ant-card-head-title::before {
 }
 
 /* ---------- Dashboard ---------- */
-/* Health strip: fleet health (with a stacked bar) and three numbers, side by side; 2 + 2 below 1200px, a column on phones. */
+/* Health strip: fleet health (with a stacked bar) and three cells, side by side; 2 + 2 below 1200px, a column on phones. */
 .health-strip {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr)) minmax(0, 1.2fr);
 }
 
 .health-cell {
@@ -434,9 +434,122 @@ body .ant-card-head-title::before {
   background: var(--text-disabled);
 }
 
+/* Agents cell: the fleet by OS. */
+.health-bar .os-1,
+.health-legend .os-1 {
+  background: var(--series-1);
+}
+
+.health-bar .os-2,
+.health-legend .os-2 {
+  background: var(--series-2);
+}
+
+.health-bar .os-3,
+.health-legend .os-3 {
+  background: var(--text-disabled);
+}
+
+.group-health .health-bar {
+  width: 140px;
+  margin-top: 0;
+}
+
+/* Top usage and Disk filling up: one row per device, name · bar · value. */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rank-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rank-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(64px, 140px) 96px;
+  gap: 12px;
+  align-items: center;
+  min-height: 52px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.rank-row:last-child {
+  border-bottom: 0;
+}
+
+.rank-row .ant-progress {
+  margin: 0;
+}
+
+.rank-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rank-value {
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.rank-value.hot {
+  color: var(--error);
+}
+
+.card-note {
+  margin: 0;
+  padding: 16px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 @media (max-width: 1199px) {
   .health-strip {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .health-cell:nth-child(3) {
+    border-left: 0;
+  }
+
+  .health-cell:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 991px) {
+  .grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Phones: name and value on one line, the bar under them. */
+@media (max-width: 575px) {
+  .rank-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 4px;
+  }
+
+  .rank-row .ant-progress {
+    grid-column: 1 / -1;
+    order: 1;
   }
 }
 

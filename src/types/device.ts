@@ -82,6 +82,17 @@ export interface DeviceProcess {
   memoryMb: number
 }
 
+/** A disk that is filling up, as EdgePanel projects it from the last 7 days of usage. */
+export interface DiskForecast {
+  host: string
+  /** Percent used now */
+  disk: number
+  /** Percentage points gained per day */
+  perDay: number
+  /** Days until 100 % at that rate */
+  daysLeft: number
+}
+
 export interface PendingEnrollment {
   host: string
   os: string

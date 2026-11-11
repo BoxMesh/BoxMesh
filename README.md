@@ -122,7 +122,8 @@ These are the endpoints the app calls today:
 | GET · POST | `/api/enrollment-tokens` (`{ group, lifetime, requiresApproval }` to create; the reply holds the only full copy) |
 | DELETE | `/api/enrollment-tokens/{id}` (revoke; placeholder name) |
 | GET | `/api/sessions/summary` |
-| GET · POST | `/api/alerts` (`{ name, ruleIds, groupIds, hosts, channelIds, message, enabled }`, both scope lists empty = every device; placeholder name) |
+| GET | `/api/disk-forecast` (`[{ host, disk, perDay, daysLeft }]`, the five disks full soonest at their last 7 days' rate; placeholder name) |
+| GET · POST | `/api/alerts` (`{ name, ruleIds, groupIds, hosts, channelIds, message }`, both scope lists empty = every device; placeholder name) |
 | PATCH · DELETE | `/api/alerts/{id}` |
 | GET · POST | `/api/alert-rules` (`{ name, metric: cpu\|ram\|disk\|offline, threshold, minutes }`; delete drops the rule from every alert; placeholder name) |
 | PATCH · DELETE | `/api/alert-rules/{id}` |

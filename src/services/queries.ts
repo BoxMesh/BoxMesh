@@ -3,7 +3,7 @@ import type { TimeRange } from '../types/dashboard'
 import { getCommandRules, getTokens, getUsers } from './adminService'
 import { getAlertRules, getAlerts, getChannels } from './alertService'
 import { getRemoteSessions } from './dashboardService'
-import { getDevice, getDeviceMetrics, getDevices, getProcesses, getGroups, getPendingEnrollments } from './deviceService'
+import { getDevice, getDeviceMetrics, getDevices, getDiskForecast, getProcesses, getGroups, getPendingEnrollments } from './deviceService'
 import { getFiles, getServices, getTransfer } from './remoteService'
 
 // Shared query keys, so every screen reading the same data hits the same cache entry.
@@ -23,6 +23,8 @@ export const deviceMetricsQuery = (host: string, range: TimeRange) =>
 
 export const processesQuery = (host: string) =>
   queryOptions({ queryKey: ['devices', host, 'processes'], queryFn: () => getProcesses(host) })
+
+export const diskForecastQuery = queryOptions({ queryKey: ['disk-forecast'], queryFn: getDiskForecast })
 
 export const tokensQuery = queryOptions({ queryKey: ['enrollment-tokens'], queryFn: getTokens })
 

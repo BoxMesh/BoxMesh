@@ -1,6 +1,6 @@
 import { isAxiosError } from 'axios'
 import type { TimeRange } from '../types/dashboard'
-import type { Device, DeviceGroup, DeviceProcess, MetricPoint, PendingEnrollment } from '../types/device'
+import type { Device, DeviceGroup, DeviceProcess, MetricPoint, PendingEnrollment, DiskForecast } from '../types/device'
 import { http } from './http'
 
 // Endpoints follow the canvas's proposed EdgePanel API; /metrics, /processes and /enrollments are not in it yet.
@@ -28,6 +28,12 @@ export async function getDeviceMetrics(host: string, range: TimeRange) {
 
 export async function getProcesses(host: string) {
   const { data } = await http.get<DeviceProcess[]>(`/devices/${encodeURIComponent(host)}/processes`)
+  return data
+}
+
+// /disk-forecast is a proposal for EdgePanel: the disks filling up fastest, soonest full first.
+export async function getDiskForecast() {
+  const { data } = await http.get<DiskForecast[]>('/disk-forecast')
   return data
 }
 

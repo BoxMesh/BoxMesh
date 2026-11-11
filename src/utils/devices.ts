@@ -1,5 +1,5 @@
 import type { DeviceAccess } from '../types/admin'
-import type { Device, DeviceFilter, Issue, OsFamily } from '../types/device'
+import type { Device, DeviceFilter, DeviceGroup, Issue, OsFamily } from '../types/device'
 import { MINUTE } from './time'
 
 // Default per-device alert thresholds (percent), as drawn on the device detail screen.
@@ -36,6 +36,35 @@ export function triage(list: Device[]): TriageRow[] {
       return [{ device, severity, issues }]
     })
     .toSorted((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
+}
+
+export interface GroupHealth {
+  group: DeviceGroup
+  total: number
+  online: number
+  healthy: number
+  warning: number
+  critical: number
+  offline: number
+  /** The member that needs attention most, if any. */
+  worst?: TriageRow
+}
+
+const rankOf = (g: GroupHealth) => (g.critical ? 0 : g.warning ? 1 : g.offline ? 2 : 3)
+
+/** Each group's devices counted the way the dashboard counts the fleet, groups in trouble first. */
+export function groupHealth(list: Device[], groups: DeviceGroup[]): GroupHealth[] {
+  const rows = triage(list)
+  return groups
+    .map((group) => {
+      const members = list.filter((d) => d.groups.includes(group.id))
+      const mine = rows.filter((r) => r.device.groups.includes(group.id))
+      const count = (s: Severity) => mine.filter((r) => r.severity === s).length
+      const online = members.filter((d) => d.online).length
+      const [critical, warning] = [count('critical'), count('warning')]
+      return { group, total: members.length, online, healthy: online - critical - warning, warning, critical, offline: count('offline'), worst: mine[0] }
+    })
+    .toSorted((a, b) => rankOf(a) - rankOf(b) || a.group.name.localeCompare(b.group.name))
 }
 
 export function filterDevices(list: Device[], f: DeviceFilter): Device[] {

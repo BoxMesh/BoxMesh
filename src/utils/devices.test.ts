@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Device } from '../types/device'
-import { filterDevices, issuesOf, membershipChanges, reachable, summarize, triage } from './devices'
+import { filterDevices, groupHealth, issuesOf, membershipChanges, reachable, summarize, triage } from './devices'
 import { DAY, fromNow, MINUTE } from './time'
 
 const NOW = Date.parse('2026-11-03T12:00:00Z')
@@ -41,6 +41,23 @@ describe('triage', () => {
       ['CPU', 'critical'],
       ['DISK', 'warning'],
       ['OFF', 'offline'],
+    ])
+  })
+})
+
+describe('groupHealth', () => {
+  it('counts each group and puts groups in trouble first', () => {
+    const groups = [{ id: 'g-a', name: 'A' }, { id: 'g-b', name: 'B' }, { id: 'g-c', name: 'C' }]
+    const list = [
+      dev({ host: 'A1', groups: ['g-a'] }),
+      dev({ host: 'B1', groups: ['g-b', 'g-a'], cpu: 95 }),
+      dev({ host: 'B2', groups: ['g-b'], online: false }),
+    ]
+    const rows = groupHealth(list, groups)
+    expect(rows.map((g) => [g.group.id, g.total, g.online, g.healthy, g.critical, g.offline, g.worst?.device.host])).toEqual([
+      ['g-a', 2, 2, 1, 1, 0, 'B1'],
+      ['g-b', 2, 1, 0, 1, 1, 'B1'],
+      ['g-c', 0, 0, 0, 0, 0, undefined],
     ])
   })
 })

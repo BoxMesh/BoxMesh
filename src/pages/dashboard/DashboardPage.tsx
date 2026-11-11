@@ -4,9 +4,13 @@ import { Link } from 'react-router'
 import { Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { tone } from '../../config/theme'
-import { devicesQuery, remoteSessionsQuery } from '../../services/queries'
+import { devicesQuery, groupsQuery, remoteSessionsQuery } from '../../services/queries'
 import { summarize, triage, type Severity, type TriageRow } from '../../utils/devices'
 import { ago } from '../../utils/time'
+import DiskForecastCard from './DiskForecastCard'
+import GroupHealthCard from './GroupHealthCard'
+import HealthBar from './HealthBar'
+import TopUsageCard from './TopUsageCard'
 
 const SEVERITY_LABEL: Record<Severity, string> = { critical: 'Critical', warning: 'Warning', offline: 'Offline' }
 
@@ -80,7 +84,9 @@ const queueColumns: TableProps<QueueRow>['columns'] = [
 ]
 
 export default function DashboardPage() {
-  const [{ data: devices }, { data: remoteSessions }] = useSuspenseQueries({ queries: [devicesQuery, remoteSessionsQuery] })
+  const [{ data: devices }, { data: groups }, { data: remoteSessions }] = useSuspenseQueries({
+    queries: [devicesQuery, groupsQuery, remoteSessionsQuery],
+  })
   const s = summarize(devices)
   const rows = triage(devices)
   const count = (severity: Severity) => rows.filter((r) => r.severity === severity).length
@@ -101,6 +107,12 @@ export default function DashboardPage() {
     { key: 'critical', count: critical, label: 'critical' },
     { key: 'offline', count: s.offline, label: 'offline' },
   ]
+  const outdated = devices.filter((d) => d.agentOutdated).length
+  const families = (['Windows', 'Linux', 'macOS'] as const).map((family, i) => ({
+    key: `os-${i + 1}`,
+    count: s.byFamily[family] ?? 0,
+    label: family,
+  }))
 
   return (
     <div className="stack">
@@ -116,12 +128,7 @@ export default function DashboardPage() {
             <span className="health-big">
               {s.online} <span className="health-unit">of {s.total} online</span>
             </span>
-            {/* The bar is a picture of the legend below it, which carries the same numbers in words. */}
-            <div className="health-bar" aria-hidden="true">
-              {segments.map((seg) => (
-                <i key={seg.key} className={seg.key} style={{ flexGrow: seg.count }} />
-              ))}
-            </div>
+            <HealthBar parts={segments} />
             <div className="health-legend">
               {segments.map((seg) => (
                 <span key={seg.key}>
@@ -146,8 +153,23 @@ export default function DashboardPage() {
               {s.avgLatency} <span className="health-unit">ms</span>
             </span>
             <span className="sub">
-              {s.online} tunnels open · {remoteSessions.reconnects24h} reconnects in 24 h
+              {remoteSessions.reconnects24h} reconnects in 24 h
             </span>
+          </div>
+          <div className="health-cell">
+            <span className="muted">Agents</span>
+            <span className="health-big">
+              {outdated} <span className="health-unit">outdated</span>
+            </span>
+            <HealthBar parts={families} />
+            <div className="health-legend">
+              {families.map((f) => (
+                <span key={f.key}>
+                  <i className={f.key} />
+                  {f.label} {f.count}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </Card>
@@ -166,6 +188,13 @@ export default function DashboardPage() {
           }}
         />
       </Card>
+
+      <GroupHealthCard devices={devices} groups={groups} />
+
+      <div className="grid-2">
+        <TopUsageCard devices={devices} />
+        <DiskForecastCard />
+      </div>
     </div>
   )
 }

@@ -190,6 +190,7 @@ const routes: Route[] = [
   ['get', /^\/devices\/([^/]+)\/metrics$/, (m, c) => seed.deviceMetrics(decodeURIComponent(m[1]), (param(c, 'range') || '24h') as TimeRange)],
   ['get', /^\/devices\/([^/]+)\/processes$/, (m) => seed.processes(decodeURIComponent(m[1]))],
   ['get', /^\/sessions\/summary$/, () => seed.remoteSessions],
+  ['get', /^\/disk-forecast$/, () => seed.diskForecast()],
 
   // ---- Remote ----
   [

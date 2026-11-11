@@ -235,14 +235,24 @@ Track `bg-track`, padding 2. Selected: `brand` fill, `on-brand`, 600.
 A table that ends a card is clipped to the card's bottom corners.
 
 ### Dashboard (triage first)
-- **Health strip** (one card, three cells split by `border` rules; one column on phones):
+- **Health strip** (one card, four cells split by `border` rules; 2 + 2 below 1200 px, one column on phones):
   Fleet health ("7 of 12 online", 28/34 600) with a stacked bar and a legend in words (healthy `positive`,
   warning `warning-fill`, critical `error`, offline `text-disabled`); Needs attention now (critical count, red when
-  above 0, with how many are over the CPU or RAM threshold); Average latency (tunnels and reconnects).
+  above 0, with how many are over the CPU or RAM threshold); Average latency (reconnects in 24 h); Agents (how many
+  run an outdated agent, with a bar and legend of the fleet by OS: Windows `--series-1`, Linux `--series-2`, macOS
+  `text-disabled`).
 - **Alert** queue (full width): one table grouped Critical → Warning → Offline by `triage()` in
   `utils/devices.ts` (any red issue is critical: CPU or RAM over threshold; a full disk and an outdated agent are
   warnings). Certificates are not tracked. Each group opens with a header row; each device has a 4 px severity stripe, all its issue tags
   (they wrap), values, last seen and an Action column with Open, which goes to the device's page (as does its name).
+- **Health by group** (full width): one row per group from `groupHealth()` in `utils/devices.ts`, groups in trouble
+  first: Group (links to `/devices?group=`), Online ("3 of 4"), a 140 px health bar, issue tags (critical, warning,
+  offline, or Healthy), Worst device with its first issue, and View devices. Pages at 10.
+- **Top usage** and **Disk filling up** side by side (stacked below 992 px), one row per device: name, a bar, the
+  value. Top usage ranks the five online devices by CPU, RAM or Disk (a small Segmented); over the alert threshold
+  the bar and value turn `error` and gain a warning icon. Disk filling up shows `/disk-forecast` (used %, % a day,
+  "~N days" to full; 14 days or fewer is `error` with the icon) and has its own loading, error and empty states. On
+  phones the bar moves under the name.
 - `--warning-fill` (`#facc15` dark, `#eab308` light) is the bright yellow for bars and stripes; `--warning` stays the
   text colour.
 
@@ -415,7 +425,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Screen | Route | What is on it |
 |---|---|---|
 | Sign in | `/login` | Sign-in card, password reset, demo entry |
-| Dashboard | `/dashboard` | Health strip (fleet health bar, needs attention now, latency); Alert queue grouped Critical / Warning / Offline |
+| Dashboard | `/dashboard` | Health strip (fleet health bar, needs attention now, latency, agents by OS); Alert queue grouped Critical / Warning / Offline; Health by group; Top usage and Disk filling up |
 | Devices | `/devices` | Table with header filters (incl. Groups), group tags with an edit picker, ping status, row remote actions; Manage groups (links to Groups); Enroll agent drawer |
 | Groups | `/groups` | Table: group, devices, members, Add devices (two-list dialog), rename / delete; New group |
 | Device detail | `/devices/:id` | Back, name, alias, the same Online / Offline status button as the Devices table (click to ping, offline included); Terminal (primary), Desktop, Files, Service. A "Device information" card (hostname, OS, IP, MAC, agent version shown as in the Devices table by `AgentVersion`, uptime, enrolled at, Groups with the edit picker). Below it one card with two tabs, like Task Manager (`?tab=performance` keeps the second): **Processes (N)** (default; search, Name, PID, Status, User, CPU sorted high first, Memory, End task not supported yet; polls every 5 s only while open; a note while offline) and **Performance** (1h / 24h / 7d switch; CPU, RAM and Disk over time, 0–100 %, dashed alert line, hardware beside each name; Network with Received `--series-1` filled and Sent `--series-2`, Mbps on its own scale; y labels in a 56 px gutter, time marks on round local times, crosshair tooltip) |
@@ -437,7 +447,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
 (all under `VITE_API_URL`, default `/api`): `/log-in`, `/log-out`, `/forgot-password` (placeholder name), `/devices`
 and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
-`/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
+`/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/disk-forecast`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
 `/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, `/ws/desktop/{id}`); internal web apps go
