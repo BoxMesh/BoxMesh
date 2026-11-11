@@ -49,6 +49,7 @@ export default function LoginPage() {
 
   return (
     <div className="login">
+      <title>{`BoxMesh - ${resetting ? t('Reset password') : t('Sign in')}`}</title>
       <LoginBackground />
       <div className="login-toggle">
         <LanguageSelect />

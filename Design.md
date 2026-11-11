@@ -170,6 +170,8 @@ Gotchas:
 **App shell**
 - Sider 216 px, `bg-surface`, right `border`. Below 992 px it collapses to zero width; antd's trigger opens it,
   parked in the header's left corner.
+- The browser tab title follows the breadcrumb: `BoxMesh - Page` (`BoxMesh - Devices - SRV-DB-01` on a detail page,
+  `BoxMesh - Sign in` on the sign-in page), in the current language.
 - Header 56, `bg-surface`, bottom border: breadcrumb on the left (`BoxMesh / Page`, current page in `text`); on the right a
   240 px search (hidden under 576 px), the language select (128 px: a 20 × 14 flag from `src/assets/flags` + English / 日本語; switching redraws every screen in place, no reload),
   the theme toggle and the account button (28 px orange avatar + name; the menu holds
