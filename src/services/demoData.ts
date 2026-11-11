@@ -358,11 +358,11 @@ export const enrollmentTokens: EnrollmentToken[] = [
 ]
 
 export const accounts: Account[] = [
-  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'Admin', scope: [], lastSignIn: fromNow(-40 * MINUTE), disabled: false },
-  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'Operator', scope: ['Accounting', 'HR'], lastSignIn: fromNow(-4 * MINUTE), disabled: false },
-  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'Operator', scope: ['Server'], lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false },
-  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'Viewer', scope: [], lastSignIn: fromNow(-2 * DAY), disabled: false },
-  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Viewer', scope: ['Warehouse'], lastSignIn: fromNow(-21 * DAY), disabled: true },
+  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'Admin', lastSignIn: fromNow(-40 * MINUTE), disabled: false },
+  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'Operator', lastSignIn: fromNow(-4 * MINUTE), disabled: false },
+  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'Operator', lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false },
+  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'Viewer', lastSignIn: fromNow(-2 * DAY), disabled: false },
+  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Viewer', lastSignIn: fromNow(-21 * DAY), disabled: true },
 ]
 
 export const settings: Settings = {

@@ -55,7 +55,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 ## Capabilities and Constraints
 
 **Built in BoxMesh**
-- Every module has a screen: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Desktop, Remote Files, Remote Service, Command & Jobs, Audit, Security & Certificates, Users & Access, System Settings.
+- Screens: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Desktop, Remote Files, Remote Service, Users & Access. Command & Jobs, Audit, Security & Certificates and System Settings were removed from the console.
 - Sign-in with email and password, and a "Forgot password?" form that requests a reset email.
 - Dark and light themes: the OS setting by default, switchable in the header.
 

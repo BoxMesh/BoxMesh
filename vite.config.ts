@@ -23,10 +23,12 @@ export default defineConfig({
         theme_color: '#101416',
         // Launching the installed app again focuses the open window instead of opening a second one.
         launch_handler: { client_mode: ['focus-existing', 'auto'] },
+        // "any" icons are rounded with transparent corners (desktop installs show them as they are); the maskable one
+        // is full-bleed, because Android cuts it to the launcher's own shape and baked-in corners would show gaps.
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

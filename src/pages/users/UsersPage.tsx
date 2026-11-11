@@ -1,26 +1,25 @@
-import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
-import { App, Button, Card, Drawer, Form, Input, Select, Switch, Table, Tag, type TableProps } from 'antd'
+import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { App, Button, Card, Drawer, Form, Input, Select, Switch, Table, type TableProps } from 'antd'
 import { useState } from 'react'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { inviteUser, updateUser } from '../../services/adminService'
-import { devicesQuery, usersQuery } from '../../services/queries'
+import { usersQuery } from '../../services/queries'
 import type { Account, Role } from '../../types/admin'
 import { ago } from '../../utils/time'
 
 const ROLES: { value: Role; label: string; help: string }[] = [
-  { value: 'Admin', label: 'Admin', help: 'Everything, plus users, certificates and settings' },
+  { value: 'Admin', label: 'Admin', help: 'Everything, plus managing users' },
   { value: 'Operator', label: 'Operator', help: 'Runs commands and opens remote sessions' },
   { value: 'Viewer', label: 'Viewer', help: 'Read-only' },
 ]
 export default function UsersPage() {
-  const [{ data: accounts }, { data: devices }] = useSuspenseQueries({ queries: [usersQuery, devicesQuery] })
+  const { data: accounts } = useSuspenseQuery(usersQuery)
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
-  const [form] = Form.useForm<{ email: string; role: Role; scope: string[] }>()
+  const [form] = Form.useForm<{ email: string; role: Role }>()
 
-  const groups = [...new Set(devices.map((d) => d.group))].sort()
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['users'] })
 
   const invite = useMutation({
@@ -66,16 +65,6 @@ export default function UsersPage() {
       ),
     },
     {
-      title: <Th icon="devices" label="Can reach" />,
-      key: 'scope',
-      render: (_, a) =>
-        a.scope.length === 0 ? (
-          <Tag>Every group</Tag>
-        ) : (
-          a.scope.map((g) => <Tag key={g}>{g}</Tag>)
-        ),
-    },
-    {
       title: <Th icon="clock" label="Last sign-in" />,
       key: 'last',
       render: (_, a) => (a.lastSignIn ? ago(a.lastSignIn) : <span className="muted">Never</span>),
@@ -98,7 +87,7 @@ export default function UsersPage() {
     <div className="stack">
       <PageHeader
         title="Users & Access"
-        subtitle="Who can sign in, what they may do, and which groups they can reach."
+        subtitle="Who can sign in and what they may do."
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setOpen(true)}>
             Invite person
@@ -132,7 +121,7 @@ export default function UsersPage() {
           form={form}
           layout="vertical"
           requiredMark={false}
-          initialValues={{ role: 'Viewer', scope: [] }}
+          initialValues={{ role: 'Viewer' }}
           onFinish={(values) => invite.mutate(values)}
         >
           <Form.Item
@@ -148,9 +137,6 @@ export default function UsersPage() {
           </Form.Item>
           <Form.Item name="role" label="Role">
             <Select options={ROLES.map((r) => ({ value: r.value, label: `${r.label} — ${r.help}` }))} />
-          </Form.Item>
-          <Form.Item name="scope" label="Groups they can reach" extra="Leave empty for every group.">
-            <Select mode="multiple" placeholder="Every group" options={groups.map((g) => ({ value: g, label: g }))} />
           </Form.Item>
           <Button type="primary" htmlType="submit" loading={invite.isPending}>
             Send invitation

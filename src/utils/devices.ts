@@ -49,28 +49,3 @@ export function summarize(list: Device[], now = Date.now()) {
     avgLatency: online.length ? Math.round(online.reduce((sum, d) => sum + d.latencyMs, 0) / online.length) : 0,
   }
 }
-
-const CSV_COLUMNS = [
-  'host',
-  'alias',
-  'os',
-  'osVersion',
-  'osArchitecture',
-  'ip',
-  'mac',
-  'online',
-  'agentVersion',
-  'group',
-  'tag',
-  'lastSeen',
-] as const
-
-export function toCsv(list: Device[]) {
-  const cell = (v: unknown) => {
-    const s = String(v)
-    // Leading = + - @ would run as a formula when the file is opened in a spreadsheet.
-    const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s
-    return `"${safe.replaceAll('"', '""')}"`
-  }
-  return [CSV_COLUMNS.join(','), ...list.map((d) => CSV_COLUMNS.map((c) => cell(d[c])).join(','))].join('\r\n')
-}

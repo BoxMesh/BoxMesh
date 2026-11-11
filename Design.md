@@ -6,8 +6,8 @@ The app has since moved away from the canvas in places: a light theme, a more co
 sign-in page and logo. **This file records what the app does now.** Where the canvas and this file disagree,
 this file wins; where the code and this file disagree, fix one of them.
 
-Look in one line: **near-black (or warm off-white) UI with a single lime accent**, Geist type, soft 12–16 px
-corners, deep shadows and a lime glow on primary actions in dark. Built on **Ant Design 6** with plain antd
+Look in one line: **near-black (or warm off-white) UI with a single tangerine accent**, Geist type, soft 12–16 px
+corners, deep shadows and an orange glow on primary actions in dark. Built on **Ant Design 6** with plain antd
 `Layout` + `Menu` (the canvas names Ant Design 5 / ProLayout; v6 is used because it supports React 19 without a patch).
 
 Where things live:
@@ -19,7 +19,7 @@ Where things live:
 
 ## 1. Color
 
-One accent only (lime), and lime means **action**: buttons, links, the current selection. "Good" status (online,
+One accent only (tangerine orange), and orange means **action**: buttons, links, the current selection. "Good" status (online,
 trusted, healthy) is a separate green, so a status never reads as a button. Status is never told by hue alone:
 always with a word, a number or an icon.
 
@@ -27,10 +27,10 @@ always with a word, a number or an icon.
 
 | Token | Dark | Light | Used for |
 |---|---|---|---|
-| `brand` | `#c7f36b` | `#c7f36b` | Lime fills: primary buttons, selected segment, checkbox, avatar, step numbers |
-| `brand-hover` | `#d8ff8a` | `#b8e65a` | Primary button hover |
-| `on-brand` | `#090b0c` | `#090b0c` | Text and icons on lime |
-| `accent` | `#c7f36b` | `#3f5a0a` | Lime as **text or line**: links, active tab, pagination, focus ring, active menu icon, card-title dot. antd `colorPrimary` |
+| `brand` | `#fb923c` | `#f97316` | Orange fills: primary buttons, selected segment, checkbox, avatar, step numbers |
+| `brand-hover` | `#fdba74` | `#fb923c` | Primary button hover |
+| `on-brand` | `#090b0c` | `#090b0c` | Text and icons on the orange fill (8.7:1 / 7.0:1) |
+| `accent` | `#fb923c` | `#c2410c` | Orange as **text or line**: links, active tab, pagination, focus ring, active menu icon, card-title dot. antd `colorPrimary` |
 | `bg-page` | `#000000` | `#f4f5f0` | Page background |
 | `bg-surface` | `#101416` | `#ffffff` | Cards, sider, header |
 | `bg-raised` | `#151a1d` | `#f4f5f0` | Table header, row hover, input fill, icon buttons |
@@ -45,21 +45,22 @@ always with a word, a number or an icon.
 | `text-secondary` | `#a7adb0` | `#4a5256` | Labels, captions, breadcrumbs, idle menu items, offline rows |
 | `text-disabled` | `#7a8287` | `#6b7377` | Menu group titles, offline dot |
 
-Why two lime roles: `#c7f36b` text on white is about 1.3:1, so in light the lime stays a **fill** and the
-darker `#3f5a0a` does every job where lime is text or a thin line. For the same reason, light-theme primary
-buttons get a `#6f9420` edge (3.5:1 on white), or their shape disappears on a white card.
+On dark one orange does both jobs: `#fb923c` reads at 8.2:1 on the surface. On light the roles split: the fill is a
+bright `#f97316` with dark text (a deep `#c2410c` fill with white text read as too heavy), and text and lines use
+`#c2410c` (5.2:1 on white, 4.7:1 on the page grey), the lightest orange that still reads as text. Light primary
+buttons get an `#ea580c` edge (3.6:1 on white), since the bright fill alone is 2.8:1 against a white card. The accent was lime (`#c7f36b`) until November 2026.
 
 ### Semantic (status) sets: background / border / text
 
 | Status | Dark | Light | Examples |
 |---|---|---|---|
 | Success | `#12261a` / `#2e5a3a` / `#7fd88f` | `#e6f4ea` / `#a8d5b5` / `#1f7a3a` | Online, trusted cert, exit 0, healthy resource meters (`tone.positive`) |
-| Warning | `#2a2010` / `#5c4520` / `#f5b84a` | `#fff4e0` / `#f0cf8f` / `#965a00` | Disk almost full, outdated agent, cert expiring within 30 days |
-| Error | `#2a1412` / `#5c2a24` / `#ff7a6b` | `#fdecea` / `#f2b8ae` / `#c4321f` | Revoked, High CPU/RAM, offline status, exit 1, cert expiring within 7 days |
+| Warning | `#2a2410` / `#5c5020` / `#facc15` | `#fefce8` / `#fde68a` / `#854d0e` | Disk almost full, outdated agent, cert expiring within 30 days |
+| Error | `#2a1418` / `#5c2430` / `#ff6b81` | `#fff1f2` / `#fecdd3` / `#be123c` | Revoked, High CPU/RAM, exit 1, cert expiring within 7 days |
 | Info | `#142028` / `#2c4250` / `#7ea2b8` | `#e8f2f8` / `#b3d3e6` / `#2f5f7a` | Group tag, running job |
-| Neutral | `bg-raised` / `border-control` / `text-secondary` | same roles | Free-form tag, "Heartbeat lost", "Every group" |
+| Neutral | `bg-raised` / `border-control` / `text-secondary` | same roles | Offline status and offline notices, free-form tag, "Heartbeat lost" |
 
-Light warning was `#b26b00` until it failed contrast (3.9:1 on its own tag background); `#965a00` clears 5:1.
+Warning is yellow and error rose-red so neither reads as the orange accent (amber and coral were too close to it).
 Every text colour above clears 4.5:1 on the surface it sits on, in both themes. Check a new one before using it.
 
 ### Theme switching
@@ -89,7 +90,7 @@ Every text colour above clears 4.5:1 on the surface it sits on, in both themes. 
 | Statistic value | 26 | 600 | coloured by meaning |
 | Table header | 12 | 600 | uppercase, letter-spacing 0.06em, `text-secondary`, with a 14 px icon |
 | Caption, tag, sub-line | 12 | 400 | `text-secondary` |
-| Sider item | 13 / 32 | 400 | 14 would clip "Security & Certificates" in the 216 px sider |
+| Sider item | 13 / 32 | 400 | |
 | Sider group title | 12 / 16 | 400 | uppercase, letter-spacing 0.04em, `text-disabled` |
 | Inline code (MAC, serial) | 13 | 400 | Geist Mono |
 | Logo word on sign-in | 30 / 36 (24 under 576 px) | 600 | letter-spacing −0.02em |
@@ -156,7 +157,7 @@ Nothing is smaller than 12 px.
 | `Tag` | default `bg-raised` / `text-secondary`, 12 px; `variant="outlined"` set once on `ConfigProvider` |
 
 Gotchas:
-- `colorTextLightSolid` is dark in dark mode (text on lime), so `Tooltip.colorTextLightSolid` and
+- `colorTextLightSolid` is dark in dark mode (text on the bright orange), so `Tooltip.colorTextLightSolid` and
   `Layout.triggerColor` are reset.
 - The checkbox tick uses `colorWhite` (reset to `#090b0c`), and `Checkbox.borderRadiusSM` is 4, or the
   global 10 px turns the box into a circle.
@@ -170,7 +171,7 @@ Gotchas:
 - Sider 216 px, `bg-surface`, right `border`. Below 992 px it collapses to zero width; antd's trigger opens it,
   parked in the header's left corner.
 - Header 56, `bg-surface`, bottom border: breadcrumb on the left (`BoxMesh / Page`, current page in `text`); on the right a
-  240 px search (hidden under 576 px), the theme toggle and the account button (28 px lime avatar + name; the menu holds
+  240 px search (hidden under 576 px), the theme toggle and the account button (28 px orange avatar + name; the menu holds
   the email and "Sign out").
 - The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "BoxMesh" root is dropped.
 - Page body: padding 20, vertical stack, gap 12.
@@ -187,16 +188,19 @@ Gotchas:
 ## 6. Components
 
 ### Logo (`src/components/Logo.tsx`)
-- `LogoMark`: a hexagonal cage drawn in strokes, 6 node rings at the corners, a lime core. Node fills use
+- `LogoMark`: a hexagonal cage drawn in strokes, 6 node rings at the corners, an orange core (`brand`). Node fills use
   `--logo-ground` (default `bg-surface`; the sign-in page sets it to `bg-page`), so the rings read as holes on any ground.
 - `Logo`: mark + "Box**Mesh**" (Mesh in `accent`). Sider uses 24 px, sign-in 40 px.
 
 ### Favicon and app icons
 - `public/favicon.svg`: transparent, drawn for 16 px (solid nodes and heavier strokes than the logo). Its colours follow
   the **browser's** colour scheme through a `prefers-color-scheme` rule inside the SVG, not the app's theme toggle:
-  dark mark `#101416` with core `#8fb83a` on light tab bars, cream `#f1efe7` with core `#c7f36b` on dark ones.
-- `public/pwa-192.png`, `pwa-512.png`: full-bleed `#101416` tile with the mark at 72 %, so one file serves "any" and
-  "maskable". Manifest `background_color` is `#101416`.
+  dark mark `#101416` with core `#ea580c` on light tab bars, cream `#f1efe7` with core `#fb923c` on dark ones.
+- `public/pwa-192.png`, `pwa-512.png` (purpose "any"): a rounded tile (22 % radius, transparent corners) with a dark
+  `#1c2327`→`#0c0f11` gradient, a `#2a3135` hairline edge, a faint orange glow behind the mark (core `#fb923c`), and the mark at 62 %.
+- `public/pwa-maskable-512.png`: the same art full-bleed, for Android's launcher masks and iOS (`apple-touch-icon`), which
+  round the corners themselves and would fill transparent ones. The mark's outer nodes stay inside the 80 % safe circle.
+  Manifest `background_color` is `#101416`.
 
 ### Sider menu
 - Logo row 56 tall with a bottom `border`, padding `0 20px`, so it lines up with the header.
@@ -209,7 +213,7 @@ Gotchas:
 ### Buttons
 | Variant | Look | Hover |
 |---|---|---|
-| Primary | `brand` fill, `on-brand` text, 600; lime glow in dark, `#6f9420` edge in light | `brand-hover` |
+| Primary | `brand` fill, `on-brand` text, 600; orange glow in dark, `#ea580c` edge in light | `brand-hover` |
 | Default | dark: `bg-button` fill; light: white; `border-control` border | border and text turn `accent` |
 | Danger | antd danger, for destructive actions only; always confirmed (Popconfirm) | |
 | Icon (row actions) | 28×28, transparent, `text-secondary`, `aria-label` required | `bg-strong`, `text` |
@@ -227,7 +231,7 @@ Track `bg-track`, padding 2. Selected: `brand` fill, `on-brand`, 600.
 
 ### Card
 `bg-surface`, 1 px `border`, radius 16, card shadow. Header 44 with bottom border; title 14/600 prefixed by an
-8×8 `accent` square (radius 3, lime glow in dark); optional link on the right ("All devices").
+8×8 `accent` square (radius 3, orange glow in dark); optional link on the right ("All devices").
 A table that ends a card is clipped to the card's bottom corners.
 
 ### Statistic card (Dashboard)
@@ -240,7 +244,7 @@ Hover: border `border-hover` and a soft shadow. No lift.
 - First column: bold link to detail, or name + 12 px secondary sub-line (Users). MAC and serial in mono `<code>`.
 - Filters live in the column headers (antd filter dropdowns), not in a bar above.
 - Devices: an offline row drops to `text-secondary`. The Status column is a small outlined button with the word
-  (Online green, Offline red); clicking pings the agent, and it spins while waiting. The last column is three icon
+  (Online: green text and border on `success-bg` with a solid dot; Offline: grey text, `border-control` border, no fill, a hollow ring. They differ in shape, not only hue. Offline is grey because a switched-off machine is not an error); clicking pings the agent, and it spins while waiting. The last column is three icon
   links (terminal, desktop, files), `aria-disabled` with a tooltip when the device is offline.
 - Users: an account that can't sign in drops to `text-secondary` (no opacity).
 - Pagination: page size 10, range text `1–10 / 12`, hidden on a single page.
@@ -248,7 +252,7 @@ Hover: border `border-hover` and a soft shadow. No lift.
 ### Certificate expiry (`src/components/CertExpiry.tsx`)
 The date in `dd Mon yyyy`, coloured by `certTone` (`src/utils/devices.ts`): red within 7 days, amber within 30, plain
 otherwise or when revoked. No "N days left" text in the cell; the count is in the tooltip and `aria-label`.
-Used on Security & Certificates and on Device detail. The Dashboard alert lists certificates within 30 days and turns
+Used on Device detail. The Dashboard alert lists certificates within 30 days and turns
 red when any is within 7.
 
 ### Tag
@@ -302,7 +306,7 @@ toast "<Doing something> isn't available yet." They never fake success.
 ### Sign-in page (`/login`)
 `/login` is public; every other route sends a signed-out visitor there and returns them to the page they asked for.
 - Full-window artwork (`src/assets/boxmesh.svg`, the canvas's sign-in art, inlined by `LoginBackground.tsx`): a mesh
-  lattice, lime hubs, OS tiles with status dots, and packets travelling along routes to the panel (SMIL, hidden under
+  lattice, orange hubs (`--bm-lime`: `#fb923c` dark, `#ea580c` light), OS tiles with status dots, and packets travelling along routes to the panel (SMIL, hidden under
   reduced motion). It paints with `--bm-*` variables defined on `.login-bg`, mapped to theme tokens, so one file
   serves both themes.
 - Theme toggle top-right. Centred: the 40 px logo lockup, then a 400 px card (padding 16, gap 12) on the same scale as
@@ -342,24 +346,19 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 **Sider groups**
 - Overview: Dashboard, Devices
 - Remote: Remote Terminal, Remote Desktop, Remote Files, Remote Service
-- Operations: Command & Jobs, Audit
-- Admin: Security & Certificates, Users & Access, System Settings
+- Admin: Users & Access
 
 | Screen | Route | What is on it |
 |---|---|---|
 | Sign in | `/login` | Sign-in card, password reset, demo entry |
 | Dashboard | `/dashboard` | Time range; cert alert; Total / Online / Offline stat cards; Average resources; Connection status; Devices needing attention; Recent activity |
-| Devices | `/devices` | Table with header filters, ping status, row remote actions; Export CSV; Enroll agent drawer |
+| Devices | `/devices` | Table with header filters, ping status, row remote actions; Enroll agent drawer |
 | Device detail | `/devices/:id` | Back, name, alias, status, group; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); tabs Overview (device information, connection card, alert thresholds) and Connection |
 | Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
 | Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
 | Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload. Two devices: two panes, copy and sync between them, Transfers |
 | Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
-| Command & Jobs | `/jobs` | Job table (click a row for per-host results), New job drawer |
-| Audit | `/audit` | Searchable log |
-| Security & Certificates | `/security/certificates` | Agent certificates (expiry, revoke), Enrollment tokens, Create token drawer |
-| Users & Access | `/users` | Role cards; people table with role select, reach, last sign-in, active switch; Invite drawer |
-| System Settings | `/settings` | Agents and retention, Panel health, Backup and restore |
+| Users & Access | `/users` | Role cards; people table with role select, last sign-in, active switch; Invite drawer (email, role) |
 
 ---
 
@@ -395,4 +394,6 @@ installed app, plus the Web Lock for browser tabs.
 1. Architecture artboard says "EdgeAgent (Go)"; the repo's EdgeAgent is C# / .NET.
 2. Charts (a Metrics tab) are named in the canvas but not drawn or built; series colours are still to define.
 3. No translation layer yet (PRODUCT.md, Language).
-4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with a lime icon.
+4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with an accent icon.
+5. The canvas's Operations group (Command & Jobs, Audit), Security & Certificates and System Settings were removed
+   in November 2026; their services and demo routes remain in `src/services`.

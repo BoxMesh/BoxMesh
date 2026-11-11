@@ -1,5 +1,5 @@
 // The brand mark and lockup from the design's Logo.html: a box seen from its corner, its vertices the
-// mesh, the lime core the control plane every agent dials into. The cage takes the surrounding text
+// mesh, the orange core the control plane every agent dials into. The cage takes the surrounding text
 // colour, so the same mark works on the sider, the sign-in page and the one-window notice.
 
 const CAGE = 'M24 5L40.5 14.5V33.5L24 43L7.5 33.5V14.5Z M24 24L7.5 14.5M24 24L40.5 14.5M24 24V43'

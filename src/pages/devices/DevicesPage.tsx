@@ -4,11 +4,10 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
-import { tone } from '../../config/theme'
 import { navItem } from '../../config/nav'
 import { devicesQuery } from '../../services/queries'
 import type { Device, DeviceFilter } from '../../types/device'
-import { filterDevices, toCsv } from '../../utils/devices'
+import { filterDevices } from '../../utils/devices'
 import EnrollDrawer from './EnrollDrawer'
 
 const ALL = { value: '', label: 'All' }
@@ -108,30 +107,15 @@ export default function DevicesPage() {
     { title: <Th icon="more" label="Actions" />, key: 'actions', render: (_, d) => <RowActions device={d} /> },
   ]
 
-  const exportCsv = () => {
-    // BOM so Excel reads the file as UTF-8.
-    const url = URL.createObjectURL(new Blob(['﻿', toCsv(rows)], { type: 'text/csv;charset=utf-8' }))
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'devices.csv'
-    a.click()
-    setTimeout(() => URL.revokeObjectURL(url))
-  }
-
   return (
     <div className="stack">
       <PageHeader
         title="Devices"
         subtitle={`${devices.length} devices enrolled`}
         actions={
-          <>
-            <Button onClick={exportCsv} disabled={rows.length === 0}>
-              Export CSV
-            </Button>
-            <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEnrollOpen(true)}>
-              Enroll agent
-            </Button>
-          </>
+          <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEnrollOpen(true)}>
+            Enroll agent
+          </Button>
         }
       />
 
@@ -199,17 +183,19 @@ function StatusButton({ device }: { device: Device }) {
   // The word carries the state, so colour is the second signal rather than the only one.
   const waiting = online === null
   const state = online ? 'Online' : 'Offline'
-  const color = online ? tone.positive : tone.error
+  const busy = waiting || ping.isPending
   return (
     <Tooltip title={waiting ? `Waiting for ${device.host} to report in` : `Ping ${device.host}`}>
       <Button
         size="small"
-        loading={waiting || ping.isPending}
+        loading={busy}
         onClick={() => ping.mutate()}
         aria-label={waiting ? `Waiting for ${device.host} to report in` : `${state} — ping ${device.host}`}
-        className="status-btn"
-        style={{ color, borderColor: color }}
+        // Online and Offline differ in shape, not only hue (index.css): a filled pill with a solid dot against an
+        // empty grey one with a ring. Offline is grey, not red: a switched-off machine is not an error.
+        className={`status-btn ${online ? 'is-online' : 'is-offline'}`}
       >
+        {busy ? null : <span className="status-dot" aria-hidden="true" />}
         {state}
       </Button>
     </Tooltip>

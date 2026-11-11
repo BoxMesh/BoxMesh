@@ -33,12 +33,12 @@ export async function getUsers() {
   return data
 }
 
-export async function inviteUser(input: { email: string; role: Role; scope: string[] }) {
+export async function inviteUser(input: { email: string; role: Role }) {
   const { data } = await http.post<Account>('/users', input)
   return data
 }
 
-export async function updateUser(id: string, patch: Partial<Pick<Account, 'role' | 'scope' | 'disabled'>>) {
+export async function updateUser(id: string, patch: Partial<Pick<Account, 'role' | 'disabled'>>) {
   const { data } = await http.patch<Account>(`/users/${id}`, patch)
   return data
 }

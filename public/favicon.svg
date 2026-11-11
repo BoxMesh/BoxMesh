@@ -5,10 +5,10 @@
        whose rings and 2.6 strokes blur into one smudge at tab size. -->
   <style>
     .mark { stroke: #101416; fill: #101416; }
-    .core { fill: #8fb83a; }
+    .core { fill: #ea580c; }
     @media (prefers-color-scheme: dark) {
       .mark { stroke: #f1efe7; fill: #f1efe7; }
-      .core { fill: #c7f36b; }
+      .core { fill: #fb923c; }
     }
   </style>
   <g transform="translate(24 24) scale(0.95) translate(-24 -24)" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">

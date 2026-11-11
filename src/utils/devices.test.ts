@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Device } from '../types/device'
-import { filterDevices, issuesOf, summarize, toCsv } from './devices'
+import { filterDevices, issuesOf, summarize } from './devices'
 import { DAY, fromNow, MINUTE } from './time'
 
 const NOW = Date.parse('2026-11-03T12:00:00Z')
@@ -51,14 +51,5 @@ describe('summarize', () => {
     expect(s.expiringCerts.map((d) => d.latencyMs)).toEqual([10])
     // One over its CPU threshold, one with no heartbeat.
     expect(s.attention.map((a) => a.kind)).toEqual(['cpu', 'offline'])
-  })
-})
-
-describe('toCsv', () => {
-  it('quotes cells and neutralises spreadsheet formulas', () => {
-    const [header, row] = toCsv([dev({ alias: 'He said "hi"', tag: '=HYPERLINK("x")' })]).split('\r\n')
-    expect(header.startsWith('host,alias')).toBe(true)
-    expect(row).toContain('"He said ""hi"""')
-    expect(row).toContain(`"'=HYPERLINK(""x"")"`)
   })
 })

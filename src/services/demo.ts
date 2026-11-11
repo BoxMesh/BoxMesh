@@ -112,7 +112,14 @@ const param = (config: InternalAxiosRequestConfig, key: string) => String(config
 const id = () => Math.random().toString(36).slice(2, 10)
 
 const routes: Route[] = [
-  ['post', /^\/log-in$/, (_m, c) => ({ id: 'demo-user', email: body<{ email: string }>(c).email })],
+  [
+    'post',
+    /^\/log-in$/,
+    (_m, c) => {
+      const email = body<{ email: string }>(c).email
+      return { id: 'demo-user', email, name: state.accounts.find((a) => a.email === email)?.name }
+    },
+  ],
   ['post', /^\/log-out$/, () => null],
 
   // ---- Fleet ----
@@ -228,13 +235,12 @@ const routes: Route[] = [
     'post',
     /^\/users$/,
     (_m, c) => {
-      const input = body<{ email: string; role: string; scope?: string[] }>(c)
+      const input = body<{ email: string; role: string }>(c)
       const account = {
         id: `u-${state.accounts.length + 1}`,
         email: input.email,
         name: input.email.split('@')[0],
         role: input.role as (typeof state.accounts)[number]['role'],
-        scope: input.scope ?? [],
         lastSignIn: '',
         disabled: false,
       }

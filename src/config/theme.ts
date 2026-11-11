@@ -3,16 +3,16 @@ import { theme, type ThemeConfig } from 'antd'
 export type ThemeMode = 'dark' | 'light'
 
 // Token names follow Design.md §1; index.css mirrors them as CSS variables per [data-theme].
-// `brand` is the lime fill (buttons, selected segment, checkbox) in both modes. `accent` is antd's
-// colorPrimary, which antd also uses for text, borders and focus: lime on dark, a darker lime on light,
-// where #c7f36b text would sit at about 1.3:1.
+// `brand` is the tangerine fill (buttons, selected segment, checkbox, switch) with dark text in both modes.
+// `accent` is antd's colorPrimary, which antd also uses for text, borders and focus: the fill's orange on dark
+// (8.2:1 on the surface), a deeper #c2410c on light (5.2:1 on white), where the bright fill would be too faint as text.
 const palettes = {
   dark: {
-    brand: '#c7f36b',
-    brandHover: '#d8ff8a',
+    brand: '#fb923c',
+    brandHover: '#fdba74',
     onBrand: '#090b0c',
-    accent: '#c7f36b',
-    accentHover: '#d8ff8a',
+    accent: '#fb923c',
+    accentHover: '#fdba74',
     onSolid: '#090b0c',
     bgPage: '#000000',
     bgSurface: '#101416',
@@ -26,32 +26,33 @@ const palettes = {
     text: '#f1efe7',
     textSecondary: '#a7adb0',
     textDisabled: '#7a8287',
-    // Green, not the brand lime: lime is for actions, so "online" and a primary button never read as one signal.
+    // Status colours keep clear of the orange accent: green for good, yellow (not amber) for warning, rose-red
+    // (not coral) for error, so no status reads as a button or link.
     success: '#7fd88f',
     successBg: '#12261a',
     successBorder: '#2e5a3a',
     rowSelectedHover: '#173020',
-    warning: '#f5b84a',
-    warningBg: '#2a2010',
-    warningBorder: '#5c4520',
-    error: '#ff7a6b',
-    errorBg: '#2a1412',
-    errorBorder: '#5c2a24',
+    warning: '#facc15',
+    warningBg: '#2a2410',
+    warningBorder: '#5c5020',
+    error: '#ff6b81',
+    errorBg: '#2a1418',
+    errorBorder: '#5c2430',
     info: '#7ea2b8',
     infoBg: '#142028',
     infoBorder: '#2c4250',
     tooltipBg: '#2a3135',
     tooltipText: '#f1efe7',
-    primaryShadow: '0 0 0 1px rgba(199,243,107,.4), 0 8px 24px -8px rgba(199,243,107,.55)',
+    primaryShadow: '0 0 0 1px rgba(251,146,60,.4), 0 8px 24px -8px rgba(251,146,60,.55)',
     defaultShadow: 'inset 0 1px 0 rgba(241,239,231,.1), 0 4px 12px -4px rgba(0,0,0,.9)',
-    dangerShadow: '0 8px 24px -8px rgba(255,122,107,.55)',
+    dangerShadow: '0 8px 24px -8px rgba(255,107,129,.55)',
   },
   light: {
-    brand: '#c7f36b',
-    brandHover: '#b8e65a',
+    brand: '#f97316',
+    brandHover: '#fb923c',
     onBrand: '#090b0c',
-    accent: '#3f5a0a',
-    accentHover: '#324707',
+    accent: '#c2410c',
+    accentHover: '#9a3412',
     onSolid: '#ffffff',
     bgPage: '#f4f5f0',
     bgSurface: '#ffffff',
@@ -69,13 +70,12 @@ const palettes = {
     successBg: '#e6f4ea',
     successBorder: '#a8d5b5',
     rowSelectedHover: '#d6ecdc',
-    // #b26b00 read at 3.9:1 on its own tag background; this clears 5:1 on that and on white.
-    warning: '#965a00',
-    warningBg: '#fff4e0',
-    warningBorder: '#f0cf8f',
-    error: '#c4321f',
-    errorBg: '#fdecea',
-    errorBorder: '#f2b8ae',
+    warning: '#854d0e',
+    warningBg: '#fefce8',
+    warningBorder: '#fde68a',
+    error: '#be123c',
+    errorBg: '#fff1f2',
+    errorBorder: '#fecdd3',
     info: '#2f5f7a',
     infoBg: '#e8f2f8',
     infoBorder: '#b3d3e6',
@@ -172,7 +172,7 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
         activeBarBorderWidth: 0,
       },
       Button: {
-        // Primary buttons are the lime brand fill in both modes, with dark text.
+        // Primary buttons are the tangerine brand fill: dark text on dark, white text on light.
         colorPrimary: p.brand,
         colorPrimaryHover: p.brandHover,
         colorPrimaryActive: p.brandHover,
@@ -215,7 +215,8 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
       Descriptions: { labelColor: p.textSecondary, itemPaddingBottom: 12 },
       Progress: { remainingColor: p.bgTrack },
       Tooltip: { colorTextLightSolid: p.tooltipText, colorBgSpotlight: p.tooltipBg },
-      // Lime box with a dark tick; the global borderRadiusSM (10) would turn the 16 px box into a circle.
+      // Orange box with an on-brand tick; the global borderRadiusSM (10) would turn the 16 px box into a circle.
+      Switch: { colorPrimary: p.brand, colorPrimaryHover: p.brandHover },
       Checkbox: { colorPrimary: p.brand, colorPrimaryHover: p.brandHover, colorWhite: p.onBrand, borderRadiusSM: 4 },
     },
   }

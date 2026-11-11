@@ -22,8 +22,7 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 | Dashboard | yes | missing |
 | Devices (list, detail, enrollment) | yes | missing |
 | Remote Terminal, Desktop, Files, Service | yes | missing |
-| Command & Jobs, Audit | yes | missing |
-| Security & Certificates, Users & Access, System Settings | yes | missing |
+| Users & Access | yes | missing |
 
 Remote Desktop has no video stream yet: the UI runs, and the frame says so.
 
@@ -107,7 +106,7 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email }`, JWTs set as HttpOnly cookies) |
+| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email, name? }`, JWTs set as HttpOnly cookies; without `name` the header shows the part of the email before the @) |
 | POST | `/api/log-out` → EdgePanel `/log-out` (clears both cookies) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |

@@ -20,7 +20,10 @@ export const getSession = () => session;
 
 export async function logIn(email: string, password: string) {
   const { data: account } = await http
-    .post<{ id: string; email: string }>("/log-in", { email, password })
+    .post<{ id: string; email: string; name?: string }>("/log-in", {
+      email,
+      password,
+    })
     .catch((error: unknown) => {
       if (isAxiosError(error) && error.response?.status === 401)
         throw new Error("Wrong email or password.");
@@ -28,7 +31,8 @@ export async function logIn(email: string, password: string) {
     });
   const data: User = {
     email: account.email,
-    name: account.email.split("@")[0],
+    // The person's name when the panel sends one; until then, the part of the email before the @.
+    name: account.name?.trim() || account.email.split("@")[0],
   };
   session = data;
   try {

@@ -2,17 +2,13 @@ import { Result } from 'antd'
 import { lazy } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router'
 import AppLayout from './layouts/AppLayout'
-import AuditPage from './pages/audit/AuditPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import DeviceDetailPage from './pages/device-detail/DeviceDetailPage'
 import DevicesPage from './pages/devices/DevicesPage'
-import JobsPage from './pages/jobs/JobsPage'
 import LoginPage from './pages/login/LoginPage'
 import DesktopPage from './pages/remote-desktop/DesktopPage'
 import FilesPage from './pages/remote-files/FilesPage'
 import ServicesPage from './pages/remote-services/ServicesPage'
-import CertificatesPage from './pages/security/CertificatesPage'
-import SettingsPage from './pages/settings/SettingsPage'
 import UsersPage from './pages/users/UsersPage'
 import { getSession } from './services/authService'
 
@@ -38,11 +34,7 @@ export default function App() {
         <Route path="remote-desktop" element={<DesktopPage />} />
         <Route path="remote-files" element={<FilesPage />} />
         <Route path="remote-services" element={<ServicesPage />} />
-        <Route path="jobs" element={<JobsPage />} />
-        <Route path="audit" element={<AuditPage />} />
-        <Route path="security/certificates" element={<CertificatesPage />} />
         <Route path="users" element={<UsersPage />} />
-        <Route path="settings" element={<SettingsPage />} />
         <Route
           path="*"
           element={<Result status="404" title="Page not found" subTitle="Check the address, or pick a page from the menu." />}

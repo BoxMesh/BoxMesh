@@ -23,8 +23,6 @@ export interface Account {
   email: string
   name: string
   role: Role
-  /** Group names the account may reach; empty means every group. */
-  scope: string[]
   lastSignIn: string
   disabled: boolean
 }

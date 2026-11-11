@@ -59,7 +59,11 @@ export function PickFirst({ icon, what }: { icon: IconName; what: string }) {
 export function DeviceOffline({ device }: { device: Device }) {
   return (
     <Result
-      status="warning"
+      icon={
+        <span className="soon-icon">
+          <Icon name="devices" size={36} />
+        </span>
+      }
       title={`${device.host} is offline`}
       subTitle="Its agent has no open tunnel, so remote actions can't reach it. This screen works again when the agent reconnects."
     />

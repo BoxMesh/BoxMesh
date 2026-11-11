@@ -51,6 +51,17 @@ describe("authService", () => {
     expect(getSession()).toBeNull();
   });
 
+  it("shows the person's name when the panel sends one", async () => {
+    http.defaults.adapter = reply(200, {
+      data: { id: "7b1f", email: "ops@example.com", name: " Quang Huy " },
+    });
+    expect(await logIn("ops@example.com", "secret")).toEqual({
+      email: "ops@example.com",
+      name: "Quang Huy",
+    });
+    await logOut();
+  });
+
   // EdgePanel owns the cookies, but an unreachable panel must not strand the person in a signed-in portal.
   it("signs out locally even when the panel can't be reached", async () => {
     http.defaults.adapter = reply(200, {

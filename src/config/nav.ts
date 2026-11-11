@@ -19,18 +19,9 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    title: 'Operations',
-    items: [
-      { icon: 'jobs', label: 'Command & Jobs', path: '/jobs' },
-      { icon: 'audit', label: 'Audit', path: '/audit' },
-    ],
-  },
-  {
     title: 'Admin',
     items: [
-      { icon: 'security', label: 'Security & Certificates', path: '/security/certificates' },
       { icon: 'users', label: 'Users & Access', path: '/users' },
-      { icon: 'settings', label: 'System Settings', path: '/settings' },
     ],
   },
 ]
