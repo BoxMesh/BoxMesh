@@ -3,6 +3,7 @@ import { App, Breadcrumb, Button, Card, Dropdown, Table, Tag, type TableProps } 
 import { useState, type ReactNode } from 'react'
 import { Icon, Th } from '../../components/Icon'
 import { useNotSupported } from '../../hooks/useNotSupported'
+import { t } from '../../i18n'
 import { userMessage } from '../../services/http'
 import { filesQuery } from '../../services/queries'
 import type { Device } from '../../types/device'
@@ -11,11 +12,11 @@ import { formatSize, joinPath, parentOf, rootOf, sepOf, type Comparison } from '
 import { ago } from '../../utils/time'
 
 const COMPARED: Record<Comparison, { color: string; label: string }> = {
-  newer: { color: 'warning', label: 'Newer here' },
-  only: { color: 'processing', label: 'Only here' },
-  older: { color: 'default', label: 'Older here' },
-  same: { color: 'default', label: 'Same' },
-  differs: { color: 'default', label: 'Different size' },
+  newer: { color: 'warning', label: t('Newer here') },
+  only: { color: 'processing', label: t('Only here') },
+  older: { color: 'default', label: t('Older here') },
+  same: { color: 'default', label: t('Same') },
+  differs: { color: 'default', label: t('Different size') },
 }
 
 interface Props {
@@ -61,7 +62,7 @@ export default function FileBrowser({
 
   const columns: TableProps<FileEntry>['columns'] = [
     {
-      title: <Th icon="files" label="Name" />,
+      title: <Th icon="files" label={t('Name')} />,
       key: 'name',
       render: (_, entry) =>
         entry.kind === 'folder' ? (
@@ -77,19 +78,19 @@ export default function FileBrowser({
         ),
     },
     {
-      title: <Th icon="box" label="Size" />,
+      title: <Th icon="box" label={t('Size')} />,
       key: 'size',
       render: (_, e) => formatSize(e.size),
     },
     {
-      title: <Th icon="clock" label="Modified" />,
+      title: <Th icon="clock" label={t('Modified')} />,
       key: 'modified',
       render: (_, e) => ago(e.modified),
     },
     ...(comparison
       ? [
           {
-            title: <Th icon="swap" label="Compared" />,
+            title: <Th icon="swap" label={t('Compared')} />,
             key: 'compared',
             render: (_: unknown, e: FileEntry) => {
               const c = comparison.get(e.name)
@@ -102,34 +103,34 @@ export default function FileBrowser({
   // Comparing adds a column; dropping the per-row actions then keeps both panes inside their width.
   if (!comparison)
     columns.push({
-      title: <Th icon="more" label="Actions" />,
+      title: <Th icon="more" label={t('Actions')} />,
       key: 'actions',
       render: (_, entry) => (
         <div className="row-actions">
           {entry.kind === 'file' ? (
-            <Button size="small" onClick={() => notSupported('Downloading files')}>
-              Download
+            <Button size="small" onClick={() => notSupported(t('Downloading files'))}>
+              {t('Download')}
             </Button>
           ) : null}
           <Dropdown
             trigger={['click']}
             menu={{
               items: [
-                { key: 'rename', label: 'Rename' },
-                { key: 'copy', label: 'Copy path' },
+                { key: 'rename', label: t('Rename') },
+                { key: 'copy', label: t('Copy path') },
                 { type: 'divider' },
-                { key: 'delete', label: 'Delete' },
+                { key: 'delete', label: t('Delete') },
               ],
               onClick: ({ key }) =>
                 key === 'copy'
                   ? navigator.clipboard.writeText(joinPath(path, entry.name, sep)).then(
-                      () => message.success('Path copied'),
-                      () => message.error('Copy failed. Select the path and copy it manually.'),
+                      () => message.success(t('Path copied')),
+                      () => message.error(t('Copy failed. Select the path and copy it manually.')),
                     )
-                  : notSupported(key === 'delete' ? 'Deleting files' : 'Renaming files'),
+                  : notSupported(key === 'delete' ? t('Deleting files') : t('Renaming files')),
             }}
           >
-            <button type="button" className="icon-btn" aria-label={`More actions for ${entry.name}`}>
+            <button type="button" className="icon-btn" aria-label={t('More actions for {name}', { name: entry.name })}>
               <Icon name="more" />
             </button>
           </Dropdown>
@@ -189,7 +190,7 @@ export default function FileBrowser({
       {head ? <div className="files-head">{head}</div> : null}
       <div className="filters">
         <Button onClick={() => onPath(parentOf(path, root, sep))} disabled={path === root} icon={<Icon name="back" size={14} />}>
-          Up
+          {t('Up')}
         </Button>
         <Breadcrumb items={crumbs} separator={sep} />
         <span className="screen-spacer" />
@@ -198,10 +199,11 @@ export default function FileBrowser({
       {picked.length > 0 ? (
         <div className="files-picked" role="status">
           <span>
-            <span className="strong">{picked.length} selected</span> · {formatSize(picked.reduce((sum, e) => sum + e.size, 0))}
+            <span className="strong">{t('{n} selected', { n: picked.length })}</span> ·{' '}
+            {formatSize(picked.reduce((sum, e) => sum + e.size, 0))}
           </span>
           <Button type="link" size="small" onClick={() => onSelect?.([])}>
-            Clear
+            {t('Clear')}
           </Button>
         </div>
       ) : null}
@@ -234,7 +236,7 @@ export default function FileBrowser({
                 onChange: (keys) => onSelect?.(keys.map(String)),
                 getCheckboxProps: (e) => ({
                   disabled: e.kind === 'folder',
-                  'aria-label': `Select ${e.name}`,
+                  'aria-label': t('Select {name}', { name: e.name }),
                 }),
               }
             : undefined
@@ -242,7 +244,9 @@ export default function FileBrowser({
         locale={{
           emptyText: (
             <span className="muted">
-              {listing.error ? `This folder didn't load. ${userMessage(listing.error)}` : 'This folder is empty.'}
+              {listing.error
+                ? t("This folder didn't load. {reason}", { reason: userMessage(listing.error) })
+                : t('This folder is empty.')}
             </span>
           ),
         }}

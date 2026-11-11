@@ -7,6 +7,7 @@ import { Icon } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { useDeviceParam } from '../../hooks/useDeviceParam'
 import { useNotSupported } from '../../hooks/useNotSupported'
+import { t } from '../../i18n'
 import { filesQuery, transferQuery } from '../../services/queries'
 import { startTransfer } from '../../services/remoteService'
 import type { Device } from '../../types/device'
@@ -39,11 +40,11 @@ export default function FilesPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Remote Files"
+        title={t('Remote Files')}
         subtitle={
           dual
-            ? 'Copy files between two devices, each through its own agent tunnel.'
-            : 'Browse, download and upload files on a device through its agent tunnel.'
+            ? t('Copy files between two devices, each through its own agent tunnel.')
+            : t('Browse, download and upload files on a device through its agent tunnel.')
         }
         actions={
           dual ? (
@@ -53,13 +54,13 @@ export default function FilesPage() {
               icon={<Icon name="swap" size={14} />}
               onClick={() => setComparing(!comparing)}
             >
-              {comparing ? 'Comparing folders' : 'Compare folders'}
+              {comparing ? t('Comparing folders') : t('Compare folders')}
             </Button>
           ) : (
             <>
               <DevicePicker devices={devices} host={host} onChange={setHost} />
               <Button icon={<Icon name="columns" size={14} />} disabled={!device?.online} onClick={() => setOther('')}>
-                Add a second device
+                {t('Add a second device')}
               </Button>
             </>
           )
@@ -67,7 +68,7 @@ export default function FilesPage() {
       />
       {!device ? (
         <Card>
-          <PickFirst icon="files" what="browse files on" />
+          <PickFirst icon="files" what={t('browse files on')} />
         </Card>
       ) : !device.online ? (
         <Card>
@@ -106,13 +107,13 @@ function OneDevice({ device }: { device: Device }) {
       tools={
         <Upload
           beforeUpload={() => {
-            notSupported('Uploading files')
+            notSupported(t('Uploading files'))
             return false
           }}
           showUploadList={false}
         >
           <Button type="primary" icon={<Icon name="plus" size={14} />}>
-            Upload
+            {t('Upload')}
           </Button>
         </Upload>
       }
@@ -214,21 +215,28 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
   const toLeftCount = comparing ? namesToSync(rightCmp ?? new Map()).length : rightSel.length
   const busy = send.isPending || pending !== null
   const others = (except: string) => devices.filter((d) => d.host !== except)
-  const files = (n: number) => `${n} ${n === 1 ? 'file' : 'files'}`
+  const files = (n: number) => (n === 1 ? t('{n} file', { n }) : t('{n} files', { n }))
 
   // The arrows carry no words, so their tooltip and accessible name say exactly what a click does.
   const arrowLabel = (toRight: boolean) => {
     const count = toRight ? toRightCount : toLeftCount
-    const target = toRight ? (ready?.host ?? 'the other device') : left.host
-    if (comparing) return `Sync ${files(count)} to ${target}: copies newer and missing files, deletes nothing`
-    return count ? `Copy ${files(count)} to ${target}` : `Tick files, or drag them across, to copy them to ${target}`
+    const target = toRight ? (ready?.host ?? t('the other device')) : left.host
+    if (comparing)
+      return t('Sync {files} to {target}: copies newer and missing files, deletes nothing', { files: files(count), target })
+    return count
+      ? t('Copy {files} to {target}', { files: files(count), target })
+      : t('Tick files, or drag them across, to copy them to {target}', { target })
   }
 
   const dropOn = (toRight: boolean) => {
     if (!drag || drag.toRight !== toRight || !loaded || busy) return null
     const target = toRight ? { host: ready?.host, path: rightPath } : { host: left.host, path: leftPath }
     return {
-      label: `Drop to copy ${files(drag.names.length)} to ${target.host} · ${target.path}`,
+      label: t('Drop to copy {files} to {host} · {path}', {
+        files: files(drag.names.length),
+        host: target.host ?? '',
+        path: target.path,
+      }),
       onDrop: () => {
         copy(toRight, drag.names)
         setDrag(null)
@@ -302,7 +310,7 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
             <div className="files-head">
               <SecondHead devices={others(left.host)} host={right?.host ?? ''} onChange={onRight} onClose={onClose} />
             </div>
-            {right ? <DeviceOffline device={right} /> : <PickFirst icon="files" what="copy files to" />}
+            {right ? <DeviceOffline device={right} /> : <PickFirst icon="files" what={t('copy files to')} />}
           </Card>
         )}
       </div>
@@ -333,8 +341,8 @@ function SecondHead({
     <>
       <DevicePicker devices={devices} host={host} onChange={onChange} />
       <span className="screen-spacer" />
-      <Tooltip title="Close the second device">
-        <button type="button" className="icon-btn files-close" aria-label="Close the second device" onClick={onClose}>
+      <Tooltip title={t('Close the second device')}>
+        <button type="button" className="icon-btn files-close" aria-label={t('Close the second device')} onClick={onClose}>
           <Icon name="close" />
         </button>
       </Tooltip>

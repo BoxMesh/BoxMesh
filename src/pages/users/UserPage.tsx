@@ -5,13 +5,14 @@ import { Link, useNavigate, useParams } from 'react-router'
 import { Icon, Th } from '../../components/Icon'
 import Status from '../../components/Status'
 import { deleteUser, updateUser } from '../../services/adminService'
+import { t } from '../../i18n'
 import { getSession } from '../../services/authService'
 import { devicesQuery, groupsQuery, usersQuery } from '../../services/queries'
 import type { DeviceAccess } from '../../types/admin'
 import type { Device } from '../../types/device'
 import { reachable } from '../../utils/devices'
 import { ago, formatDateTime } from '../../utils/time'
-import { AccessFields } from './Access'
+import { AccessFields, RoleName } from './Access'
 
 interface Fields {
   active: boolean
@@ -41,7 +42,7 @@ export default function UserPage() {
       updateUser(id, { disabled: !values.active, ...(account?.role === 'Operator' ? { access: values.access } : {}) }),
     onSuccess: () => {
       refresh()
-      message.success('Changes saved')
+      message.success(t('Changes saved'))
     },
     onError: (error) => message.error(error.message),
   })
@@ -49,7 +50,7 @@ export default function UserPage() {
     mutationFn: () => deleteUser(id),
     onSuccess: () => {
       refresh()
-      message.success(`${account?.name} no longer has an account`)
+      message.success(t('{name} no longer has an account', { name: account?.name ?? '' }))
       navigate('/users', { replace: true })
     },
     onError: (error) => message.error(error.message),
@@ -59,23 +60,23 @@ export default function UserPage() {
     return (
       <Result
         status="404"
-        title="User not found"
-        subTitle="This account doesn't exist, or it was deleted."
-        extra={<Link to="/users">Back to Users & Access</Link>}
+        title={t('User not found')}
+        subTitle={t("This account doesn't exist, or it was deleted.")}
+        extra={<Link to="/users">{t('Back to Users & Access')}</Link>}
       />
     )
   }
 
   const isAdmin = account.role === 'Admin'
   // Your own account would lock you out mid-session; the Admin's would leave nobody to manage users.
-  const locked = isAdmin ? 'the Admin account' : account.email === getSession()?.email ? 'your own account' : null
+  const locked = isAdmin ? t('the Admin account') : account.email === getSession()?.email ? t('your own account') : null
   // From what is saved, not from unsaved picks in the form.
   const reach = isAdmin ? devices : reachable(account.access, devices)
   const names = new Map(groups.map((g) => [g.id, g.name]))
 
   const columns: TableProps<Device>['columns'] = [
     {
-      title: <Th icon="devices" label="Device" />,
+      title: <Th icon="devices" label={t('Device')} />,
       key: 'host',
       render: (_, d) => (
         <span>
@@ -86,9 +87,9 @@ export default function UserPage() {
         </span>
       ),
     },
-    { title: <Th icon="pulse" label="Status" />, key: 'status', render: (_, d) => <Status online={d.online} /> },
+    { title: <Th icon="pulse" label={t('Status')} />, key: 'status', render: (_, d) => <Status online={d.online} /> },
     {
-      title: <Th icon="tag" label="Groups" />,
+      title: <Th icon="tag" label={t('Groups')} />,
       key: 'groups',
       render: (_, d) => {
         const shown = d.groups.filter((g) => names.has(g))
@@ -106,9 +107,9 @@ export default function UserPage() {
       },
     },
     {
-      title: <Th icon="lock" label="Reached through" />,
+      title: <Th icon="lock" label={t('Reached through')} />,
       key: 'via',
-      render: (_, d) => (isAdmin ? 'Admin role' : account.access.hosts.includes(d.host) ? 'Single device' : 'Group'),
+      render: (_, d) => (isAdmin ? t('Admin role') : account.access.hosts.includes(d.host) ? t('Single device') : t('Group')),
     },
   ]
 
@@ -116,26 +117,26 @@ export default function UserPage() {
     <div className="stack">
       <div className="page-header">
         <div className="title-row">
-          <Link to="/users" className="icon-btn" aria-label="Back to Users & Access">
+          <Link to="/users" className="icon-btn" aria-label={t('Back to Users & Access')}>
             <Icon name="back" />
           </Link>
           <h1 style={{ margin: 0 }}>{account.name}</h1>
-          <Tag color={isAdmin ? 'processing' : 'default'}>{account.role}</Tag>
-          {account.disabled ? <Tag>Disabled</Tag> : <Tag color="success">Active</Tag>}
+          <Tag color={isAdmin ? 'processing' : 'default'}><RoleName role={account.role} /></Tag>
+          {account.disabled ? <Tag>{t('Disabled')}</Tag> : <Tag color="success">{t('Active')}</Tag>}
         </div>
         <div className="page-actions">
           {locked ? (
-            <span className="muted">You can't delete {locked}.</span>
+            <span className="muted">{t("You can't delete {locked}.", { locked })}</span>
           ) : (
             <Popconfirm
-              title={`Delete ${account.name}?`}
-              description="They lose access at once. This can't be undone."
-              okText="Delete"
+              title={t('Delete {name}?', { name: account.name })}
+              description={t("They lose access at once. This can't be undone.")}
+              okText={t('Delete')}
               okButtonProps={{ danger: true }}
               onConfirm={() => remove.mutate()}
             >
               <Button danger icon={<Icon name="trash" size={14} />} loading={remove.isPending}>
-                Delete user
+                {t('Delete user')}
               </Button>
             </Popconfirm>
           )}
@@ -150,34 +151,34 @@ export default function UserPage() {
         onFinish={(values) => save.mutate(values)}
       >
         <div className="stack">
-          <Card title="Account">
+          <Card title={t('Account')}>
             <Descriptions
               column={{ xs: 1, md: 2 }}
               items={[
-                { key: 'email', label: 'Email', children: account.email },
-                { key: 'role', label: 'Role', children: account.role },
+                { key: 'email', label: t('Email'), children: account.email },
+                { key: 'role', label: t('Role'), children: <RoleName role={account.role} /> },
                 {
                   key: 'last',
-                  label: 'Last sign-in',
-                  children: account.lastSignIn ? `${formatDateTime(account.lastSignIn)} (${ago(account.lastSignIn)})` : 'Never',
+                  label: t('Last sign-in'),
+                  children: account.lastSignIn ? `${formatDateTime(account.lastSignIn)} (${ago(account.lastSignIn)})` : t('Never'),
                 },
-                { key: 'reach', label: 'Devices reached', children: isAdmin ? 'All' : reach.length },
+                { key: 'reach', label: t('Devices reached'), children: isAdmin ? t('All') : reach.length },
               ]}
             />
             <Form.Item
               name="active"
-              label="Can sign in"
+              label={t('Can sign in')}
               valuePropName="checked"
               style={{ marginTop: 16, marginBottom: 0 }}
-              extra={locked ? `You can't turn off ${locked}.` : 'Turned off, they keep their account but can no longer sign in.'}
+              extra={locked ? t("You can't turn off {locked}.", { locked }) : t('Turned off, they keep their account but can no longer sign in.')}
             >
-              <Switch disabled={Boolean(locked)} aria-label={`${account.email} can sign in`} />
+              <Switch disabled={Boolean(locked)} aria-label={t('{email} can sign in', { email: account.email })} />
             </Form.Item>
           </Card>
 
-          <Card title="What they can reach">
+          <Card title={t('What they can reach')}>
             {isAdmin ? (
-              <span className="muted">The Admin reaches every device.</span>
+              <span className="muted">{t('The Admin reaches every device.')}</span>
             ) : (
               <Form.Item name="access" style={{ marginBottom: 0 }}>
                 <AccessFields groups={groups} devices={devices} />
@@ -191,17 +192,17 @@ export default function UserPage() {
               <span className="screen-spacer" />
               {/* Not resetFields: that goes back to the values at first load, not the last save. */}
               <Button onClick={() => form.setFieldsValue({ active: !account.disabled, access: account.access })}>
-                Discard changes
+                {t('Discard changes')}
               </Button>
               <Button type="primary" htmlType="submit" loading={save.isPending}>
-                Save changes
+                {t('Save changes')}
               </Button>
             </div>
           )}
         </div>
       </Form>
 
-      <Card title={`Devices they reach (${reach.length})`} className="table-card" styles={{ body: { padding: 0 } }}>
+      <Card title={t('Devices they reach ({n})', { n: reach.length })} className="table-card" styles={{ body: { padding: 0 } }}>
         <Table<Device>
           columns={columns}
           dataSource={reach}
@@ -209,7 +210,7 @@ export default function UserPage() {
           pagination={false}
           size="small"
           scroll={{ x: 'max-content' }}
-          locale={{ emptyText: <span className="muted">No device yet. Add groups or single devices above.</span> }}
+          locale={{ emptyText: <span className="muted">{t('No device yet. Add groups or single devices above.')}</span> }}
         />
       </Card>
     </div>

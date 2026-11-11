@@ -4,6 +4,7 @@ import DevicePicker, { DeviceOffline, PickFirst } from '../../components/DeviceP
 import { useDeviceParam } from '../../hooks/useDeviceParam'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
+import { t } from '../../i18n'
 import { userMessage } from '../../services/http'
 import { servicesQuery } from '../../services/queries'
 import type { RemoteService } from '../../types/remote'
@@ -18,7 +19,7 @@ export default function ServicesPage() {
 
   const columns: TableProps<RemoteService>['columns'] = [
     {
-      title: <Th icon="web" label="Service" />,
+      title: <Th icon="web" label={t('Service')} />,
       key: 'name',
       render: (_, s) => (
         <>
@@ -27,19 +28,20 @@ export default function ServicesPage() {
         </>
       ),
     },
-    { title: <Th icon="chip" label="Port" />, key: 'port', render: (_, s) => <code>{s.port}</code> },
+    { title: <Th icon="chip" label={t('Port')} />, key: 'port', render: (_, s) => <code>{s.port}</code> },
     {
-      title: <Th icon="pulse" label="Status" />,
+      title: <Th icon="pulse" label={t('Status')} />,
       key: 'status',
-      render: (_, s) => <Tag color={s.status === 'running' ? 'success' : 'default'}>{s.status}</Tag>,
+      render: (_, s) =>
+        s.status === 'running' ? <Tag color="success">{t('running')}</Tag> : <Tag color="default">{t('stopped')}</Tag>,
     },
     {
-      title: <Th icon="arrow" label="Address" />,
+      title: <Th icon="arrow" label={t('Address')} />,
       key: 'url',
       render: (_, s) => <code>{proxyPath(host, s)}</code>,
     },
     {
-      title: <Th icon="more" label="Actions" />,
+      title: <Th icon="more" label={t('Actions')} />,
       key: 'actions',
       render: (_, s) => (
         <div className="row-actions">
@@ -47,12 +49,12 @@ export default function ServicesPage() {
             size="small"
             onClick={() =>
               navigator.clipboard.writeText(`${location.origin}${proxyPath(host, s)}`).then(
-                () => message.success('Address copied'),
-                () => message.error('Copy failed. Select the address and copy it manually.'),
+                () => message.success(t('Address copied')),
+                () => message.error(t('Copy failed. Select the address and copy it manually.')),
               )
             }
           >
-            Copy link
+            {t('Copy link')}
           </Button>
           <Button
             size="small"
@@ -62,7 +64,7 @@ export default function ServicesPage() {
             rel="noopener noreferrer"
             disabled={s.status !== 'running'}
           >
-            Open
+            {t('Open')}
           </Button>
         </div>
       ),
@@ -72,21 +74,21 @@ export default function ServicesPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Remote Service"
-        subtitle="Open web apps running on a device — Grafana, an internal dashboard — through the panel's proxy."
+        title={t('Remote Service')}
+        subtitle={t("Open web apps running on a device — Grafana, an internal dashboard — through the panel's proxy.")}
         actions={<DevicePicker devices={devices} host={host} onChange={setHost} />}
       />
 
       {!device ? (
         <Card>
-          <PickFirst icon="web" what="list the web apps on" />
+          <PickFirst icon="web" what={t('list the web apps on')} />
         </Card>
       ) : !device.online ? (
         <Card>
           <DeviceOffline device={device} />
         </Card>
       ) : (
-        <Card className="table-card" title={`Web apps on ${device.host}`} styles={{ body: { padding: 0 } }}>
+        <Card className="table-card" title={t('Web apps on {host}', { host: device.host })} styles={{ body: { padding: 0 } }}>
           <Table<RemoteService>
             columns={columns}
             dataSource={services.data}
@@ -100,8 +102,8 @@ export default function ServicesPage() {
                   <Icon name="web" size={28} />
                   <span>
                     {services.error
-                      ? `The service list didn't load. ${userMessage(services.error)}`
-                      : `No web app is listening on ${device.host}.`}
+                      ? t("The service list didn't load. {reason}", { reason: userMessage(services.error) })
+                      : t('No web app is listening on {host}.', { host: device.host })}
                   </span>
                 </div>
               ),

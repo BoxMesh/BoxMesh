@@ -17,6 +17,7 @@ import ServicesPage from './pages/remote-services/ServicesPage'
 import TokensPage from './pages/tokens/TokensPage'
 import UserPage from './pages/users/UserPage'
 import UsersPage from './pages/users/UsersPage'
+import { t } from './i18n'
 import { getSession } from './services/authService'
 
 // xterm is a third of the bundle and only this screen needs it; AppLayout's Suspense covers the wait.
@@ -51,7 +52,7 @@ export default function App() {
         <Route path="enrollment-tokens" element={<TokensPage />} />
         <Route
           path="*"
-          element={<Result status="404" title="Page not found" subTitle="Check the address, or pick a page from the menu." />}
+          element={<Result status="404" title={t('Page not found')} subTitle={t('Check the address, or pick a page from the menu.')} />}
         />
       </Route>
     </Routes>

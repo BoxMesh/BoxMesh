@@ -9,6 +9,7 @@ import PageHeader from '../../components/PageHeader'
 import Status from '../../components/Status'
 import { useDeviceParam } from '../../hooks/useDeviceParam'
 import { useThemeMode } from '../../hooks/useThemeMode'
+import { t } from '../../i18n'
 import { userMessage } from '../../services/http'
 import { runCommand } from '../../services/remoteService'
 import type { Device, OsFamily } from '../../types/device'
@@ -45,8 +46,8 @@ export default function TerminalPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Remote Terminal"
-        subtitle="Run a command through the device's own tunnel. Every command is written to the audit log."
+        title={t('Remote Terminal')}
+        subtitle={t("Run a command through the device's own tunnel. Every command is written to the audit log.")}
         actions={
           <>
             <DevicePicker devices={devices} host={host} onChange={setHost} />
@@ -56,7 +57,7 @@ export default function TerminalPage() {
       />
       {!device ? (
         <Card>
-          <PickFirst icon="terminal" what="open a terminal on" />
+          <PickFirst icon="terminal" what={t('open a terminal on')} />
         </Card>
       ) : !device.online ? (
         <Card>
@@ -118,8 +119,8 @@ function Session({ device }: { device: Device }) {
 
     const prompt = () => terminal.write(`\x1b[32m${promptFor(shellRef.current, device.host)}\x1b[0m `)
 
-    terminal.writeln(`\x1b[90mConnected to ${device.host} over the agent tunnel.\x1b[0m`)
-    terminal.writeln('\x1b[90mTry whoami, hostname, uptime, df, ipconfig, ls or get-service.\x1b[0m')
+    terminal.writeln(`\x1b[90m${t('Connected to {host} over the agent tunnel.', { host: device.host })}\x1b[0m`)
+    terminal.writeln(`\x1b[90m${t('Try whoami, hostname, uptime, df, ipconfig, ls or get-service.')}\x1b[0m`)
     terminal.writeln('')
     prompt()
 
@@ -228,7 +229,7 @@ function Session({ device }: { device: Device }) {
   return (
     <Card
       title={`${device.host} · ${device.os} ${device.osVersion}`}
-      extra={<Segmented<Shell> aria-label="Shell" options={shells} value={shell} onChange={setShell} />}
+      extra={<Segmented<Shell> aria-label={t('Shell')} options={shells} value={shell} onChange={setShell} />}
       styles={{ body: { padding: 0 } }}
     >
       <div className="terminal-host" ref={mount} />

@@ -4,6 +4,7 @@ import { Link } from 'react-router'
 import { Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { tone } from '../../config/theme'
+import { t } from '../../i18n'
 import { devicesQuery, groupsQuery, remoteSessionsQuery } from '../../services/queries'
 import { summarize, triage, type Severity, type TriageRow } from '../../utils/devices'
 import { ago } from '../../utils/time'
@@ -12,7 +13,11 @@ import GroupHealthCard from './GroupHealthCard'
 import HealthBar from './HealthBar'
 import TopUsageCard from './TopUsageCard'
 
-const SEVERITY_LABEL: Record<Severity, string> = { critical: 'Critical', warning: 'Warning', offline: 'Offline' }
+const SEVERITY_LABEL: Record<Severity, string> = {
+  critical: t('Critical'),
+  warning: t('Warning'),
+  offline: t('Offline'),
+}
 
 // The queue is one table: each severity opens with a header row that spans every column.
 type QueueRow = TriageRow | { group: Severity; count: number }
@@ -33,7 +38,7 @@ const queueColumns: TableProps<QueueRow>['columns'] = [
       ),
   },
   {
-    title: <Th icon="devices" label="Device" />,
+    title: <Th icon="devices" label={t('Device')} />,
     key: 'device',
     onCell: spanGroup,
     render: (_, r) =>
@@ -44,7 +49,7 @@ const queueColumns: TableProps<QueueRow>['columns'] = [
       ),
   },
   {
-    title: <Th icon="warning" label="Issue" />,
+    title: <Th icon="warning" label={t('Issue')} />,
     key: 'issue',
     onCell: spanGroup,
     render: (_, r) =>
@@ -59,25 +64,25 @@ const queueColumns: TableProps<QueueRow>['columns'] = [
       ),
   },
   {
-    title: <Th icon="pulse" label="Value" />,
+    title: <Th icon="pulse" label={t('Value')} />,
     key: 'value',
     onCell: spanGroup,
     render: (_, r) => (isGroup(r) ? null : r.issues.map((i) => i.value).join(' · ')),
   },
   {
-    title: <Th icon="clock" label="Last seen" />,
+    title: <Th icon="clock" label={t('Last seen')} />,
     key: 'seen',
     onCell: spanGroup,
     render: (_, r) => (isGroup(r) ? null : <span className="muted queue-nowrap">{ago(r.device.lastSeen)}</span>),
   },
   {
-    title: <Th icon="more" label="Action" />,
+    title: <Th icon="more" label={t('Action')} />,
     key: 'action',
     onCell: spanGroup,
     render: (_, r) =>
       isGroup(r) ? null : (
-        <Link to={`/devices/${r.device.host}`} aria-label={`Open ${r.device.host}`}>
-          <Button size="small">Open</Button>
+        <Link to={`/devices/${r.device.host}`} aria-label={t('Open {host}', { host: r.device.host })}>
+          <Button size="small">{t('Open')}</Button>
         </Link>
       ),
   },
@@ -102,10 +107,10 @@ export default function DashboardPage() {
   })
 
   const segments = [
-    { key: 'healthy', count: healthy, label: 'healthy' },
-    { key: 'warning', count: warning, label: 'warning' },
-    { key: 'critical', count: critical, label: 'critical' },
-    { key: 'offline', count: s.offline, label: 'offline' },
+    { key: 'healthy', count: healthy, label: t('{n} healthy', { n: healthy }) },
+    { key: 'warning', count: warning, label: t('{n} warning', { n: warning }) },
+    { key: 'critical', count: critical, label: t('{n} critical', { n: critical }) },
+    { key: 'offline', count: s.offline, label: t('{n} offline', { n: s.offline }) },
   ]
   const outdated = devices.filter((d) => d.agentOutdated).length
   const families = (['Windows', 'Linux', 'macOS'] as const).map((family, i) => ({
@@ -117,49 +122,49 @@ export default function DashboardPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Dashboard"
-        subtitle="What is down, what needs attention, and what to do next."
+        title={t('Dashboard')}
+        subtitle={t('What is down, what needs attention, and what to do next.')}
       />
 
       <Card styles={{ body: { padding: 0 } }}>
         <div className="health-strip">
           <div className="health-cell">
-            <span className="muted">Fleet health</span>
+            <span className="muted">{t('Fleet health')}</span>
             <span className="health-big">
-              {s.online} <span className="health-unit">of {s.total} online</span>
+              {s.online} <span className="health-unit">{t('of {total} online', { total: s.total })}</span>
             </span>
             <HealthBar parts={segments} />
             <div className="health-legend">
               {segments.map((seg) => (
                 <span key={seg.key}>
                   <i className={seg.key} />
-                  {seg.count} {seg.label}
+                  {seg.label}
                 </span>
               ))}
             </div>
           </div>
           <div className="health-cell">
-            <span className="muted">Needs attention now</span>
+            <span className="muted">{t('Needs attention now')}</span>
             <span className="health-big" style={{ color: critical ? tone.error : undefined }}>
               {critical}
             </span>
             <span className="sub">
-              {critical ? `${overThreshold} over the CPU or RAM threshold` : 'Nothing critical'}
+              {critical ? t('{n} over the CPU or RAM threshold', { n: overThreshold }) : t('Nothing critical')}
             </span>
           </div>
           <div className="health-cell">
-            <span className="muted">Average latency</span>
+            <span className="muted">{t('Average latency')}</span>
             <span className="health-big">
               {s.avgLatency} <span className="health-unit">ms</span>
             </span>
             <span className="sub">
-              {remoteSessions.reconnects24h} reconnects in 24 h
+              {t('{n} reconnects in 24 h', { n: remoteSessions.reconnects24h })}
             </span>
           </div>
           <div className="health-cell">
-            <span className="muted">Agents</span>
+            <span className="muted">{t('Agents')}</span>
             <span className="health-big">
-              {outdated} <span className="health-unit">outdated</span>
+              {outdated} <span className="health-unit">{t('outdated')}</span>
             </span>
             <HealthBar parts={families} />
             <div className="health-legend">
@@ -174,7 +179,7 @@ export default function DashboardPage() {
         </div>
       </Card>
 
-      <Card title="Alert" extra={<Link to="/devices">All devices</Link>} styles={{ body: { padding: 0 } }}>
+      <Card title={t('Alert')} extra={<Link to="/devices">{t('All devices')}</Link>} styles={{ body: { padding: 0 } }}>
         <Table<QueueRow>
           columns={queueColumns}
           dataSource={queue}
@@ -184,7 +189,7 @@ export default function DashboardPage() {
           // pushing Last seen and Action out of the card. Below 680px the table scrolls sideways.
           scroll={{ x: 680 }}
           locale={{
-            emptyText: <span className="muted">Every device is online and within its thresholds.</span>,
+            emptyText: <span className="muted">{t('Every device is online and within its thresholds.')}</span>,
           }}
         />
       </Card>

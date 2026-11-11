@@ -1,5 +1,6 @@
 import { createContext, useContext, type MouseEvent } from 'react'
 import type { ThemeMode } from '../config/theme'
+import { t } from '../i18n'
 
 /** Viewport point the theme transition spreads from (the control's centre). */
 export interface ThemeOrigin {
@@ -25,7 +26,7 @@ export function useThemeSwitch() {
     mode,
     switchProps: {
       type: 'button' as const,
-      'aria-label': `Switch to ${mode === 'dark' ? 'light' : 'dark'} theme`,
+      'aria-label': mode === 'dark' ? t('Switch to light theme') : t('Switch to dark theme'),
       onClick: (e: MouseEvent<HTMLElement>) => {
         const r = e.currentTarget.getBoundingClientRect()
         toggle({ x: r.left + r.width / 2, y: r.top + r.height / 2 })

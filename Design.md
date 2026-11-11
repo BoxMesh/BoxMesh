@@ -171,7 +171,8 @@ Gotchas:
 - Sider 216 px, `bg-surface`, right `border`. Below 992 px it collapses to zero width; antd's trigger opens it,
   parked in the header's left corner.
 - Header 56, `bg-surface`, bottom border: breadcrumb on the left (`BoxMesh / Page`, current page in `text`); on the right a
-  240 px search (hidden under 576 px), the theme toggle and the account button (28 px orange avatar + name; the menu holds
+  240 px search (hidden under 576 px), the language select (128 px: a 20 × 14 flag from `src/assets/flags` + English / 日本語; switching reloads the page),
+  the theme toggle and the account button (28 px orange avatar + name; the menu holds
   the email and "Sign out").
 - The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "BoxMesh" root is dropped.
 - Page body: padding 20, vertical stack, gap 12.
@@ -472,7 +473,8 @@ PWA: installable (manifest in `vite.config.ts`). Any number of tabs or windows m
 
 1. Architecture artboard says "BoxAgent (Go)"; the repo's BoxAgent is C# / .NET.
 2. The canvas's Metrics tab became the Resource information card on Device detail (see Charts).
-3. No translation layer yet (PRODUCT.md, Language).
+3. English and Japanese only (PRODUCT.md, Language). Japanese text falls back from Geist to Hiragino Sans, Yu Gothic UI
+   or Meiryo, so it is set in the OS's Japanese face; dates read `2027/07/04` in Japanese.
 4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with an accent icon.
 5. The canvas's Operations group (Command & Jobs, Audit), Security & Certificates and System Settings were removed
    in November 2026, along with their services, types and demo routes.

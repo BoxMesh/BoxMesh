@@ -7,12 +7,13 @@ import PageHeader from '../../components/PageHeader'
 import { inviteUser } from '../../services/adminService'
 import { devicesQuery, groupsQuery, usersQuery } from '../../services/queries'
 import type { Account, DeviceAccess, Role } from '../../types/admin'
+import { t } from '../../i18n'
 import { ago } from '../../utils/time'
-import { AccessFields, AccessTags } from './Access'
+import { AccessFields, AccessTags, RoleName } from './Access'
 
 const ROLES: { value: Role; label: string; help: string }[] = [
-  { value: 'Admin', label: 'Admin', help: 'Everything, plus managing users' },
-  { value: 'Operator', label: 'Operator', help: 'Runs commands and opens remote sessions' },
+  { value: 'Admin', label: t('Admin'), help: t('Everything, plus managing users') },
+  { value: 'Operator', label: t('Operator'), help: t('Runs commands and opens remote sessions') },
 ]
 
 // The table only shows; every change happens on the person's own page (/users/:id). There is exactly one Admin, so roles are not
@@ -35,14 +36,14 @@ export default function UsersPage() {
       refresh()
       setOpen(false)
       form.resetFields()
-      message.success(`Invitation sent to ${account.email}`)
+      message.success(t('Invitation sent to {email}', { email: account.email }))
     },
     onError: (error) => message.error(error.message),
   })
 
   const columns: TableProps<Account>['columns'] = [
     {
-      title: <Th icon="users" label="Name" />,
+      title: <Th icon="users" label={t('Name')} />,
       key: 'name',
       render: (_, a) => (
         <Link to={`/users/${a.id}`} className="strong">
@@ -50,33 +51,33 @@ export default function UsersPage() {
         </Link>
       ),
     },
-    { title: <Th icon="mail" label="Email" />, key: 'email', render: (_, a) => a.email },
+    { title: <Th icon="mail" label={t('Email')} />, key: 'email', render: (_, a) => a.email },
     {
-      title: <Th icon="security" label="Role" />,
+      title: <Th icon="security" label={t('Role')} />,
       key: 'role',
-      render: (_, a) => <Tag color={a.role === 'Admin' ? 'processing' : 'default'}>{a.role}</Tag>,
+      render: (_, a) => <Tag color={a.role === 'Admin' ? 'processing' : 'default'}><RoleName role={a.role} /></Tag>,
     },
     ...(['groups', 'hosts'] as const).map((part) => ({
-      title: part === 'groups' ? <Th icon="tag" label="Groups" /> : <Th icon="devices" label="Devices" />,
+      title: part === 'groups' ? <Th icon="tag" label={t('Groups')} /> : <Th icon="devices" label={t('Devices')} />,
       key: part,
       render: (_: unknown, a: Account) => <AccessTags account={a} part={part} groups={groups} />,
     })),
     {
-      title: <Th icon="pulse" label="Status" />,
+      title: <Th icon="pulse" label={t('Status')} />,
       key: 'status',
-      render: (_, a) => (a.disabled ? <Tag>Disabled</Tag> : <Tag color="success">Active</Tag>),
+      render: (_, a) => (a.disabled ? <Tag>{t('Disabled')}</Tag> : <Tag color="success">{t('Active')}</Tag>),
     },
     {
-      title: <Th icon="clock" label="Last sign-in" />,
+      title: <Th icon="clock" label={t('Last sign-in')} />,
       key: 'last',
-      render: (_, a) => (a.lastSignIn ? ago(a.lastSignIn) : <span className="muted">Never</span>),
+      render: (_, a) => (a.lastSignIn ? ago(a.lastSignIn) : <span className="muted">{t('Never')}</span>),
     },
     {
-      title: <Th icon="more" label="Actions" />,
+      title: <Th icon="more" label={t('Actions')} />,
       key: 'actions',
       render: (_, a) => (
-        <Tooltip title={`Open ${a.name}`}>
-          <Link to={`/users/${a.id}`} className="icon-btn" aria-label={`Open ${a.name}`}>
+        <Tooltip title={t('Open {name}', { name: a.name })}>
+          <Link to={`/users/${a.id}`} className="icon-btn" aria-label={t('Open {name}', { name: a.name })}>
             <Icon name="edit" size={14} />
           </Link>
         </Tooltip>
@@ -87,11 +88,11 @@ export default function UsersPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Users & Access"
-        subtitle="Who can sign in, what they may do, and which devices each Operator can reach."
+        title={t('Users & Access')}
+        subtitle={t('Who can sign in, what they may do, and which devices each Operator can reach.')}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setOpen(true)}>
-            Invite person
+            {t('Invite person')}
           </Button>
         }
       />
@@ -118,16 +119,16 @@ export default function UsersPage() {
       </Card>
 
       <Modal
-        title="Invite a person"
+        title={t('Invite a person')}
         open={open}
         onCancel={() => setOpen(false)}
         width={880}
         footer={
           <div className="drawer-footer">
             <span className="screen-spacer" />
-            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => setOpen(false)}>{t('Cancel')}</Button>
             <Button type="primary" loading={invite.isPending} onClick={() => form.submit()}>
-              Send invitation
+              {t('Send invitation')}
             </Button>
           </div>
         }
@@ -141,17 +142,17 @@ export default function UsersPage() {
         >
           <Form.Item
             name="email"
-            label="Work email"
-            extra="They join as an Operator: they can run commands and open remote sessions."
+            label={t('Work email')}
+            extra={t('They join as an Operator: they can run commands and open remote sessions.')}
             normalize={(v: string) => v.trim()}
             rules={[
-              { required: true, message: 'Enter their email.' },
-              { type: 'email', message: 'Enter a valid email.' },
+              { required: true, message: t('Enter their email.') },
+              { type: 'email', message: t('Enter a valid email.') },
             ]}
           >
             <Input type="email" autoComplete="off" placeholder="name@company.com" />
           </Form.Item>
-          <Form.Item name="access" label="What they can reach">
+          <Form.Item name="access" label={t('What they can reach')}>
             {/* Form.Item passes value and onChange; until something is picked they reach no device. */}
             <AccessFields groups={groups} devices={devices} />
           </Form.Item>

@@ -3,6 +3,7 @@ import { App, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Radio, 
 import { useState } from 'react'
 import { Icon, Th, type IconName } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
+import { t } from '../../i18n'
 import { createAlertRule, deleteAlertRule, updateAlertRule, type NewAlertRule } from '../../services/alertService'
 import { alertRulesQuery, alertsQuery } from '../../services/queries'
 import type { AlertMetric, AlertRule } from '../../types/alert'
@@ -13,10 +14,10 @@ const DEFAULT_THRESHOLD: Record<AlertMetric, number> = { cpu: 90, ram: 90, disk:
 const EMPTY: NewAlertRule = { name: '', metric: 'cpu', threshold: 90, minutes: 5 }
 const METRIC_ICON: Record<AlertMetric, IconName> = { cpu: 'chip', ram: 'columns', disk: 'box', offline: 'pulse' }
 const METRIC_HINT: Record<AlertMetric, string> = {
-  cpu: 'Processor load',
-  ram: 'Memory in use',
-  disk: 'Space used',
-  offline: 'No heartbeat',
+  cpu: t('Processor load'),
+  ram: t('Memory in use'),
+  disk: t('Space used'),
+  offline: t('No heartbeat'),
 }
 
 export default function AlertRulesPage() {
@@ -31,42 +32,42 @@ export default function AlertRulesPage() {
     onSuccess: (_, rule) => {
       queryClient.invalidateQueries({ queryKey: alertRulesQuery.queryKey })
       queryClient.invalidateQueries({ queryKey: alertsQuery.queryKey })
-      message.success(`"${rule.name}" deleted`)
+      message.success(t('"{name}" deleted', { name: rule.name }))
     },
     onError: (error) => message.error(error.message),
   })
 
   const columns: TableProps<AlertRule>['columns'] = [
-    { title: <Th icon="warning" label="Rule" />, dataIndex: 'name', render: (name: string) => <span className="strong">{name}</span> },
-    { title: <Th icon="pulse" label="Condition" />, key: 'when', render: (_, r) => conditionOf(r) },
+    { title: <Th icon="warning" label={t('Rule')} />, dataIndex: 'name', render: (name: string) => <span className="strong">{name}</span> },
+    { title: <Th icon="pulse" label={t('Condition')} />, key: 'when', render: (_, r) => conditionOf(r) },
     {
-      title: <Th icon="bell" label="Used by" />,
+      title: <Th icon="bell" label={t('Used by')} />,
       key: 'used',
       render: (_, r) => {
         const list = usedBy(r.id)
-        return list.length ? list.map((a) => a.name).join(', ') : <span className="muted">No alert</span>
+        return list.length ? list.map((a) => a.name).join(', ') : <span className="muted">{t('No alert')}</span>
       },
     },
     {
-      title: <Th icon="more" label="Actions" />,
+      title: <Th icon="more" label={t('Actions')} />,
       key: 'actions',
       render: (_, r) => {
         const n = usedBy(r.id).length
         return (
           <div className="row-actions">
-            <Tooltip title={`Edit "${r.name}"`}>
-              <button type="button" className="icon-btn" aria-label={`Edit "${r.name}"`} onClick={() => setEditing(r)}>
+            <Tooltip title={t('Edit "{name}"', { name: r.name })}>
+              <button type="button" className="icon-btn" aria-label={t('Edit "{name}"', { name: r.name })} onClick={() => setEditing(r)}>
                 <Icon name="edit" size={14} />
               </button>
             </Tooltip>
             <Popconfirm
-              title={`Delete "${r.name}"?`}
-              description={n ? `${n} alert${n === 1 ? '' : 's'} stop checking it.` : 'No alert uses it.'}
-              okText="Delete"
+              title={t('Delete "{name}"?', { name: r.name })}
+              description={n ? (n === 1 ? t('{n} alert stop checking it.', { n }) : t('{n} alerts stop checking it.', { n })) : t('No alert uses it.')}
+              okText={t('Delete')}
               okButtonProps={{ danger: true }}
               onConfirm={() => remove.mutate(r)}
             >
-              <button type="button" className="icon-btn" aria-label={`Delete "${r.name}"`}>
+              <button type="button" className="icon-btn" aria-label={t('Delete "{name}"', { name: r.name })}>
                 <Icon name="trash" size={14} />
               </button>
             </Popconfirm>
@@ -79,11 +80,13 @@ export default function AlertRulesPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Rules"
-        subtitle="A rule is a condition with a name, such as CPU above 90% for 5 minutes. Use it in an alert to say which devices it watches and where the message goes."
+        title={t('Rules')}
+        subtitle={t(
+          'A rule is a condition with a name, such as CPU above 90% for 5 minutes. Use it in an alert to say which devices it watches and where the message goes.',
+        )}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEditing('new')}>
-            Add rule
+            {t('Add rule')}
           </Button>
         }
       />
@@ -94,7 +97,7 @@ export default function AlertRulesPage() {
           rowKey="id"
           pagination={false}
           scroll={{ x: 'max-content' }}
-          locale={{ emptyText: <span className="muted">No rules yet. Add one, such as CPU above 90% for 5 minutes.</span> }}
+          locale={{ emptyText: <span className="muted">{t('No rules yet. Add one, such as CPU above 90% for 5 minutes.')}</span> }}
         />
       </Card>
       <RuleDialog rule={editing} onClose={() => setEditing(null)} />
@@ -115,14 +118,21 @@ function RuleDialog({ rule, onClose }: { rule: AlertRule | 'new' | null; onClose
     mutationFn: (values: NewAlertRule) => (current ? updateAlertRule(current.id, values) : createAlertRule(values)),
     onSuccess: (saved) => {
       queryClient.invalidateQueries({ queryKey: alertRulesQuery.queryKey })
-      message.success(current ? 'Rule saved' : `"${saved.name}" added`)
+      message.success(current ? t('Rule saved') : t('"{name}" added', { name: saved.name }))
       onClose()
     },
     onError: (error) => message.error(error.message),
   })
 
   return (
-    <Modal title={current ? `Edit "${current.name}"` : 'Add a rule'} open={Boolean(rule)} onCancel={onClose} width={680} destroyOnHidden footer={null}>
+    <Modal
+      title={current ? t('Edit "{name}"', { name: current.name }) : t('Add a rule')}
+      open={Boolean(rule)}
+      onCancel={onClose}
+      width={680}
+      destroyOnHidden
+      footer={null}
+    >
       <Form<NewAlertRule>
         form={form}
         className="dialog-form"
@@ -134,16 +144,16 @@ function RuleDialog({ rule, onClose }: { rule: AlertRule | 'new' | null; onClose
         }}
         onFinish={(values) => save.mutate({ ...values, name: values.name.trim(), threshold: values.metric === 'offline' ? 0 : values.threshold })}
       >
-        <Form.Item name="name" label="Rule name" rules={[{ required: true, whitespace: true, message: 'Name the rule.' }]}>
-          <Input maxLength={60} placeholder="e.g. Disk almost full" />
+        <Form.Item name="name" label={t('Rule name')} rules={[{ required: true, whitespace: true, message: t('Name the rule.') }]}>
+          <Input maxLength={60} placeholder={t('e.g. Disk almost full')} />
         </Form.Item>
 
         <section className="form-section">
-          <h3>Condition</h3>
+          <h3>{t('Condition')}</h3>
           <p className="section-hint" aria-live="polite">
-            Fires when {sentenceOf({ metric, threshold, minutes })}.
+            {t('Fires when {condition}.', { condition: sentenceOf({ metric, threshold, minutes }) })}
           </p>
-          <Form.Item name="metric" label="Watch">
+          <Form.Item name="metric" label={t('Watch')}>
             <Radio.Group className="choice-cards">
               {METRICS.map((m) => (
                 <Radio key={m} value={m} className="choice-card">
@@ -158,15 +168,15 @@ function RuleDialog({ rule, onClose }: { rule: AlertRule | 'new' | null; onClose
           </Form.Item>
           <div className="kv">
             {metric !== 'offline' ? (
-              <Form.Item name="threshold" label="Goes above" rules={[{ required: true, message: 'Enter a limit.' }]}>
+              <Form.Item name="threshold" label={t('Goes above')} rules={[{ required: true, message: t('Enter a limit.') }]}>
                 <InputNumber min={1} max={100} suffix="%" style={{ width: '100%' }} />
               </Form.Item>
             ) : null}
             <Form.Item
               name="minutes"
-              label={metric === 'offline' ? 'Offline for' : 'For at least'}
-              extra="A short spike sends nothing."
-              rules={[{ required: true, message: 'Enter how long.' }]}
+              label={metric === 'offline' ? t('Offline for') : t('For at least')}
+              extra={t('A short spike sends nothing.')}
+              rules={[{ required: true, message: t('Enter how long.') }]}
             >
               <InputNumber min={metric === 'offline' ? 1 : 0} max={1440} suffix="min" style={{ width: '100%' }} />
             </Form.Item>
@@ -175,9 +185,9 @@ function RuleDialog({ rule, onClose }: { rule: AlertRule | 'new' | null; onClose
 
         <div className="dialog-footer">
           <span className="dialog-buttons">
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>{t('Cancel')}</Button>
             <Button type="primary" htmlType="submit" loading={save.isPending}>
-              {current ? 'Save changes' : 'Add rule'}
+              {current ? t('Save changes') : t('Add rule')}
             </Button>
           </span>
         </div>

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Icon } from '../../components/Icon'
 import { tone } from '../../config/theme'
+import { t } from '../../i18n'
 import type { Device } from '../../types/device'
 import { THRESHOLDS } from '../../utils/devices'
 
@@ -11,7 +12,7 @@ type Metric = 'cpu' | 'ram' | 'disk'
 const METRICS: { value: Metric; label: string }[] = [
   { value: 'cpu', label: 'CPU' },
   { value: 'ram', label: 'RAM' },
-  { value: 'disk', label: 'Disk' },
+  { value: 'disk', label: t('Disk') },
 ]
 
 /** The five online devices using the most of one resource. Offline ones are left out: their numbers are stale. */
@@ -25,8 +26,8 @@ export default function TopUsageCard({ devices }: { devices: Device[] }) {
 
   return (
     <Card
-      title="Top usage"
-      extra={<Segmented<Metric> size="small" aria-label="Resource" options={METRICS} value={metric} onChange={setMetric} />}
+      title={t('Top usage')}
+      extra={<Segmented<Metric> size="small" aria-label={t('Resource')} options={METRICS} value={metric} onChange={setMetric} />}
       styles={{ body: { padding: 0 } }}
     >
       {top.length ? (
@@ -47,14 +48,14 @@ export default function TopUsageCard({ devices }: { devices: Device[] }) {
                 />
                 <span className={hot ? 'rank-value hot' : 'rank-value'}>
                   {hot && <Icon name="warning" size={12} />}
-                  {d[metric]}%{hot && <span className="sr-only"> (over the {THRESHOLDS[metric]}% threshold)</span>}
+                  {d[metric]}%{hot && <span className="sr-only"> {t('(over the {n}% threshold)', { n: THRESHOLDS[metric] })}</span>}
                 </span>
               </li>
             )
           })}
         </ul>
       ) : (
-        <p className="muted card-note">No device is online.</p>
+        <p className="muted card-note">{t('No device is online.')}</p>
       )}
     </Card>
   )

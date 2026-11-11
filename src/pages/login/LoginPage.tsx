@@ -3,7 +3,9 @@ import { Alert, Button, Divider, Form, Input } from 'antd'
 import { useState } from 'react'
 import { Navigate, useLocation, useNavigate, type Location } from 'react-router'
 import Logo from '../../components/Logo'
+import LanguageSelect from '../../components/LanguageSelect'
 import ThemeToggle from '../../components/ThemeToggle'
+import { t } from '../../i18n'
 import { getSession, logIn, requestPasswordReset } from '../../services/authService'
 import { isDemo, startDemo } from '../../services/demo'
 import LoginBackground from './LoginBackground'
@@ -49,6 +51,7 @@ export default function LoginPage() {
     <div className="login">
       <LoginBackground />
       <div className="login-toggle">
+        <LanguageSelect />
         <ThemeToggle />
       </div>
       <main className="login-main">
@@ -56,11 +59,11 @@ export default function LoginPage() {
         <div className="login-card">
           {/* Keyed so the new heading fades in instead of the text just snapping. */}
           <header className="login-head" key={String(resetting)}>
-            <h1>{resetting ? 'Reset password' : 'Sign in'}</h1>
+            <h1>{resetting ? t('Reset password') : t('Sign in')}</h1>
             <p>
               {resetting
-                ? 'Enter your email and we’ll send you a link to reset your password.'
-                : 'Manage all your devices in one place.'}
+                ? t('Enter your email and we’ll send you a link to reset your password.')
+                : t('Manage all your devices in one place.')}
             </p>
           </header>
 
@@ -77,17 +80,17 @@ export default function LoginPage() {
                 className="login-error"
                 type="success"
                 showIcon
-                title="Check your inbox"
-                description={`If an account exists for ${reset.variables}, a reset link is on its way.`}
+                title={t('Check your inbox')}
+                description={t('If an account exists for {email}, a reset link is on its way.', { email: reset.variables ?? '' })}
               />
             ) : null}
             <Form.Item
               name="email"
-              label="Email"
+              label={t('Email')}
               normalize={(value: string) => value.trim()}
               rules={[
-                { required: true, message: 'Enter your email.' },
-                { type: 'email', message: 'Enter a valid email.' },
+                { required: true, message: t('Enter your email.') },
+                { type: 'email', message: t('Enter a valid email.') },
               ]}
             >
               <Input type="email" autoComplete="username" autoFocus placeholder="you@company.com" />
@@ -97,12 +100,12 @@ export default function LoginPage() {
               <div className="login-field">
                 <div className="login-label">
                   {/* A real label: the field has no antd label of its own, because the link shares its line. */}
-                  <label htmlFor="login-password">Password</label>
+                  <label htmlFor="login-password">{t('Password')}</label>
                   <Button type="link" size="small" onClick={() => switchTo(true)}>
-                    Forgot password?
+                    {t('Forgot password?')}
                   </Button>
                 </div>
-                <Form.Item name="password" rules={resetting ? [] : [{ required: true, message: 'Enter your password.' }]}>
+                <Form.Item name="password" rules={resetting ? [] : [{ required: true, message: t('Enter your password.') }]}>
                   <Input.Password id="login-password" autoComplete="current-password" placeholder="••••••••" />
                 </Form.Item>
               </div>
@@ -110,18 +113,18 @@ export default function LoginPage() {
             <Button type="primary" htmlType="submit" block loading={pending.isPending}>
               {resetting
                 ? reset.isPending
-                  ? 'Sending…'
+                  ? t('Sending…')
                   : reset.isSuccess
-                    ? 'Send again'
-                    : 'Send reset link'
+                    ? t('Send again')
+                    : t('Send reset link')
                 : login.isPending
-                  ? 'Signing in…'
-                  : 'Sign in'}
+                  ? t('Signing in…')
+                  : t('Sign in')}
             </Button>
             <div className={`login-fold${resetting ? '' : ' is-folded'}`} inert={!resetting}>
               <div>
                 <Button type="link" block onClick={() => switchTo(false)}>
-                  Back to sign in
+                  {t('Back to sign in')}
                 </Button>
               </div>
             </div>
@@ -130,9 +133,9 @@ export default function LoginPage() {
           {/* The canvas's secondary slot (company SSO there); BoxMesh has no SSO, so the demo takes it. */}
           <div className={`login-fold${resetting ? ' is-folded' : ''}`} inert={resetting}>
             <div className="login-alt">
-              <Divider plain>or</Divider>
+              <Divider plain>{t('or')}</Divider>
               <Button block onClick={exploreDemo}>
-                Explore the demo
+                {t('Explore the demo')}
               </Button>
             </div>
           </div>

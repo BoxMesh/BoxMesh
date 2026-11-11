@@ -136,7 +136,7 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
       borderRadiusSM: 10,
       controlHeight: 32,
       fontSize: 14,
-      fontFamily: "Geist, 'Geist Fallback', -apple-system, 'Segoe UI', Roboto, Arial, sans-serif",
+      fontFamily: "Geist, 'Geist Fallback', -apple-system, 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', Meiryo, Roboto, Arial, sans-serif",
       fontFamilyCode: "'Geist Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace",
     },
     components: {

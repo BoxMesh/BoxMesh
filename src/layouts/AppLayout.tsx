@@ -5,8 +5,10 @@ import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
 import ErrorBoundary from '../components/ErrorBoundary'
 import { Icon } from '../components/Icon'
 import Logo from '../components/Logo'
+import LanguageSelect from '../components/LanguageSelect'
 import ThemeToggle from '../components/ThemeToggle'
 import { navGroups, navItems } from '../config/nav'
+import { t } from '../i18n'
 import { getSession, logOut } from '../services/authService'
 import { isDemo } from '../services/demo'
 import { usersQuery } from '../services/queries'
@@ -36,7 +38,7 @@ export default function AppLayout() {
   const user = getSession()
 
   const accountMenu: MenuProps = {
-    items: [{ type: 'group', key: 'account', label: user?.email, children: [{ key: 'sign-out', label: 'Sign out' }] }],
+    items: [{ type: 'group', key: 'account', label: user?.email, children: [{ key: 'sign-out', label: t('Sign out') }] }],
     onClick: async () => {
       const wasDemo = isDemo()
       await logOut()
@@ -69,13 +71,14 @@ export default function AppLayout() {
             <Input
               className="header-search"
               prefix={<Icon name="search" size={14} />}
-              placeholder="Search hostname, IP…"
-              aria-label="Search devices"
+              placeholder={t('Search hostname, IP…')}
+              aria-label={t('Search devices')}
               onPressEnter={(e) => navigate(`/devices?q=${encodeURIComponent(e.currentTarget.value.trim())}`)}
             />
+            <LanguageSelect />
             <ThemeToggle />
             <Dropdown menu={accountMenu} trigger={['click']} placement="bottomRight">
-              <button type="button" className="user" aria-label={`Account: ${user?.email}`}>
+              <button type="button" className="user" aria-label={t('Account: {email}', { email: user?.email ?? '' })}>
                 <Avatar size={28}>{user?.name.charAt(0).toUpperCase()}</Avatar>
                 <span className="user-name">{user?.name}</span>
               </button>

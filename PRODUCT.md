@@ -74,8 +74,9 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 - The product owner builds BoxAgent and EdgePanel. BoxMesh work must not change them.
 
 **Language**
-- The goal: the UI ships in English and Vietnamese, switchable by the user, with English as the default.
-- Today it is English only, with copy written straight into the components; there is no translation layer yet.
+- The UI ships in English and Japanese, switchable from the header and the sign-in page. A saved choice wins;
+  otherwise a Japanese browser starts in Japanese and every other browser in English.
+- Vietnamese is not built.
 - Technical terms (agent, heartbeat, mTLS, CSR, token) may stay in English in both languages.
 
 **Undecided**

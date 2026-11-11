@@ -1,5 +1,6 @@
 import { Button, Result } from 'antd'
 import { Component, type ReactNode } from 'react'
+import { t } from '../i18n'
 import { userMessage } from '../services/http'
 
 type Props = { children: ReactNode; onReset: () => void }
@@ -28,11 +29,11 @@ export default class ErrorBoundary extends Component<Props, { error: Error | nul
     return (
       <Result
         status="error"
-        title="This page couldn't load"
+        title={t("This page couldn't load")}
         subTitle={userMessage(error)}
         extra={
           <Button type="primary" onClick={this.retry}>
-            Try again
+            {t('Try again')}
           </Button>
         }
       />

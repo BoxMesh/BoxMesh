@@ -1,3 +1,5 @@
+import { lang, t } from '../i18n'
+
 export const SECOND = 1000
 export const MINUTE = 60 * SECOND
 export const DAY = 24 * 60 * MINUTE
@@ -14,22 +16,24 @@ export function fromNow(offsetMs: number, now = Date.now()) {
 
 export function formatDate(iso: string) {
   const d = new Date(iso)
+  // Japanese reads dates year first: 2027/07/04.
+  if (lang === 'ja') return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())}`
   return `${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`
 }
 
 export function formatDateTime(iso: string) {
   const d = new Date(iso)
-  return `${formatDate(iso)}, ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  return `${formatDate(iso)}${lang === 'ja' ? ' ' : ', '}${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
 export function ago(iso: string, now = Date.now()) {
   const s = Math.max(0, Math.round((now - Date.parse(iso)) / SECOND))
-  if (s < 10) return 'just now'
-  if (s < 60) return `${s} s ago`
+  if (s < 10) return t('just now')
+  if (s < 60) return t('{n} s ago', { n: s })
   const m = Math.floor(s / 60)
-  if (m < 60) return `${m} min ago`
+  if (m < 60) return t('{n} min ago', { n: m })
   const h = Math.floor(m / 60)
-  if (h < 24) return `${h} h ago`
+  if (h < 24) return t('{n} h ago', { n: h })
   const d = Math.floor(h / 24)
-  return d === 1 ? '1 day ago' : `${d} days ago`
+  return d === 1 ? t('1 day ago') : t('{n} days ago', { n: d })
 }

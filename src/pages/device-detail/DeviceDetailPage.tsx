@@ -4,13 +4,19 @@ import { Link, useParams, useSearchParams } from 'react-router'
 import { Icon } from '../../components/Icon'
 import StatusButton from '../../components/StatusButton'
 import { navItem } from '../../config/nav'
+import { t } from '../../i18n'
 import { deviceQuery, groupsQuery, processesQuery } from '../../services/queries'
 import DeviceInfo from './DeviceInfo'
 import PerformancePanel from './PerformancePanel'
 import ProcessesPanel from './ProcessesPanel'
 
 // Each remote screen takes the device in `?host=`, so these open straight onto this machine.
-const REMOTE = ['/remote-terminal', '/remote-desktop', '/remote-files', '/remote-services'].map(navItem)
+const REMOTE = [
+  { path: '/remote-terminal', short: t('Terminal') },
+  { path: '/remote-desktop', short: t('Desktop') },
+  { path: '/remote-files', short: t('Files') },
+  { path: '/remote-services', short: t('Service') },
+].map(({ path, short }) => ({ ...navItem(path), short }))
 
 type Tab = 'processes' | 'performance'
 
@@ -26,9 +32,9 @@ export default function DeviceDetailPage() {
     return (
       <Result
         status="404"
-        title="Device not found"
-        subTitle={`No enrolled device is named ${id}.`}
-        extra={<Link to="/devices">Back to devices</Link>}
+        title={t('Device not found')}
+        subTitle={t('No enrolled device is named {id}.', { id })}
+        extra={<Link to="/devices">{t('Back to devices')}</Link>}
       />
     )
   }
@@ -40,7 +46,7 @@ export default function DeviceDetailPage() {
     <div className="stack">
       <div className="page-header">
         <div className="title-row">
-          <Link to="/devices" className="icon-btn" aria-label="Back to devices">
+          <Link to="/devices" className="icon-btn" aria-label={t('Back to devices')}>
             <Icon name="back" />
           </Link>
           <h1 style={{ margin: 0 }}>{device.host}</h1>
@@ -56,7 +62,7 @@ export default function DeviceDetailPage() {
                 icon={<Icon name={feature.icon} size={14} />}
                 disabled={!device.online}
               >
-                {feature.label.replace('Remote ', '')}
+                {feature.short}
               </Button>
             </Link>
           ))}
@@ -75,10 +81,10 @@ export default function DeviceDetailPage() {
           items={[
             {
               key: 'processes',
-              label: device.online && processes ? `Processes (${processes.length})` : 'Processes',
+              label: device.online && processes ? t('Processes ({n})', { n: processes.length }) : t('Processes'),
               children: <ProcessesPanel device={device} />,
             },
-            { key: 'performance', label: 'Performance', children: <PerformancePanel device={device} /> },
+            { key: 'performance', label: t('Performance'), children: <PerformancePanel device={device} /> },
           ]}
         />
       </Card>

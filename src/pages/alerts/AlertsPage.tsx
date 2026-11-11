@@ -7,6 +7,7 @@ import ChannelIcon from '../../components/ChannelIcon'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import ScopeFields from '../../components/ScopeFields'
+import { t } from '../../i18n'
 import { createAlert, deleteAlert, updateAlert, type NewAlert } from '../../services/alertService'
 import { alertChannelsQuery, alertRulesQuery, alertsQuery, devicesQuery, groupsQuery } from '../../services/queries'
 import type { Alert, AlertChannel, AlertRule } from '../../types/alert'
@@ -32,15 +33,15 @@ export default function AlertsPage() {
     mutationFn: (alert: Alert) => deleteAlert(alert.id),
     onSuccess: (_, alert) => {
       queryClient.invalidateQueries({ queryKey: alertsQuery.queryKey })
-      message.success(`"${alert.name}" deleted`)
+      message.success(t('"{name}" deleted', { name: alert.name }))
     },
     onError: (error) => message.error(error.message),
   })
 
   const columns: TableProps<Alert>['columns'] = [
-    { title: <Th icon="bell" label="Alert" />, dataIndex: 'name', render: (name: string) => <span className="strong">{name}</span> },
+    { title: <Th icon="bell" label={t('Alert')} />, dataIndex: 'name', render: (name: string) => <span className="strong">{name}</span> },
     {
-      title: <Th icon="warning" label="Rules" />,
+      title: <Th icon="warning" label={t('Rules')} />,
       key: 'rules',
       render: (_, a) => {
         const list = a.ruleIds.map((id) => ruleById.get(id)).filter((r): r is AlertRule => Boolean(r))
@@ -53,12 +54,12 @@ export default function AlertsPage() {
             ))}
           </span>
         ) : (
-          <Tag color="warning">No rule</Tag>
+          <Tag color="warning">{t('No rule')}</Tag>
         )
       },
     },
     {
-      title: <Th icon="devices" label="Applies to" />,
+      title: <Th icon="devices" label={t('Applies to')} />,
       key: 'scope',
       render: (_, a) =>
         a.groupIds.length ? (
@@ -76,11 +77,11 @@ export default function AlertsPage() {
             ))}
           </span>
         ) : (
-          <span className="muted">All devices</span>
+          <span className="muted">{t('All devices')}</span>
         ),
     },
     {
-      title: <Th icon="mail" label="Send to" />,
+      title: <Th icon="mail" label={t('Send to')} />,
       key: 'channels',
       render: (_, a) => {
         const list = a.channelIds.map((id) => channelById.get(id)).filter((c): c is AlertChannel => Boolean(c))
@@ -94,28 +95,28 @@ export default function AlertsPage() {
             ))}
           </span>
         ) : (
-          <Tag color="warning">No channel</Tag>
+          <Tag color="warning">{t('No channel')}</Tag>
         )
       },
     },
     {
-      title: <Th icon="more" label="Actions" />,
+      title: <Th icon="more" label={t('Actions')} />,
       key: 'actions',
       render: (_, a) => (
         <div className="row-actions">
-          <Tooltip title={`Edit "${a.name}"`}>
-            <button type="button" className="icon-btn" aria-label={`Edit "${a.name}"`} onClick={() => setEditing(a)}>
+          <Tooltip title={t('Edit "{name}"', { name: a.name })}>
+            <button type="button" className="icon-btn" aria-label={t('Edit "{name}"', { name: a.name })} onClick={() => setEditing(a)}>
               <Icon name="edit" size={14} />
             </button>
           </Tooltip>
           <Popconfirm
-            title={`Delete "${a.name}"?`}
-            description="Its rules and channels stay; only this alert stops."
-            okText="Delete"
+            title={t('Delete "{name}"?', { name: a.name })}
+            description={t('Its rules and channels stay; only this alert stops.')}
+            okText={t('Delete')}
             okButtonProps={{ danger: true }}
             onConfirm={() => remove.mutate(a)}
           >
-            <button type="button" className="icon-btn" aria-label={`Delete "${a.name}"`}>
+            <button type="button" className="icon-btn" aria-label={t('Delete "{name}"', { name: a.name })}>
               <Icon name="trash" size={14} />
             </button>
           </Popconfirm>
@@ -124,32 +125,36 @@ export default function AlertsPage() {
     },
   ]
 
-  const missing = [!rules.length && { to: '/alert-rules', text: 'a rule' }, !channels.length && { to: '/alert-channels', text: 'a channel' }].filter(
+  const missing = [!rules.length && { to: '/alert-rules', text: t('a rule') }, !channels.length && { to: '/alert-channels', text: t('a channel') }].filter(
     (m): m is { to: string; text: string } => Boolean(m),
   )
+  // One key keeps the Japanese word order; the links go where {items} is.
+  const [beforeMissing, afterMissing] = t('Before an alert, add {items}.').split('{items}')
 
   return (
     <div className="stack">
       <PageHeader
-        title="Alerts"
-        subtitle="An alert applies rules to groups or devices and sends a message to your channels when one fires. EdgePanel checks every heartbeat, so alerts go out even when nobody has BoxMesh open."
+        title={t('Alerts')}
+        subtitle={t(
+          'An alert applies rules to groups or devices and sends a message to your channels when one fires. EdgePanel checks every heartbeat, so alerts go out even when nobody has BoxMesh open.',
+        )}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEditing('new')} disabled={missing.length > 0}>
-            Add alert
+            {t('Add alert')}
           </Button>
         }
       />
       {missing.length ? (
         <Card>
           <span className="muted">
-            Before an alert, add{' '}
+            {beforeMissing}
             {missing.map((m, i) => (
               <span key={m.to}>
-                {i ? ' and ' : ''}
+                {i ? t(' and ') : ''}
                 <Link to={m.to}>{m.text}</Link>
               </span>
             ))}
-            .
+            {afterMissing}
           </span>
         </Card>
       ) : null}
@@ -160,7 +165,7 @@ export default function AlertsPage() {
           rowKey="id"
           pagination={false}
           scroll={{ x: 'max-content' }}
-          locale={{ emptyText: <span className="muted">No alerts yet. Add one to hear about a device running hot or going offline.</span> }}
+          locale={{ emptyText: <span className="muted">{t('No alerts yet. Add one to hear about a device running hot or going offline.')}</span> }}
         />
       </Card>
       <AlertDialog alert={editing} rules={rules} channels={channels} groups={groups} devices={devices} onClose={() => setEditing(null)} />
@@ -201,7 +206,7 @@ function AlertDialog({
     mutationFn: (values: NewAlert) => (current ? updateAlert(current.id, values) : createAlert(values)),
     onSuccess: (saved) => {
       queryClient.invalidateQueries({ queryKey: alertsQuery.queryKey })
-      message.success(current ? 'Alert saved' : `"${saved.name}" added`)
+      message.success(current ? t('Alert saved') : t('"{name}" added', { name: saved.name }))
       onClose()
     },
     onError: (error) => message.error(error.message),
@@ -247,7 +252,14 @@ function AlertDialog({
   }
 
   return (
-    <Modal title={current ? `Edit "${current.name}"` : 'Add an alert'} open={Boolean(alert)} onCancel={onClose} width={720} destroyOnHidden footer={null}>
+    <Modal
+      title={current ? t('Edit "{name}"', { name: current.name }) : t('Add an alert')}
+      open={Boolean(alert)}
+      onCancel={onClose}
+      width={720}
+      destroyOnHidden
+      footer={null}
+    >
       <Form<Fields>
         form={form}
         className="dialog-form"
@@ -256,14 +268,14 @@ function AlertDialog({
         initialValues={{ ...(current ?? EMPTY), scope: scopeOf(current ?? EMPTY) }}
         onFinish={submit}
       >
-        <Form.Item name="name" label="Alert name" rules={[{ required: true, whitespace: true, message: 'Name the alert.' }]}>
-          <Input maxLength={60} placeholder="e.g. Servers" />
+        <Form.Item name="name" label={t('Alert name')} rules={[{ required: true, whitespace: true, message: t('Name the alert.') }]}>
+          <Input maxLength={60} placeholder={t('e.g. Servers')} />
         </Form.Item>
 
         <section className="form-section">
-          <h3>Rules</h3>
-          <p className="section-hint">A message goes out when any ticked rule fires on a device below.</p>
-          <Form.Item name="ruleIds" rules={[{ required: true, type: 'array', min: 1, message: 'Tick at least one rule.' }]}>
+          <h3>{t('Rules')}</h3>
+          <p className="section-hint">{t('A message goes out when any ticked rule fires on a device below.')}</p>
+          <Form.Item name="ruleIds" rules={[{ required: true, type: 'array', min: 1, message: t('Tick at least one rule.') }]}>
             <Checkbox.Group className="choice-cards">
               {rules.map((r) => (
                 <Checkbox key={r.id} value={r.id} className="choice-card">
@@ -276,15 +288,15 @@ function AlertDialog({
         </section>
 
         <section className="form-section">
-          <h3>Devices</h3>
-          <p className="section-hint">Which groups or devices the rules watch.</p>
+          <h3>{t('Devices')}</h3>
+          <p className="section-hint">{t('Which groups or devices the rules watch.')}</p>
           <ScopeFields scope={scope} groups={groups} devices={devices} label={null} />
         </section>
 
         <section className="form-section">
-          <h3>Send to</h3>
-          <p className="section-hint">Every ticked channel gets the message.</p>
-          <Form.Item name="channelIds" rules={[{ required: true, type: 'array', min: 1, message: 'Tick at least one channel.' }]}>
+          <h3>{t('Send to')}</h3>
+          <p className="section-hint">{t('Every ticked channel gets the message.')}</p>
+          <Form.Item name="channelIds" rules={[{ required: true, type: 'array', min: 1, message: t('Tick at least one channel.') }]}>
             <Checkbox.Group className="choice-list">
               {channels.map((c) => (
                 <Checkbox key={c.id} value={c.id} className="choice-card">
@@ -301,9 +313,9 @@ function AlertDialog({
         </section>
 
         <section className="form-section">
-          <h3>Message</h3>
-          <p className="section-hint">What the channels receive. Click a field to insert it where the cursor is.</p>
-          <div className="placeholder-chips" role="group" aria-label="Insert a field">
+          <h3>{t('Message')}</h3>
+          <p className="section-hint">{t('What the channels receive. Click a field to insert it where the cursor is.')}</p>
+          <div className="placeholder-chips" role="group" aria-label={t('Insert a field')}>
             {PLACEHOLDERS.map((key) => (
               <Button key={key} size="small" className="mono" onClick={() => insert(key)}>
                 {`{${key}}`}
@@ -313,28 +325,31 @@ function AlertDialog({
           <Form.Item
             name="message"
             rules={[
-              { required: true, whitespace: true, message: 'Write the message.' },
+              { required: true, whitespace: true, message: t('Write the message.') },
               {
                 validator: (_, v: string = '') => {
                   const bad = unknownPlaceholders(v)
-                  return bad.length ? Promise.reject(new Error(`Unknown field: {${bad[0]}}`)) : Promise.resolve()
+                  return bad.length ? Promise.reject(new Error(t('Unknown field: {field}', { field: `{${bad[0]}}` }))) : Promise.resolve()
                 },
               },
             ]}
           >
-            <Input.TextArea ref={textArea} rows={4} maxLength={1000} className="mono" aria-label="Message" />
+            <Input.TextArea ref={textArea} rows={4} maxLength={1000} className="mono" aria-label={t('Message')} />
           </Form.Item>
           <div className="message-preview" aria-live="polite">
-            <span className="sub">Preview{sample ? ` · ${sample.host}` : ''}</span>
+            <span className="sub">
+              {t('Preview')}
+              {sample ? ` · ${sample.host}` : ''}
+            </span>
             <p>{preview}</p>
           </div>
         </section>
 
         <div className="dialog-footer">
           <span className="dialog-buttons">
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>{t('Cancel')}</Button>
             <Button type="primary" htmlType="submit" loading={save.isPending}>
-              {current ? 'Save changes' : 'Add alert'}
+              {current ? t('Save changes') : t('Add alert')}
             </Button>
           </span>
         </div>

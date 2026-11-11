@@ -1,6 +1,7 @@
 import { Result, Select } from 'antd'
 import type { Device } from '../types/device'
 import { tone } from '../config/theme'
+import { t } from '../i18n'
 import { Icon, type IconName } from './Icon'
 
 export default function DevicePicker({
@@ -16,15 +17,15 @@ export default function DevicePicker({
     <Select
       value={host || undefined}
       onChange={onChange}
-      placeholder="Pick a device"
+      placeholder={t('Pick a device')}
       showSearch
       optionFilterProp="label"
       style={{ minWidth: 260 }}
-      aria-label="Device"
+      aria-label={t('Device')}
       options={devices.map((d) => ({
         value: d.host,
         label: `${d.host} · ${d.alias}`,
-        title: d.online ? 'Online' : 'Offline',
+        title: d.online ? t('Online') : t('Offline'),
       }))}
       optionRender={({ data }) => {
         const device = devices.find((d) => d.host === data.value)!
@@ -49,8 +50,8 @@ export function PickFirst({ icon, what }: { icon: IconName; what: string }) {
           <Icon name={icon} size={36} />
         </span>
       }
-      title={`Pick a device to ${what}`}
-      subTitle="Choose one from the list above, or open a device and use its tab."
+      title={t('Pick a device to {what}', { what })}
+      subTitle={t('Choose one from the list above, or open a device and use its tab.')}
     />
   )
 }
@@ -64,8 +65,8 @@ export function DeviceOffline({ device }: { device: Device }) {
           <Icon name="devices" size={36} />
         </span>
       }
-      title={`${device.host} is offline`}
-      subTitle="Its agent has no open tunnel, so remote actions can't reach it. This screen works again when the agent reconnects."
+      title={t('{host} is offline', { host: device.host })}
+      subTitle={t("Its agent has no open tunnel, so remote actions can't reach it. This screen works again when the agent reconnects.")}
     />
   )
 }

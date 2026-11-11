@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Segmented, Skeleton } from 'antd'
 import { useState } from 'react'
+import { t } from '../../i18n'
 import { userMessage } from '../../services/http'
 import { deviceMetricsQuery } from '../../services/queries'
 import type { TimeRange } from '../../types/dashboard'
@@ -17,7 +18,7 @@ const RANGES: { value: TimeRange; label: string }[] = [
 const RESOURCES = [
   { key: 'cpu', label: 'CPU' },
   { key: 'ram', label: 'RAM' },
-  { key: 'disk', label: 'Disk' },
+  { key: 'disk', label: t('Disk') },
 ] as const
 
 const percent = (v: number) => `${Math.round(v)}%`
@@ -36,19 +37,19 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
   const times = points.map((p) => p.at)
   const latest = points.at(-1)
   const network = [
-    { label: 'Received', values: points.map((p) => p.netIn) },
-    { label: 'Sent', values: points.map((p) => p.netOut) },
+    { label: t('Received'), values: points.map((p) => p.netIn) },
+    { label: t('Sent'), values: points.map((p) => p.netOut) },
   ]
 
   return (
     <div className="perf-panel">
       <div className="perf-bar">
-        <Segmented<TimeRange> size="small" aria-label="Time range" options={RANGES} value={range} onChange={setRange} />
+        <Segmented<TimeRange> size="small" aria-label={t('Time range')} options={RANGES} value={range} onChange={setRange} />
       </div>
       {metrics.isPending ? (
         <Skeleton active paragraph={{ rows: 8 }} title={false} />
       ) : metrics.isError ? (
-        <span className="muted">Usage history didn't load. {userMessage(metrics.error)}</span>
+        <span className="muted">{t("Usage history didn't load.")} {userMessage(metrics.error)}</span>
       ) : (
         <>
           {RESOURCES.map(({ key, label }) => {
@@ -61,7 +62,7 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
                     {label} <span className="muted">· {d.hardware[key]}</span>
                   </span>
                   <span>
-                    {now}%{high ? ` · above ${THRESHOLDS[key]}%` : ''}
+                    {now}%{high ? ` · ${t('above {n}%', { n: THRESHOLDS[key] })}` : ''}
                   </span>
                 </div>
                 <UsageChart
@@ -79,7 +80,7 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
           <div className="usage">
             <div className="meter-label">
               <span className="nowrap">
-                Network <span className="muted">· Mbps</span>
+                {t('Network')} <span className="muted">· Mbps</span>
               </span>
               <span className="usage-legend">
                 {network.map((s, i) => (
@@ -91,7 +92,7 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
               </span>
             </div>
             <UsageChart
-              label="Network"
+              label={t('Network')}
               times={times}
               series={network}
               max={niceMax(Math.max(...network.flatMap((s) => s.values)) * 1.05)}

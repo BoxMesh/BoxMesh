@@ -1,8 +1,11 @@
 import { ConfigProvider } from 'antd'
+import enUS from 'antd/locale/en_US'
+import jaJP from 'antd/locale/ja_JP'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import { buildTheme, THEME_COLOR, type ThemeMode } from '../config/theme'
 import { ThemeModeContext, type ThemeOrigin } from '../hooks/useThemeMode'
+import { lang } from '../i18n'
 
 const STORAGE_KEY = 'boxmesh-theme'
 
@@ -61,7 +64,7 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeModeContext value={value}>
-      <ConfigProvider theme={themeConfig} tag={{ variant: 'outlined' }}>
+      <ConfigProvider theme={themeConfig} tag={{ variant: 'outlined' }} locale={lang === 'ja' ? jaJP : enUS}>
         {children}
       </ConfigProvider>
     </ThemeModeContext>

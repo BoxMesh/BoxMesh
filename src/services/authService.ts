@@ -1,5 +1,6 @@
 import { isAxiosError } from "axios";
 import type { User } from "../types/auth";
+import { t } from "../i18n";
 import { stopDemo } from "./demo";
 import { http, userMessage } from "./http";
 
@@ -26,8 +27,8 @@ export async function logIn(email: string, password: string) {
     })
     .catch((error: unknown) => {
       if (isAxiosError(error) && error.response?.status === 401)
-        throw new Error("Wrong email or password.");
-      throw new Error(`Sign-in failed. ${userMessage(error)}`);
+        throw new Error(t("Wrong email or password."));
+      throw new Error(t("Sign-in failed. {reason}", { reason: userMessage(error) }));
     });
   const data: User = {
     email: account.email,
@@ -53,6 +54,6 @@ export async function logOut() {
 // shortcut: "/forgot-password" is assumed, the panel's reset route is not known yet; rename it once it is.
 export async function requestPasswordReset(email: string) {
   await http.post("/forgot-password", { email }).catch((error: unknown) => {
-    throw new Error(`Couldn't send the reset email. ${userMessage(error)}`);
+    throw new Error(t("Couldn't send the reset email. {reason}", { reason: userMessage(error) }));
   });
 }

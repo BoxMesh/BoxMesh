@@ -1,4 +1,5 @@
 import { useState, type PointerEvent } from 'react'
+import { t } from '../../i18n'
 import type { TimeRange } from '../../types/dashboard'
 import { DAY, formatDate, formatDateTime, MINUTE } from '../../utils/time'
 
@@ -18,7 +19,7 @@ const clock = (iso: string) => {
 function ticksBetween(start: number, end: number, step: number) {
   const offset = new Date(start).getTimezoneOffset() * MINUTE
   const out: number[] = []
-  for (let t = Math.ceil((start - offset) / step) * step + offset; t <= end; t += step) out.push(t)
+  for (let ms = Math.ceil((start - offset) / step) * step + offset; ms <= end; ms += step) out.push(ms)
   return out
 }
 
@@ -50,7 +51,7 @@ export default function UsageChart({
 
   const start = Date.parse(times[0])
   const end = Date.parse(times[last])
-  const ticks = ticksBetween(start, end, TICK_STEP[range]).map((t) => ({ t, at: (t - start) / (end - start) }))
+  const ticks = ticksBetween(start, end, TICK_STEP[range]).map((ms) => ({ ms, at: (ms - start) / (end - start) }))
   const y = (v: number) => 100 - (Math.min(v, max) / max) * 100
   const path = (values: number[]) => values.map((v, i) => `${i ? 'L' : 'M'}${i},${y(v)}`).join(' ')
   const tickLabel = range === '7d' ? (iso: string) => formatDate(iso).slice(0, 6) : clock
@@ -64,7 +65,14 @@ export default function UsageChart({
   const at = hover === null ? 0 : hover / last
   const shift = (pos: number) => (pos < 0.08 ? '0' : pos > 0.92 ? '-100%' : '-50%')
   const summary = series
-    .map((s) => `${s.label} now ${format(s.values[last])}, lowest ${format(Math.min(...s.values))}, highest ${format(Math.max(...s.values))}`)
+    .map((s) =>
+      t('{label} now {now}, lowest {low}, highest {high}', {
+        label: s.label,
+        now: format(s.values[last]),
+        low: format(Math.min(...s.values)),
+        high: format(Math.max(...s.values)),
+      }),
+    )
     .join('; ')
 
   return (
@@ -73,14 +81,22 @@ export default function UsageChart({
         className="usage-plot"
         style={{ height }}
         role="img"
-        aria-label={`${label} from ${formatDateTime(times[0])} to ${formatDateTime(times[last])}, scale 0 to ${format(max)}: ${summary}${threshold === undefined ? '' : `; alert at ${format(threshold)}`}`}
+        aria-label={
+          t('{label} from {from} to {to}, scale 0 to {max}: {summary}', {
+            label,
+            from: formatDateTime(times[0]),
+            to: formatDateTime(times[last]),
+            max: format(max),
+            summary,
+          }) + (threshold === undefined ? '' : t('; alert at {value}', { value: format(threshold) }))
+        }
         onPointerMove={track}
         onPointerDown={track}
         onPointerLeave={() => setHover(null)}
       >
         <svg viewBox={`0 0 ${last} 100`} preserveAspectRatio="none" aria-hidden="true">
-          {ticks.map(({ t, at: pos }) => (
-            <line key={t} className="usage-grid" x1={pos * last} x2={pos * last} y1={0} y2={100} />
+          {ticks.map(({ ms, at: pos }) => (
+            <line key={ms} className="usage-grid" x1={pos * last} x2={pos * last} y1={0} y2={100} />
           ))}
           {[0, 50, 100].map((v) => (
             <line key={v} className="usage-grid" x1={0} x2={last} y1={v} y2={v} />
@@ -99,7 +115,7 @@ export default function UsageChart({
         </span>
         {threshold === undefined ? null : (
           <span className="usage-limit-label" style={{ top: `${y(threshold)}%` }}>
-            Alert {format(threshold)}
+            {t('Alert {value}', { value: format(threshold) })}
           </span>
         )}
         {hover !== null ? (
@@ -125,9 +141,9 @@ export default function UsageChart({
         ) : null}
       </div>
       <div className="usage-axis" aria-hidden="true">
-        {ticks.map(({ t, at: pos }) => (
-          <span key={t} style={{ left: `${pos * 100}%`, transform: `translateX(${shift(pos)})` }}>
-            {tickLabel(new Date(t).toISOString())}
+        {ticks.map(({ ms, at: pos }) => (
+          <span key={ms} style={{ left: `${pos * 100}%`, transform: `translateX(${shift(pos)})` }}>
+            {tickLabel(new Date(ms).toISOString())}
           </span>
         ))}
       </div>

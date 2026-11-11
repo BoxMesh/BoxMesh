@@ -8,18 +8,19 @@ import StatusButton from '../../components/StatusButton'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { navItem } from '../../config/nav'
+import { t } from '../../i18n'
 import { devicesQuery, groupsQuery } from '../../services/queries'
 import type { Device, DeviceFilter } from '../../types/device'
 import { filterDevices } from '../../utils/devices'
 import EnrollDrawer from './EnrollDrawer'
 
-const ALL = { value: '', label: 'All' }
+const ALL = { value: '', label: t('All') }
 const OS_OPTIONS = [ALL, { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }, { value: 'macOS', label: 'macOS' }]
-const STATUS_OPTIONS = [ALL, { value: 'online', label: 'Online' }, { value: 'offline', label: 'Offline' }]
+const STATUS_OPTIONS = [ALL, { value: 'online', label: t('Online') }, { value: 'offline', label: t('Offline') }]
 const REMOTE_ACTIONS = [
-  { path: '/remote-terminal', verb: 'Open a terminal' },
-  { path: '/remote-desktop', verb: 'Open remote desktop' },
-  { path: '/remote-files', verb: 'Browse files' },
+  { path: '/remote-terminal', label: (host: string) => t('Open a terminal on {host}', { host }) },
+  { path: '/remote-desktop', label: (host: string) => t('Open remote desktop on {host}', { host }) },
+  { path: '/remote-files', label: (host: string) => t('Browse files on {host}', { host }) },
 ]
 
 export default function DevicesPage() {
@@ -59,7 +60,7 @@ export default function DevicesPage() {
 
   const columns: TableProps<Device>['columns'] = [
     {
-      title: <Th icon="devices" label="Hostname" />,
+      title: <Th icon="devices" label={t('Hostname')} />,
       key: 'host',
       // The search reaches alias and MAC as well, so it sits on the first column rather than each one.
       filteredValue: filter.q ? [filter.q] : null,
@@ -69,8 +70,8 @@ export default function DevicesPage() {
           className="filter-search"
           allowClear
           autoFocus
-          placeholder="Hostname, IP, MAC…"
-          aria-label="Search devices"
+          placeholder={t('Hostname, IP, MAC…')}
+          aria-label={t('Search devices')}
           value={filter.q}
           onChange={(e) => setFilter('q', e.target.value)}
         />
@@ -82,42 +83,42 @@ export default function DevicesPage() {
       ),
     },
     {
-      title: <Th icon="tag" label="Groups" />,
+      title: <Th icon="tag" label={t('Groups')} />,
       key: 'groups',
       ...choice([ALL, ...groups.map((g) => ({ value: g.id, label: g.name }))], 'group'),
       render: (_, d) => <DeviceGroups device={d} groups={groups} />,
     },
     { title: <Th icon="desktop" label="OS" />, dataIndex: 'os', ...choice(OS_OPTIONS, 'os') },
-    { title: <Th icon="tag" label="Version" />, dataIndex: 'osVersion' },
-    { title: <Th icon="chip" label="Arch" />, dataIndex: 'osArchitecture' },
+    { title: <Th icon="tag" label={t('Version')} />, dataIndex: 'osVersion' },
+    { title: <Th icon="chip" label={t('Arch')} />, dataIndex: 'osArchitecture' },
     { title: <Th icon="web" label="IP" />, dataIndex: 'ip' },
     { title: <Th icon="hash" label="MAC" />, key: 'mac', render: (_, d) => <code>{d.mac}</code> },
     {
-      title: <Th icon="box" label="Agent" />,
+      title: <Th icon="box" label={t('Agent')} />,
       key: 'agent',
       render: (_, d) => <AgentVersion device={d} />,
     },
     {
-      title: <Th icon="pulse" label="Status" />,
+      title: <Th icon="pulse" label={t('Status')} />,
       key: 'status',
       ...choice(STATUS_OPTIONS, 'status'),
       render: (_, d) => <StatusButton device={d} />,
     },
-    { title: <Th icon="more" label="Actions" />, key: 'actions', render: (_, d) => <RowActions device={d} /> },
+    { title: <Th icon="more" label={t('Actions')} />, key: 'actions', render: (_, d) => <RowActions device={d} /> },
   ]
 
   return (
     <div className="stack">
       <PageHeader
-        title="Devices"
-        subtitle={`${devices.length} devices enrolled`}
+        title={t('Devices')}
+        subtitle={t('{n} devices enrolled', { n: devices.length })}
         actions={
           <>
             <Link to="/groups">
-              <Button icon={<Icon name="tag" size={14} />}>Manage groups</Button>
+              <Button icon={<Icon name="tag" size={14} />}>{t('Manage groups')}</Button>
             </Link>
             <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEnrollOpen(true)}>
-              Enroll agent
+              {t('Enroll agent')}
             </Button>
           </>
         }
@@ -134,14 +135,14 @@ export default function DevicesPage() {
           locale={{
             emptyText: filtered ? (
               <div className="empty">
-                <span>No devices match these filters.</span>
-                <Button onClick={() => setParams({}, { replace: true })}>Clear filters</Button>
+                <span>{t('No devices match these filters.')}</span>
+                <Button onClick={() => setParams({}, { replace: true })}>{t('Clear filters')}</Button>
               </div>
             ) : (
               <div className="empty">
-                <span>No devices are enrolled yet.</span>
+                <span>{t('No devices are enrolled yet.')}</span>
                 <Button type="primary" onClick={() => setEnrollOpen(true)}>
-                  Enroll agent
+                  {t('Enroll agent')}
                 </Button>
               </div>
             ),
@@ -157,9 +158,9 @@ export default function DevicesPage() {
 function RowActions({ device }: { device: Device }) {
   return (
     <div className="row-actions">
-      {REMOTE_ACTIONS.map(({ path, verb }) => {
+      {REMOTE_ACTIONS.map(({ path, label: labelFor }) => {
         const feature = navItem(path)
-        const label = `${verb} on ${device.host}`
+        const label = labelFor(device.host)
         // Offline keeps aria-disabled rather than disabled, so keyboard users can still focus it and hear why.
         return device.online ? (
           <Tooltip key={path} title={feature.label}>
@@ -168,8 +169,8 @@ function RowActions({ device }: { device: Device }) {
             </Link>
           </Tooltip>
         ) : (
-          <Tooltip key={path} title={`${device.host} is offline`}>
-            <button type="button" className="icon-btn" aria-disabled="true" aria-label={`${label}, offline`}>
+          <Tooltip key={path} title={t('{host} is offline', { host: device.host })}>
+            <button type="button" className="icon-btn" aria-disabled="true" aria-label={t('{label}, offline', { label })}>
               <Icon name={feature.icon} />
             </button>
           </Tooltip>

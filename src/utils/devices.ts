@@ -1,18 +1,19 @@
 import type { DeviceAccess } from '../types/admin'
 import type { Device, DeviceFilter, DeviceGroup, Issue, OsFamily } from '../types/device'
 import { MINUTE } from './time'
+import { t } from '../i18n'
 
 // Default per-device alert thresholds (percent), as drawn on the device detail screen.
 export const THRESHOLDS = { cpu: 90, ram: 90, disk: 85 }
 
 export function issuesOf(d: Device): Issue[] {
   // Metrics of an offline agent are stale, so only the lost heartbeat counts.
-  if (!d.online) return [{ kind: 'offline', label: 'Heartbeat lost', value: '—', level: 'default' }]
+  if (!d.online) return [{ kind: 'offline', label: t('Heartbeat lost'), value: '—', level: 'default' }]
   const issues: Issue[] = []
-  if (d.cpu >= THRESHOLDS.cpu) issues.push({ kind: 'cpu', label: 'High CPU', value: `${d.cpu}%`, level: 'error' })
-  if (d.ram >= THRESHOLDS.ram) issues.push({ kind: 'ram', label: 'High RAM', value: `${d.ram}%`, level: 'error' })
-  if (d.disk >= THRESHOLDS.disk) issues.push({ kind: 'disk', label: 'Disk almost full', value: `${d.disk}%`, level: 'warning' })
-  if (d.agentOutdated) issues.push({ kind: 'agent', label: 'Outdated agent', value: d.agentVersion, level: 'warning' })
+  if (d.cpu >= THRESHOLDS.cpu) issues.push({ kind: 'cpu', label: t('High CPU'), value: `${d.cpu}%`, level: 'error' })
+  if (d.ram >= THRESHOLDS.ram) issues.push({ kind: 'ram', label: t('High RAM'), value: `${d.ram}%`, level: 'error' })
+  if (d.disk >= THRESHOLDS.disk) issues.push({ kind: 'disk', label: t('Disk almost full'), value: `${d.disk}%`, level: 'warning' })
+  if (d.agentOutdated) issues.push({ kind: 'agent', label: t('Outdated agent'), value: d.agentVersion, level: 'warning' })
   return issues
 }
 

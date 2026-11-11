@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
+import { t } from '../../i18n'
 import { createGroup, deleteGroup, renameGroup, setDeviceGroups } from '../../services/deviceService'
 import { devicesQuery, groupsQuery } from '../../services/queries'
 import type { Device, DeviceGroup } from '../../types/device'
@@ -42,7 +43,7 @@ export default function GroupsPage() {
     mutationFn: (group: DeviceGroup) => deleteGroup(group.id),
     onSuccess: (_, group) => {
       refresh()
-      message.success(`Group ${group.name} deleted`)
+      message.success(t('Group {name} deleted', { name: group.name }))
     },
     onError: (error) => message.error(error.message),
   })
@@ -52,13 +53,13 @@ export default function GroupsPage() {
     const name = naming.name.trim()
     const before = groups.find((g) => g.id === naming.id)?.name
     if (!name || name === before) return setNaming(null)
-    if (groups.some((g) => g.id !== naming.id && sameName(g.name, name))) return message.error(`There is already a group called ${name}.`)
+    if (groups.some((g) => g.id !== naming.id && sameName(g.name, name))) return message.error(t('There is already a group called {name}.', { name }))
     rename.mutate({ id: naming.id, name })
   }
 
   const columns: TableProps<DeviceGroup>['columns'] = [
     {
-      title: <Th icon="tag" label="Group" />,
+      title: <Th icon="tag" label={t('Group')} />,
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
       render: (_, g) =>
@@ -67,7 +68,7 @@ export default function GroupsPage() {
             size="small"
             autoFocus
             maxLength={MAX_NAME}
-            aria-label={`New name for ${g.name}`}
+            aria-label={t('New name for {name}', { name: g.name })}
             value={naming.name}
             onChange={(e) => setNaming({ id: g.id, name: e.target.value })}
             onPressEnter={saveName}
@@ -82,18 +83,18 @@ export default function GroupsPage() {
         ),
     },
     {
-      title: <Th icon="devices" label="Devices" />,
+      title: <Th icon="devices" label={t('Devices')} />,
       key: 'size',
       align: 'right',
       sorter: (a, b) => membersOf(a.id).length - membersOf(b.id).length,
       render: (_, g) => membersOf(g.id).length,
     },
     {
-      title: <Th icon="devices" label="Members" />,
+      title: <Th icon="devices" label={t('Members')} />,
       key: 'members',
       render: (_, g) => {
         const hosts = membersOf(g.id).map((d) => d.host)
-        if (!hosts.length) return <span className="muted">No devices yet</span>
+        if (!hosts.length) return <span className="muted">{t('No devices yet')}</span>
         return (
           <span className="device-groups">
             {hosts.slice(0, TAGS_SHOWN).map((h) => (
@@ -111,34 +112,40 @@ export default function GroupsPage() {
       },
     },
     {
-      title: <Th icon="plus" label="Add" />,
+      title: <Th icon="plus" label={t('Add')} />,
       key: 'add',
       render: (_, g) => (
-        <Button size="small" icon={<Icon name="plus" size={12} />} aria-label={`Add devices to ${g.name}`} onClick={() => setMembers(g)}>
-          Add devices
+        <Button size="small" icon={<Icon name="plus" size={12} />} aria-label={t('Add devices to {name}', { name: g.name })} onClick={() => setMembers(g)}>
+          {t('Add devices')}
         </Button>
       ),
     },
     {
-      title: <Th icon="more" label="Actions" />,
+      title: <Th icon="more" label={t('Actions')} />,
       key: 'actions',
       render: (_, g) => {
         const size = membersOf(g.id).length
         return (
           <div className="row-actions">
-            <Tooltip title={`Rename ${g.name}`}>
-              <button type="button" className="icon-btn" aria-label={`Rename ${g.name}`} onClick={() => setNaming({ id: g.id, name: g.name })}>
+            <Tooltip title={t('Rename {name}', { name: g.name })}>
+              <button type="button" className="icon-btn" aria-label={t('Rename {name}', { name: g.name })} onClick={() => setNaming({ id: g.id, name: g.name })}>
                 <Icon name="edit" size={14} />
               </button>
             </Tooltip>
             <Popconfirm
-              title={`Delete ${g.name}?`}
-              description={size ? `${size} ${size === 1 ? 'device leaves' : 'devices leave'} this group. The devices themselves stay.` : 'No device is in this group.'}
-              okText="Delete"
+              title={t('Delete {name}?', { name: g.name })}
+              description={
+                size === 1
+                  ? t('{n} device leaves this group. The devices themselves stay.', { n: size })
+                  : size
+                    ? t('{n} devices leave this group. The devices themselves stay.', { n: size })
+                    : t('No device is in this group.')
+              }
+              okText={t('Delete')}
               okButtonProps={{ danger: true }}
               onConfirm={() => remove.mutate(g)}
             >
-              <button type="button" className="icon-btn" aria-label={`Delete ${g.name}`}>
+              <button type="button" className="icon-btn" aria-label={t('Delete {name}', { name: g.name })}>
                 <Icon name="trash" size={14} />
               </button>
             </Popconfirm>
@@ -151,11 +158,11 @@ export default function GroupsPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Groups"
-        subtitle="Put devices in groups to scope access, command rules and alerts at once. A device can be in several groups."
+        title={t('Groups')}
+        subtitle={t('Put devices in groups to scope access, command rules and alerts at once. A device can be in several groups.')}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setCreating(true)}>
-            New group
+            {t('New group')}
           </Button>
         }
       />
@@ -165,8 +172,8 @@ export default function GroupsPage() {
             allowClear
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search groups or devices"
-            aria-label="Search groups"
+            placeholder={t('Search groups or devices')}
+            aria-label={t('Search groups')}
             style={{ maxWidth: 280 }}
           />
         </div>
@@ -177,7 +184,7 @@ export default function GroupsPage() {
           scroll={{ x: 'max-content' }}
           pagination={{ pageSize: 10, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
           locale={{
-            emptyText: <span className="muted">{groups.length ? 'No group matches this search.' : 'No groups yet. Create one, then add its devices.'}</span>,
+            emptyText: <span className="muted">{groups.length ? t('No group matches this search.') : t('No groups yet. Create one, then add its devices.')}</span>,
           }}
         />
       </Card>
@@ -203,7 +210,7 @@ interface Item {
 
 function MembersDialog({ group, devices, onClose, onSaved }: { group: DeviceGroup | null; devices: Device[]; onClose: () => void; onSaved: () => void }) {
   return (
-    <Modal title={group ? `Devices in ${group.name}` : ''} open={Boolean(group)} onCancel={onClose} width={880} destroyOnHidden footer={null}>
+    <Modal title={group ? t('Devices in {name}', { name: group.name }) : ''} open={Boolean(group)} onCancel={onClose} width={880} destroyOnHidden footer={null}>
       {group ? <MembersPicker group={group} devices={devices} onClose={onClose} onSaved={onSaved} /> : null}
     </Modal>
   )
@@ -220,11 +227,11 @@ function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGrou
     mutationFn: async () => {
       const results = await Promise.allSettled(changes.map((c) => setDeviceGroups(c.host, c.groupIds)))
       const failed = changes.filter((_, i) => results[i].status === 'rejected').map((c) => c.host)
-      if (failed.length) throw new Error(`${failed.join(', ')} could not be updated. Try again.`)
+      if (failed.length) throw new Error(t('{hosts} could not be updated. Try again.', { hosts: failed.join(', ') }))
     },
     onSuccess: () => {
       onSaved()
-      message.success(`${group.name} saved`)
+      message.success(t('{name} saved', { name: group.name }))
       onClose()
     },
     onError: (error) => {
@@ -233,7 +240,7 @@ function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGrou
     },
   })
 
-  const items: Item[] = devices.map((d) => ({ key: d.host, title: d.host, description: `${d.alias} · ${d.online ? 'Online' : 'Offline'}` }))
+  const items: Item[] = devices.map((d) => ({ key: d.host, title: d.host, description: `${d.alias} · ${d.online ? t('Online') : t('Offline')}` }))
 
   return (
     <div className="dialog-form">
@@ -242,8 +249,8 @@ function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGrou
         dataSource={items}
         targetKeys={chosen}
         onChange={(keys) => setChosen(keys.map(String))}
-        titles={['Other devices', `In ${group.name}`]}
-        showSearch={{ placeholder: 'Search devices' }}
+        titles={[t('Other devices'), t('In {name}', { name: group.name })]}
+        showSearch={{ placeholder: t('Search devices') }}
         filterOption={(value, item) => `${item.title} ${item.description}`.toLowerCase().includes(value.trim().toLowerCase())}
         render={(item) => (
           <span className="access-item">
@@ -252,19 +259,21 @@ function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGrou
           </span>
         )}
         actions={[
-          <Button key="add" aria-label={`Add the checked devices to ${group.name}`} icon={<Icon name="arrow" size={14} />} />,
-          <Button key="remove" aria-label={`Remove the checked devices from ${group.name}`} icon={<Icon name="arrow-left" size={14} />} />,
+          <Button key="add" aria-label={t('Add the checked devices to {name}', { name: group.name })} icon={<Icon name="arrow" size={14} />} />,
+          <Button key="remove" aria-label={t('Remove the checked devices from {name}', { name: group.name })} icon={<Icon name="arrow-left" size={14} />} />,
         ]}
-        locale={{ itemUnit: 'device', itemsUnit: 'devices', notFoundContent: <span className="muted">None</span> }}
+        locale={{ itemUnit: t('device'), itemsUnit: t('devices'), notFoundContent: <span className="muted">{t('None')}</span> }}
       />
       <div className="dialog-footer">
         <span className="muted" aria-live="polite">
-          {changes.length ? `${adding} to add · ${changes.length - adding} to remove` : 'No changes yet'}
+          {changes.length
+            ? t('{add} to add · {remove} to remove', { add: adding, remove: changes.length - adding })
+            : t('No changes yet')}
         </span>
         <span className="dialog-buttons">
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>{t('Cancel')}</Button>
           <Button type="primary" disabled={!changes.length} loading={save.isPending} onClick={() => save.mutate()}>
-            Save changes
+            {t('Save changes')}
           </Button>
         </span>
       </div>
@@ -289,7 +298,7 @@ function NewGroupDialog({
   const create = useMutation({
     mutationFn: (name: string) => createGroup(name),
     onSuccess: (group) => {
-      message.success(`Group ${group.name} created. Now add its devices.`)
+      message.success(t('Group {name} created. Now add its devices.', { name: group.name }))
       onClose()
       onCreated(group)
     },
@@ -297,26 +306,26 @@ function NewGroupDialog({
   })
 
   return (
-    <Modal title="New group" open={open} onCancel={onClose} width={440} destroyOnHidden footer={null}>
+    <Modal title={t('New group')} open={open} onCancel={onClose} width={440} destroyOnHidden footer={null}>
       <Form form={form} className="dialog-form" layout="vertical" requiredMark={false} onFinish={({ name }) => create.mutate(name.trim())}>
         <Form.Item
           name="name"
-          label="Name"
+          label={t('Name')}
           rules={[
-            { required: true, whitespace: true, message: 'Enter a name for the group.' },
+            { required: true, whitespace: true, message: t('Enter a name for the group.') },
             {
               validator: (_, value: string) =>
-                value && groups.some((g) => sameName(g.name, value)) ? Promise.reject(new Error('There is already a group with that name.')) : Promise.resolve(),
+                value && groups.some((g) => sameName(g.name, value)) ? Promise.reject(new Error(t('There is already a group with that name.'))) : Promise.resolve(),
             },
           ]}
         >
-          <Input autoFocus maxLength={MAX_NAME} placeholder="e.g. Night shift" autoComplete="off" />
+          <Input autoFocus maxLength={MAX_NAME} placeholder={t('e.g. Night shift')} autoComplete="off" />
         </Form.Item>
         <div className="dialog-footer">
           <span className="dialog-buttons">
-            <Button onClick={onClose}>Cancel</Button>
+            <Button onClick={onClose}>{t('Cancel')}</Button>
             <Button type="primary" htmlType="submit" loading={create.isPending}>
-              Create group
+              {t('Create group')}
             </Button>
           </span>
         </div>

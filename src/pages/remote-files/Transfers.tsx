@@ -3,6 +3,7 @@ import { App, Button, Card, Checkbox, Progress } from 'antd'
 import { useEffect, useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { tone } from '../../config/theme'
+import { t } from '../../i18n'
 import { transferQuery } from '../../services/queries'
 import { cancelTransfer } from '../../services/remoteService'
 import type { ConflictChoice, FileEntry, FileLocation, FileTransfer } from '../../types/remote'
@@ -29,9 +30,9 @@ interface Props {
 }
 
 const CHOICES: { value: ConflictChoice; label: string }[] = [
-  { value: 'replace', label: 'Replace' },
-  { value: 'keep-both', label: 'Keep both' },
-  { value: 'skip', label: 'Skip' },
+  { value: 'replace', label: t('Replace') },
+  { value: 'keep-both', label: t('Keep both') },
+  { value: 'skip', label: t('Skip') },
 ]
 
 export default function Transfers({ pending, onResolve, onAbandon, transfers, onClear }: Props) {
@@ -44,11 +45,11 @@ export default function Transfers({ pending, onResolve, onAbandon, transfers, on
   return (
     <Card
       className="table-card"
-      title="Transfers"
+      title={t('Transfers')}
       extra={
         transfers.length > 0 ? (
           <Button size="small" onClick={() => onClear(transfers.filter((id) => !running(id)))}>
-            Clear finished
+            {t('Clear finished')}
           </Button>
         ) : null
       }
@@ -85,18 +86,19 @@ function Conflicts({ pending, onResolve, onAbandon }: Pick<Props, 'onResolve' | 
     <div className="files-conflict" role="alert">
       <Icon name="warning" />
       <p>
-        <span className="strong">{current}</span> already exists on {pending.to.host}.
-        {here && there ? (
-          standing === 'same' ? (
-            ' Both copies have the same size and time, so replacing it changes nothing.'
-          ) : (
-            <>
-              {' '}
-              The copy on {pending.from.host} is {STANDING[standing ?? 'differs']} ({ago(here.modified)}, {formatSize(here.size)})
-              than the one there ({ago(there.modified)}, {formatSize(there.size)}).
-            </>
-          )
-        ) : null}
+        <span className="strong">{current}</span> {t('already exists on {host}.', { host: pending.to.host })}
+        {here && there
+          ? ' ' +
+            (standing === 'same'
+              ? t('Both copies have the same size and time, so replacing it changes nothing.')
+              : standingLine(standing ?? 'differs', {
+                  host: pending.from.host,
+                  when: ago(here.modified),
+                  size: formatSize(here.size),
+                  thereWhen: ago(there.modified),
+                  thereSize: formatSize(there.size),
+                }))
+          : null}
       </p>
       <div className="files-conflict-actions">
         {CHOICES.map((c, i) => (
@@ -106,31 +108,39 @@ function Conflicts({ pending, onResolve, onAbandon }: Pick<Props, 'onResolve' | 
         ))}
         {left > 1 ? (
           <Checkbox checked={applyAll} onChange={(e) => setApplyAll(e.target.checked)}>
-            Apply to all {left}
+            {t('Apply to all {n}', { n: left })}
           </Checkbox>
         ) : null}
         <Button size="small" type="link" onClick={onAbandon}>
-          Cancel copy
+          {t('Cancel copy')}
         </Button>
       </div>
     </div>
   )
 }
 
-const STANDING: Record<Comparison, string> = {
-  newer: 'newer',
-  older: 'older',
-  differs: 'a different size',
-  same: 'the same',
-  only: 'the only one',
+// A whole sentence per standing, so a language can put the comparison where its grammar wants it.
+function standingLine(standing: Comparison, vars: Record<string, string>) {
+  switch (standing) {
+    case 'newer':
+      return t('The copy on {host} is newer ({when}, {size}) than the one there ({thereWhen}, {thereSize}).', vars)
+    case 'older':
+      return t('The copy on {host} is older ({when}, {size}) than the one there ({thereWhen}, {thereSize}).', vars)
+    case 'same':
+      return t('The copy on {host} is the same ({when}, {size}) than the one there ({thereWhen}, {thereSize}).', vars)
+    case 'only':
+      return t('The copy on {host} is the only one ({when}, {size}) than the one there ({thereWhen}, {thereSize}).', vars)
+    default:
+      return t('The copy on {host} is a different size ({when}, {size}) than the one there ({thereWhen}, {thereSize}).', vars)
+  }
 }
 
 const STATE_LABEL = {
-  done: 'Done',
-  skipped: 'Skipped',
-  cancelled: 'Cancelled',
-  failed: 'Failed',
-} as const
+  done: t('Done'),
+  skipped: t('Skipped'),
+  cancelled: t('Cancelled'),
+  failed: t('Failed'),
+}
 
 function TransferGroup({ id }: { id: string }) {
   const { message } = App.useApp()
@@ -154,19 +164,22 @@ function TransferGroup({ id }: { id: string }) {
 
   if (!transfer) return null
   const copied = transfer.items.filter((i) => i.state !== 'skipped').length
+  const files = copied === 1 ? t('{n} file', { n: copied }) : t('{n} files', { n: copied })
 
   return (
-    <section className="files-transfer" aria-label={`Copy to ${transfer.to.host}`}>
+    <section className="files-transfer" aria-label={t('Copy to {host}', { host: transfer.to.host })}>
       <div className="files-transfer-head">
         <span>
           <span className="strong">
-            {running ? 'Copying' : 'Copied'} {copied} {copied === 1 ? 'file' : 'files'} to {transfer.to.host}
+            {running
+              ? t('Copying {files} to {host}', { files, host: transfer.to.host })
+              : t('Copied {files} to {host}', { files, host: transfer.to.host })}
           </span>{' '}
           <code>{transfer.to.path}</code>
         </span>
         {running ? (
           <Button size="small" loading={cancel.isPending} onClick={() => cancel.mutate()}>
-            Cancel
+            {t('Cancel')}
           </Button>
         ) : null}
       </div>
@@ -180,7 +193,7 @@ function TransferGroup({ id }: { id: string }) {
               showInfo={false}
               size="small"
               strokeColor={tone.positive}
-              aria-label={`${item.name} copied`}
+              aria-label={t('{name} copied', { name: item.name })}
             />
             <span className={item.state === 'failed' ? 'files-transfer-state error' : 'files-transfer-state'}>
               {item.state === 'copying'

@@ -7,6 +7,7 @@ import App from './App.tsx'
 import ThemeProvider from './components/ThemeProvider.tsx'
 import './styles/index.css'
 import { install as installDemo, isDemo } from './services/demo.ts'
+import { lang } from './i18n'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1 } },
@@ -14,6 +15,7 @@ const queryClient = new QueryClient({
 
 // Before the first render, so the first query already talks to the demo fleet instead of the network.
 if (isDemo()) installDemo()
+document.documentElement.lang = lang
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

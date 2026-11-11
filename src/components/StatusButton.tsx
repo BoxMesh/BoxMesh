@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { App, Button, Tooltip } from 'antd'
 import { useEffect, useState } from 'react'
+import { t } from '../i18n'
 import { devicesQuery } from '../services/queries'
 import type { Device } from '../types/device'
 
@@ -30,8 +31,8 @@ export default function StatusButton({ device }: { device: Device }) {
       setOnline(Boolean(fresh?.online))
       // The device page reads its own copy; refresh it so its tabs follow the answer.
       queryClient.invalidateQueries({ queryKey: ['devices', device.host] })
-      if (fresh?.online) message.success(`${device.host} answered in ${fresh.latencyMs} ms`)
-      else message.warning(`${device.host} did not answer`)
+      if (fresh?.online) message.success(t('{host} answered in {ms} ms', { host: device.host, ms: fresh.latencyMs }))
+      else message.warning(t('{host} did not answer', { host: device.host }))
     },
     onError: (error) => message.error(error.message),
   })
@@ -39,15 +40,15 @@ export default function StatusButton({ device }: { device: Device }) {
   // One control for both jobs: it reads the current state and clicking it checks that state again.
   // The word carries the state, so colour is the second signal rather than the only one.
   const waiting = online === null
-  const state = online ? 'Online' : 'Offline'
+  const state = online ? t('Online') : t('Offline')
   const busy = waiting || ping.isPending
   return (
-    <Tooltip title={waiting ? `Waiting for ${device.host} to report in` : `Ping ${device.host}`}>
+    <Tooltip title={waiting ? t('Waiting for {host} to report in', { host: device.host }) : t('Ping {host}', { host: device.host })}>
       <Button
         size="small"
         loading={busy}
         onClick={() => ping.mutate()}
-        aria-label={waiting ? `Waiting for ${device.host} to report in` : `${state} — ping ${device.host}`}
+        aria-label={waiting ? t('Waiting for {host} to report in', { host: device.host }) : t('{state} — ping {host}', { state, host: device.host })}
         // Online and Offline differ in shape, not only hue (index.css): a filled pill with a solid dot against an
         // empty grey one with a ring. Offline is grey, not red: a switched-off machine is not an error.
         className={`status-btn ${online ? 'is-online' : 'is-offline'}`}

@@ -3,6 +3,7 @@ import { App, Button, Popover, Select, Tag, Tooltip } from 'antd'
 import { useState } from 'react'
 import { setDeviceGroups } from '../services/deviceService'
 import type { Device, DeviceGroup } from '../types/device'
+import { t } from '../i18n'
 import { Icon } from './Icon'
 
 /**
@@ -30,14 +31,14 @@ export default function DeviceGroups({ device, groups }: { device: Device; group
   // With no group the empty slot is itself the way in: a dashed "Add to group" button opens the picker.
   // With groups, the tags lead and a small edit button sits after them.
   const trigger = shown.length ? (
-    <Tooltip title="Change groups">
-      <button type="button" className="icon-btn device-groups-edit" aria-label={`Change groups for ${device.host}`}>
+    <Tooltip title={t('Change groups')}>
+      <button type="button" className="icon-btn device-groups-edit" aria-label={t('Change groups for {host}', { host: device.host })}>
         <Icon name="edit" size={14} />
       </button>
     </Tooltip>
   ) : (
-    <Button size="small" type="dashed" icon={<Icon name="plus" size={12} />} aria-label={`Add ${device.host} to a group`}>
-      Add to group
+    <Button size="small" type="dashed" icon={<Icon name="plus" size={12} />} aria-label={t('Add {host} to a group', { host: device.host })}>
+      {t('Add to group')}
     </Button>
   )
 
@@ -51,7 +52,7 @@ export default function DeviceGroups({ device, groups }: { device: Device; group
       <Popover
         trigger="click"
         placement="bottomLeft"
-        title={`Groups for ${device.host}`}
+        title={t('Groups for {host}', { host: device.host })}
         onOpenChange={(open) => open && setValue(device.groups)}
         content={
           <Select
@@ -59,12 +60,12 @@ export default function DeviceGroups({ device, groups }: { device: Device; group
             autoFocus
             allowClear
             className="device-groups-select"
-            placeholder="Pick one or more groups"
-            aria-label={`Groups for ${device.host}`}
+            placeholder={t('Pick one or more groups')}
+            aria-label={t('Groups for {host}', { host: device.host })}
             value={value.filter((id) => names.has(id))}
             options={groups.map((g) => ({ value: g.id, label: g.name }))}
             optionFilterProp="label"
-            notFoundContent={<span className="muted">No groups yet. Create one on the Groups page.</span>}
+            notFoundContent={<span className="muted">{t('No groups yet. Create one on the Groups page.')}</span>}
             onChange={(ids: string[]) => {
               setValue(ids)
               save.mutate(ids)

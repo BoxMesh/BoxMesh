@@ -1,18 +1,20 @@
+import { t } from '../i18n'
 import type { AlertChannel, AlertMetric, AlertRule, ChannelKind } from '../types/alert'
 
-export const METRIC_LABEL: Record<AlertMetric, string> = { cpu: 'CPU', ram: 'RAM', disk: 'Disk', offline: 'Offline' }
-export const KIND_LABEL: Record<ChannelKind, string> = { telegram: 'Telegram', discord: 'Discord', email: 'Email' }
+export const METRIC_LABEL: Record<AlertMetric, string> = { cpu: 'CPU', ram: 'RAM', disk: t('Disk'), offline: t('Offline') }
+export const KIND_LABEL: Record<ChannelKind, string> = { telegram: 'Telegram', discord: 'Discord', email: t('Email') }
 
-export function conditionOf(rule: Pick<AlertRule, 'metric' | 'threshold' | 'minutes'>) {
-  const lasting = rule.minutes > 0 ? ` for ${rule.minutes} min` : ''
-  return rule.metric === 'offline' ? `Offline${lasting}` : `${METRIC_LABEL[rule.metric]} above ${rule.threshold}%${lasting}`
+export function conditionOf({ metric, threshold, minutes }: Pick<AlertRule, 'metric' | 'threshold' | 'minutes'>) {
+  if (metric === 'offline') return minutes > 0 ? t('Offline for {minutes} min', { minutes }) : t('Offline')
+  const vars = { metric: METRIC_LABEL[metric], threshold, minutes }
+  return minutes > 0 ? t('{metric} above {threshold}% for {minutes} min', vars) : t('{metric} above {threshold}%', vars)
 }
 
 /** The condition as the end of a sentence: "Sends a message when …". */
-export function sentenceOf(rule: Pick<AlertRule, 'metric' | 'threshold' | 'minutes'>) {
-  const lasting = rule.minutes > 0 ? ` for ${rule.minutes} min` : ''
-  if (rule.metric === 'offline') return `a device is offline${lasting}`
-  return `${METRIC_LABEL[rule.metric]} ${rule.minutes > 0 ? 'stays' : 'goes'} above ${rule.threshold}%${lasting}`
+export function sentenceOf({ metric, threshold, minutes }: Pick<AlertRule, 'metric' | 'threshold' | 'minutes'>) {
+  if (metric === 'offline') return minutes > 0 ? t('a device is offline for {minutes} min', { minutes }) : t('a device is offline')
+  const vars = { metric: METRIC_LABEL[metric], threshold, minutes }
+  return minutes > 0 ? t('{metric} stays above {threshold}% for {minutes} min', vars) : t('{metric} goes above {threshold}%', vars)
 }
 
 export const PLACEHOLDERS = ['device', 'alias', 'rule', 'condition', 'value', 'groups', 'time'] as const
@@ -28,7 +30,7 @@ export const unknownPlaceholders = (template: string) =>
   [...template.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).filter((k) => !(PLACEHOLDERS as readonly string[]).includes(k))
 
 export function destinationOf(channel: AlertChannel) {
-  if (channel.kind === 'telegram') return `Chat ${channel.chatId ?? '—'}`
+  if (channel.kind === 'telegram') return t('Chat {id}', { id: channel.chatId ?? '—' })
   if (channel.kind === 'discord') return channel.webhookTail ? `Webhook …${channel.webhookTail}` : 'Webhook'
   return (channel.to ?? []).join(', ') || '—'
 }
