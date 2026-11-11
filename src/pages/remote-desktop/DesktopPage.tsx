@@ -5,6 +5,7 @@ import DevicePicker, { DeviceOffline, PickFirst } from '../../components/DeviceP
 import { Icon } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { useDeviceParam } from '../../hooks/useDeviceParam'
+import { useNotSupported } from '../../hooks/useNotSupported'
 import { startDesktop } from '../../services/remoteService'
 import type { Device } from '../../types/device'
 import type { DesktopSession } from '../../types/remote'
@@ -40,6 +41,7 @@ export default function DesktopPage() {
 
 function Viewer({ device }: { device: Device }) {
   const { message } = App.useApp()
+  const notSupported = useNotSupported()
   const [session, setSession] = useState<DesktopSession | null>(null)
   const [quality, setQuality] = useState<DesktopSession['quality']>('auto')
   const [clipboard, setClipboard] = useState(true)
@@ -84,15 +86,14 @@ function Viewer({ device }: { device: Device }) {
           Clipboard sync
         </label>
         <span className="screen-spacer" />
-        <Button size="small" onClick={() => message.info('Ctrl+Alt+Del sent')}>
+        <Button size="small" onClick={() => notSupported('Sending Ctrl+Alt+Del')}>
           Ctrl+Alt+Del
         </Button>
-        <Button size="small" onClick={() => message.info('Screenshot saved to your downloads')}>
+        <Button size="small" onClick={() => notSupported('Screenshots')}>
           Screenshot
         </Button>
         <Button
           size="small"
-          danger
           onClick={() => {
             setSession(null)
             message.success('Session ended')

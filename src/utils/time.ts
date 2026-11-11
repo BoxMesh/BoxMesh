@@ -22,15 +22,6 @@ export function formatDateTime(iso: string) {
   return `${formatDate(iso)}, ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
-export function daysLeft(iso: string, now = Date.now()) {
-  return Math.ceil((Date.parse(iso) - now) / DAY)
-}
-
-export function daysLeftLabel(days: number) {
-  if (days <= 0) return 'expired'
-  return days === 1 ? '1 day left' : `${days} days left`
-}
-
 export function ago(iso: string, now = Date.now()) {
   const s = Math.max(0, Math.round((now - Date.parse(iso)) / SECOND))
   if (s < 10) return 'just now'

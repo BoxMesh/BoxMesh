@@ -1,8 +1,9 @@
-import { queryOptions } from '@tanstack/react-query'
+import { keepPreviousData, queryOptions } from '@tanstack/react-query'
 import type { TimeRange } from '../types/dashboard'
-import { getCommandRules, getUsers } from './adminService'
-import { getRecentActivity, getRemoteSessions, getResourceUsage } from './dashboardService'
-import { getConnectionHistory, getDevice, getDevices, getGroups, getPendingEnrollments } from './deviceService'
+import { getCommandRules, getTokens, getUsers } from './adminService'
+import { getAlertRules, getAlerts, getChannels } from './alertService'
+import { getRemoteSessions } from './dashboardService'
+import { getDevice, getDeviceMetrics, getDevices, getProcesses, getGroups, getPendingEnrollments } from './deviceService'
 import { getFiles, getServices, getTransfer } from './remoteService'
 
 // Shared query keys, so every screen reading the same data hits the same cache entry.
@@ -13,17 +14,27 @@ export const groupsQuery = queryOptions({ queryKey: ['groups'], queryFn: getGrou
 
 export const deviceQuery = (host: string) => queryOptions({ queryKey: ['devices', host], queryFn: () => getDevice(host) })
 
-export const connectionHistoryQuery = (host: string) =>
-  queryOptions({ queryKey: ['devices', host, 'connections'], queryFn: () => getConnectionHistory(host) })
+export const deviceMetricsQuery = (host: string, range: TimeRange) =>
+  queryOptions({
+    queryKey: ['devices', host, 'metrics', range],
+    queryFn: () => getDeviceMetrics(host, range),
+    placeholderData: keepPreviousData,
+  })
+
+export const processesQuery = (host: string) =>
+  queryOptions({ queryKey: ['devices', host, 'processes'], queryFn: () => getProcesses(host) })
+
+export const tokensQuery = queryOptions({ queryKey: ['enrollment-tokens'], queryFn: getTokens })
+
+export const alertsQuery = queryOptions({ queryKey: ['alerts'], queryFn: getAlerts })
+
+export const alertRulesQuery = queryOptions({ queryKey: ['alert-rules'], queryFn: getAlertRules })
+
+export const alertChannelsQuery = queryOptions({ queryKey: ['alert-channels'], queryFn: getChannels })
 
 export const pendingEnrollmentsQuery = queryOptions({ queryKey: ['enrollments', 'pending'], queryFn: getPendingEnrollments })
 
-export const resourceUsageQuery = (range: TimeRange) =>
-  queryOptions({ queryKey: ['metrics', 'summary', range], queryFn: () => getResourceUsage(range) })
-
 export const remoteSessionsQuery = queryOptions({ queryKey: ['sessions', 'summary'], queryFn: getRemoteSessions })
-
-export const recentActivityQuery = queryOptions({ queryKey: ['audit', 'recent'], queryFn: () => getRecentActivity() })
 
 // ---- Remote ----
 

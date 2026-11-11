@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Alert, App, Button, Checkbox, Drawer, Form, Segmented, Select, Spin } from 'antd'
+import { Alert, App, Button, Checkbox, Drawer, Form, Popconfirm, Segmented, Select, Spin } from 'antd'
 import { useState } from 'react'
 import { createToken, type NewToken } from '../../services/adminService'
 import { decideEnrollment } from '../../services/deviceService'
@@ -126,9 +126,15 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
                 >
                   Approve
                 </Button>
-                <Button danger onClick={() => decide.mutate({ host: p.host, outcome: 'reject' })}>
-                  Reject
-                </Button>
+                <Popconfirm
+                  title={`Reject ${p.host}?`}
+                  description="It gets no certificate and can't connect. It can ask again with a new token."
+                  okText="Reject"
+                  okButtonProps={{ danger: true }}
+                  onConfirm={() => decide.mutate({ host: p.host, outcome: 'reject' })}
+                >
+                  <Button>Reject</Button>
+                </Popconfirm>
               </span>
             </div>
           ))}

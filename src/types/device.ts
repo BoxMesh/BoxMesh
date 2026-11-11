@@ -28,7 +28,6 @@ export interface Device {
   /** ISO 8601 timestamps */
   lastSeen: string
   enrolledAt: string
-  certExpires: string
   /** Current usage in percent */
   cpu: number
   ram: number
@@ -37,7 +36,7 @@ export interface Device {
   hardware: DeviceHardware
 }
 
-export type IssueKind = 'cpu' | 'ram' | 'disk' | 'cert' | 'agent' | 'offline'
+export type IssueKind = 'cpu' | 'ram' | 'disk' | 'agent' | 'offline'
 
 export interface Issue {
   kind: IssueKind
@@ -61,11 +60,26 @@ export interface DeviceGroup {
   name: string
 }
 
-export interface ConnectionEvent {
-  event: string
+/** One sample of a device's usage: cpu, ram and disk in percent, network in Mbps. */
+export interface MetricPoint {
   at: string
-  publicIp: string
-  duration: string
+  cpu: number
+  ram: number
+  disk: number
+  netIn: number
+  netOut: number
+}
+
+export type ProcessStatus = 'running' | 'suspended' | 'not-responding'
+
+export interface DeviceProcess {
+  pid: number
+  name: string
+  user: string
+  status: ProcessStatus
+  /** Percent of the whole machine */
+  cpu: number
+  memoryMb: number
 }
 
 export interface PendingEnrollment {

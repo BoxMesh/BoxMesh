@@ -235,15 +235,14 @@ Track `bg-track`, padding 2. Selected: `brand` fill, `on-brand`, 600.
 A table that ends a card is clipped to the card's bottom corners.
 
 ### Dashboard (triage first)
-- **Health strip** (one card, four cells split by `border` rules; 2 + 2 below 1200 px, one column on phones):
+- **Health strip** (one card, three cells split by `border` rules; one column on phones):
   Fleet health ("7 of 12 online", 28/34 600) with a stacked bar and a legend in words (healthy `positive`,
   warning `warning-fill`, critical `error`, offline `text-disabled`); Needs attention now (critical count, red when
-  above 0); Certificates within 30 days (warning colour, soonest named); Average latency (tunnels and reconnects).
-- **Needs attention** queue (left, about 63 %): one table grouped Critical → Warning → Offline by `triage()` in
-  `utils/devices.ts` (any red issue is critical; a certificate within 7 days is red, within 30 a warning; an outdated
-  agent is a warning). Each group opens with a header row; each device has a 4 px severity stripe, all its issue tags
-  (they wrap), values, last seen and a next step: Terminal for a machine running hot, Open otherwise.
-- **Right column**: Average resources (meters, warning fill above 70 %) and Recent activity.
+  above 0, with how many are over the CPU or RAM threshold); Average latency (tunnels and reconnects).
+- **Alert** queue (full width): one table grouped Critical → Warning → Offline by `triage()` in
+  `utils/devices.ts` (any red issue is critical: CPU or RAM over threshold; a full disk and an outdated agent are
+  warnings). Certificates are not tracked. Each group opens with a header row; each device has a 4 px severity stripe, all its issue tags
+  (they wrap), values, last seen and an Action column with Open, which goes to the device's page (as does its name).
 - `--warning-fill` (`#facc15` dark, `#eab308` light) is the bright yellow for bars and stripes; `--warning` stays the
   text colour.
 
@@ -257,26 +256,20 @@ A table that ends a card is clipped to the card's bottom corners.
 - Users: an account that can't sign in drops to `text-secondary` (no opacity).
 - Pagination: page size 10, range text `1–10 / 12`, hidden on a single page.
 
-### Certificate expiry (`src/components/CertExpiry.tsx`)
-The date in `dd Mon yyyy`, coloured by `certTone` (`src/utils/devices.ts`): red within 7 days, amber within 30, plain
-otherwise or when revoked. No "N days left" text in the cell; the count is in the tooltip and `aria-label`.
-Used on Device detail. On the Dashboard, certificates join the Needs attention queue (critical within 7 days, a
-warning within 30).
-
 ### Tag
 12 px, radius 10, outlined, colours from the semantic sets. "+ Tag" is a dashed default-size tag button.
 
+### Charts (`pages/device-detail/UsageChart.tsx`)
+Hand-drawn SVG lines, 88 px tall, 2 px stroke, a 12 % area under a single series. Series colours `--series-1`
+(orange, dark `#e0702a`, light `#c2410c`) and `--series-2` (blue, dark `#3987e5`, light `#2a78d6`), checked with the
+dataviz validator in both themes. Grid `border`; alert line dashed `text-secondary`; a mid-scale label and five time
+marks under each chart. Hover or tap shows a crosshair, an 8 px dot per series and a tooltip with the time and values.
+
 ### Tabs
-Underline tabs (Device detail: Overview · Connection): active = `accent` text + 2 px underline.
+Underline tabs: active = `accent` text + 2 px underline.
 
 ### Alert
 Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with links.
-
-### Progress (Average resources)
-Track `bg-track`; fill success green, warning above the threshold. Label row above: name left, value right.
-
-### Timeline (Recent activity)
-Ring per event: success green = normal, error = failure or offline. Time 12 px secondary below.
 
 ### Remote Files: two devices
 - "Add a second device" (default button beside the picker) opens a second pane; the URL keeps it in `?with=`.
@@ -296,15 +289,20 @@ Ring per event: success green = normal, error = failure or offline. Time 12 px s
 - Transfers card: one group per copy ("Copying 2 files to HOST" + target path, Cancel while running), one row per file
   with a progress bar (success green) and its state. The target folder reloads when a copy finishes.
 
-### Device groups (`src/components/DeviceGroups.tsx`, `pages/devices/GroupsDrawer.tsx`)
+### Device groups (`src/components/DeviceGroups.tsx`, `pages/groups/GroupsPage.tsx`)
 - A device belongs to any number of groups (`device.groups`, a list of group ids; names come from `/groups`).
 - Shown as info-coloured tags that wrap, then a 24 px edit button. With no group, a dashed "+ Add to group" button
   takes their place and opens the same picker.
 - The picker is a popover with a multi-select; each change saves at once (no Save button). Used on the Devices table
-  and the Device detail header.
-- "Manage groups" (default button beside Enroll agent) opens a drawer: add a group (name required, at most 40
-  characters, unique ignoring case), a table of groups with their device count, rename in place (Enter saves, Esc
-  cancels) and delete with a confirm that says how many devices leave the group. Devices are never deleted with it.
+  and the Device detail page (Groups row).
+- Groups page (`/groups`, also "Manage groups" on Devices): a table like Devices, with search (group or device name),
+  Group (links to Devices filtered by it; renamed in place, Enter saves, Esc cancels), Devices (count), Members (up
+  to three device tags, then "+N" with the rest in a tooltip), Add (an "Add devices" button) and Actions (rename,
+  delete with a confirm that says how many devices leave; devices are never deleted with it).
+- "Add devices" opens an 880 px dialog with the two-list picker (Other devices / In <group>), "N to add · M to remove"
+  and Save changes. Saving PUTs `/devices/{host}/groups` for each device that joins or leaves; a failed device is
+  named and the rest still save. New group (name required, at most 40 characters, unique ignoring case) opens the
+  same dialog right after.
 - The Groups column header filters the table by one group (`?group=` in the URL).
 
 ### Users table and user page (`pages/users/UsersPage.tsx`, `UserPage.tsx`, `Access.tsx`)
@@ -326,7 +324,7 @@ Ring per event: success green = normal, error = failure or offline. Time 12 px s
   Django's two-list picker). No drag and drop: on a phone it fights the scroll. Below 576 px the lists stack, 320 px
   each, and the arrows turn to point down and up.
 
-### Commands (`pages/commands/CommandsPage.tsx`, `utils/commands.ts`)
+### Command rules (`pages/commands/CommandsPage.tsx`, `utils/commands.ts`)
 - Rules for commands nobody can run in Remote Terminal, the Admin included. A rule has a command, a match (Starts
   with: whole words, so "format" doesn't catch "Format-Table"; Contains: anywhere, catching chained commands; Regex:
   not case-sensitive), shells (none picked = all shells), where it applies (a Segmented: All devices, Groups or Devices, then a multi-select for the last two; one at a time, and the other list is dropped on save), and a reason. There is no on/off: every listed rule blocks, and deleting it allows the command again. Case and runs of spaces are
@@ -342,6 +340,24 @@ Ring per event: success green = normal, error = failure or offline. Time 12 px s
 Forms open in a drawer from the right (Enroll agent, New job, Create token, Invite person). An issued secret stays on
 screen in the drawer with a "Copy" button until the drawer closes.
 
+### Channel icons (`src/components/ChannelIcon.tsx`, `src/assets/channels/*.svg`)
+Telegram, Discord and Email marks in their own colours, 16 px (12 px inside a tag). They sit beside the written type;
+where only the channel name is written (Alerts' Send to tags) the icon carries the type as its alt text. Replace the
+three SVG files to change the marks; no code changes.
+
+### Dialogs with sections (Alerts, Rules, Channels, Command rules)
+- 680 px modal, no antd footer: the form ends in its own row with Cancel / the primary on the right. Enter submits.
+- A name field on top, then bordered sections (radius 16, padding 16, `border`): a 14/600 heading, a 13 px
+  `text-secondary` hint under it, then the fields. The rule's Condition hint is a live sentence ("Sends a message when
+  Disk stays above 85% for 5 min").
+- One-of-few choices are choice cards (antd Radio, `.choice-card`): icon + 600 title + 12 px hint, `border` →
+  `accent` border and `bg-raised` when chosen, the radio dot kept so the choice isn't colour alone. Grid
+  `auto-fit, minmax(132px, 1fr)`. Pick-many lists (the rule's channels) are the same cards with checkboxes, one per row,
+  with the destination in mono under the name.
+- Number fields carry their unit as a suffix (%, min). Rare settings fold behind a summary line with a Change link
+  (the SMTP server, defaulting to smtp.gmail.com:587; it opens by itself when it fails validation).
+- Below 576 px, field pairs stack.
+
 ### Code block and terminal
 Code block: bg `#090b0c` dark / `#101416` light, Geist Mono, radius 12. Terminal: xterm.js on the same background.
 
@@ -350,8 +366,8 @@ Code block: bg `#090b0c` dark / `#101416` light, Geist Mono, radius 12. Terminal
 Relative times ("4 min ago") for last seen and activity.
 
 ### Not-yet-available actions
-Actions EdgePanel has no endpoint for (update agent, disable device, edit tags, save thresholds) stay visible and
-toast "<Doing something> isn't available yet." They never fake success.
+Actions EdgePanel has no endpoint for (update agent, disable device, edit tags, end a process, upload, download,
+rename or delete a file, desktop screenshot and Ctrl+Alt+Del) stay visible and toast "<Doing something> isn't available yet." They never fake success.
 
 ### Sign-in page (`/login`)
 `/login` is public; every other route sends a signed-out visitor there and returns them to the page they asked for.
@@ -390,21 +406,28 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 **Roles**: Admin (exactly one) · Operator (everyone invited).
 
 **Sider groups**
-- Overview: Dashboard, Devices
+- Overview: Dashboard
+- Device: Devices, Groups
 - Remote: Remote Terminal, Remote Desktop, Remote Files, Remote Service
-- Admin: Users & Access, Commands
+- Alert: Alerts, Rules, Channels
+- Admin: Users & Access, Command rules, Enrollment tokens
 
 | Screen | Route | What is on it |
 |---|---|---|
 | Sign in | `/login` | Sign-in card, password reset, demo entry |
-| Dashboard | `/dashboard` | Time range; health strip (fleet health bar, needs attention now, certificates within 30 days, latency); Needs attention queue grouped Critical / Warning / Offline; Average resources; Recent activity |
-| Devices | `/devices` | Table with header filters (incl. Groups), group tags with an edit picker, ping status, row remote actions; Manage groups drawer; Enroll agent drawer |
-| Device detail | `/devices/:id` | Back, name, alias, status, group tags with the edit picker; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); tabs Overview (device information, connection card, alert thresholds) and Connection |
+| Dashboard | `/dashboard` | Health strip (fleet health bar, needs attention now, latency); Alert queue grouped Critical / Warning / Offline |
+| Devices | `/devices` | Table with header filters (incl. Groups), group tags with an edit picker, ping status, row remote actions; Manage groups (links to Groups); Enroll agent drawer |
+| Groups | `/groups` | Table: group, devices, members, Add devices (two-list dialog), rename / delete; New group |
+| Device detail | `/devices/:id` | Back, name, alias, status; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); no tabs. "Device information" (hostname, OS, IP, MAC, agent version, uptime, enrolled at, Groups with the edit picker). "Resource information" with a 1h / 24h / 7d switch: CPU, RAM and Disk over time (0–100 %, dashed alert line, hardware beside each name) and Network (Received `--series-1`, Sent `--series-2`, Mbps on its own scale, legend with current values); every chart has five time marks and a crosshair tooltip. "Processes" like Task Manager: search, Name, PID, Status, User, CPU (sorted high first), Memory, End task (not supported yet); polls every 5 s, hidden while offline |
 | Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
 | Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
-| Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload. Two devices: two panes, copy and sync between them, Transfers |
+| Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload (not available yet). Two devices: two panes, copy and sync between them, Transfers |
 | Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
-| Commands | `/commands` | Test a command (shell + command, live Blocked / Allowed answer); read-only rules table (command, match, shells, applies to, reason) with Edit and Delete; Add rule / edit dialog |
+| Alerts | `/alerts` | Table (alert, rules, applies to, send to with channel icons) with Edit and Delete; dialog sections: Rules (ticked cards), Devices (`ScopeFields`: all, groups or devices), Send to (channel cards), Message (template with insertable {device} {alias} {rule} {condition} {value} {groups} {time} and a live preview from a real device in scope). Add alert waits until a rule and a channel exist |
+| Rules | `/alert-rules` | Table (rule, condition, used by which alerts) with Edit and Delete; dialog: name and a Condition section (CPU / RAM / Disk / Offline cards, limit %, for at least N min, live sentence) |
+| Channels | `/alert-channels` | Table (channel, type with its brand icon, used by N alerts, Test with a Send test button, Actions with Edit and Delete); dialog: type (Telegram / Discord / Email, fixed once saved), name, then per type: bot token + chat ID; webhook URL; recipients, Gmail sender + app password, SMTP server and port (smtp.gmail.com:587). Secrets are write-only: on edit, an empty field keeps the saved one |
+| Enrollment tokens | `/enrollment-tokens` | Create token (opens the Enroll new agent drawer); table: last four characters, Active / Expired, default group, expires, approval, used by (device links), Revoke with a confirm |
+| Command rules | `/commands` | Test a command (shell + command, live Blocked / Allowed answer); read-only rules table (command, match, shells, applies to, reason) with Edit and Delete; Add rule / edit dialog |
 | Users & Access | `/users` | Role cards (Admin, Operator); a read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Invite dialog (email, what they can reach; joins as Operator) |
 
 ---
@@ -413,9 +436,9 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 
 EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
 (all under `VITE_API_URL`, default `/api`): `/log-in`, `/log-out`, `/forgot-password` (placeholder name), `/devices`
-and `/devices/{host}` with `/connections`, `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
-`/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/certificates`, `/metrics/summary`, `/sessions/summary`, `/jobs`, `/audit`, `/users`,
-`/settings`, `/health`, `/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
+and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
+`/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
+`/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, `/ws/desktop/{id}`); internal web apps go
 through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
@@ -438,8 +461,8 @@ PWA: installable (manifest in `vite.config.ts`). Any number of tabs or windows m
 ## 11. Open points
 
 1. Architecture artboard says "BoxAgent (Go)"; the repo's BoxAgent is C# / .NET.
-2. Charts (a Metrics tab) are named in the canvas but not drawn or built; series colours are still to define.
+2. The canvas's Metrics tab became the Resource information card on Device detail (see Charts).
 3. No translation layer yet (PRODUCT.md, Language).
 4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with an accent icon.
 5. The canvas's Operations group (Command & Jobs, Audit), Security & Certificates and System Settings were removed
-   in November 2026; their services and demo routes remain in `src/services`.
+   in November 2026, along with their services, types and demo routes.

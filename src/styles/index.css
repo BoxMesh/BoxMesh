@@ -19,6 +19,8 @@
   --warning: #facc15;
   --warning-bg: #2a2410;
   --warning-fill: #facc15;
+  --series-1: #e0702a;
+  --series-2: #3987e5;
   --error: #ff6b81;
   --code-bg: #090b0c;
   --code-text: #f1efe7;
@@ -50,6 +52,8 @@
   --warning: #854d0e;
   --warning-bg: #fefce8;
   --warning-fill: #eab308;
+  --series-1: #c2410c;
+  --series-2: #2a78d6;
   --error: #be123c;
   --code-bg: #101416;
   --code-text: #f1efe7;
@@ -145,7 +149,7 @@ body .app-sider .ant-menu-item-selected .ant-menu-item-icon {
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 0 20px;
   border-bottom: 1px solid var(--border);
   font-size: 16px;
@@ -209,7 +213,7 @@ body .header-search {
   align-items: center;
   gap: 8px;
   height: 36px;
-  padding: 0 10px 0 4px;
+  padding: 0 8px 0 4px;
   border: 0;
   border-radius: 12px;
   background: none;
@@ -306,12 +310,6 @@ body .user .ant-avatar {
   gap: 12px;
 }
 
-.grid-2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
-  gap: 12px;
-}
-
 .muted {
   color: var(--text-secondary);
 }
@@ -336,7 +334,7 @@ body .ant-card:hover {
 body .ant-card .ant-card-head .ant-card-head-title {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 body .ant-card-head-title::before {
@@ -358,7 +356,7 @@ body .ant-card-head-title::before {
 /* Health strip: fleet health (with a stacked bar) and three numbers, side by side; 2 + 2 below 1200px, a column on phones. */
 .health-strip {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
 }
 
 .health-cell {
@@ -381,7 +379,7 @@ body .ant-card-head-title::before {
 }
 
 .health-unit {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -398,7 +396,7 @@ body .ant-card-head-title::before {
 .health-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 14px;
+  gap: 4px 12px;
   margin-top: 4px;
   font-size: 12px;
   color: var(--text-secondary);
@@ -438,15 +436,7 @@ body .ant-card-head-title::before {
 
 @media (max-width: 1199px) {
   .health-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .health-cell:nth-child(3) {
-    border-left: 0;
-  }
-
-  .health-cell:nth-child(n + 3) {
-    border-top: 1px solid var(--border);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -458,27 +448,6 @@ body .ant-card-head-title::before {
   .health-cell + .health-cell {
     border-left: 0;
     border-top: 1px solid var(--border);
-  }
-}
-
-/* Queue on the left, resources and activity on the right; one column below 1200px. */
-.dash-cols {
-  display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-  gap: 12px;
-  align-items: start;
-}
-
-.dash-side {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-}
-
-@media (max-width: 1199px) {
-  .dash-cols {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -514,7 +483,6 @@ body .ant-table-wrapper td.queue-stripe-cell {
 }
 
 /* Only the issue tags wrap; host names, times and column titles stay on one line. */
-.dash-cols .ant-table-thead th,
 .queue-nowrap {
   white-space: nowrap;
 }
@@ -541,14 +509,149 @@ body .ant-table-wrapper td.queue-stripe-cell {
   font-weight: 600;
 }
 
-.meter + .meter {
-  margin-top: 12px;
-}
-
 .meter-label {
   display: flex;
   justify-content: space-between;
   gap: 8px;
+}
+
+.usage + .usage {
+  margin-top: 20px;
+}
+
+.usage-plot {
+  position: relative;
+  height: 88px;
+  margin-top: 8px;
+  touch-action: pan-y;
+}
+
+.usage-plot svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.usage-area {
+  fill: var(--series-1);
+  fill-opacity: 0.12;
+}
+
+.usage-line {
+  fill: none;
+  stroke: var(--series-1);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.usage-grid,
+.usage-limit {
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.usage-grid {
+  stroke: var(--border);
+}
+
+.usage-limit {
+  stroke: var(--text-secondary);
+  stroke-dasharray: 4 4;
+}
+
+.usage-limit-label {
+  position: absolute;
+  right: 0;
+  transform: translateY(-100%);
+  font-size: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.usage-cross {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--text-secondary);
+  pointer-events: none;
+}
+
+.usage-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--series-1);
+  box-shadow: 0 0 0 2px var(--bg-surface);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.usage-tip {
+  position: absolute;
+  top: -8px;
+  z-index: 1;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.usage-line.s2 {
+  stroke: var(--series-2);
+}
+
+.usage-dot.s2,
+.usage-swatch.s2 {
+  background: var(--series-2);
+}
+
+.usage-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 3px;
+  margin-right: 6px;
+  border-radius: 2px;
+  vertical-align: middle;
+  background: var(--series-1);
+}
+
+.usage-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px 12px;
+}
+
+.usage-tick {
+  position: absolute;
+  left: 0;
+  transform: translateY(-100%);
+  font-size: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.usage-tip-row {
+  display: block;
+}
+
+.usage-tip-row + .usage-tip-row {
+  margin-top: 2px;
+}
+
+.usage-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 /* ---------- Tables ---------- */
@@ -776,16 +879,127 @@ body .icon-btn.device-groups-edit:hover {
   }
 }
 
-.access-count {
-  font-size: 12px;
-  white-space: nowrap;
-}
-
 /* Dialog footer: a destructive action on the left, Cancel and Save on the right. */
 .drawer-footer {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* Dialogs built from sections: a name on top, then bordered groups, then the buttons. */
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.dialog-form .ant-form-item {
+  margin-bottom: 0;
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.form-section h3 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+}
+
+.form-section .section-hint {
+  margin: -8px 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.choice-cards,
+.choice-list {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.choice-cards {
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+}
+
+.choice-list {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body .choice-card {
+  display: flex;
+  align-items: flex-start;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color 150ms, background-color 150ms;
+}
+
+body .choice-card:hover {
+  border-color: var(--border-hover);
+}
+
+body .choice-card.ant-radio-wrapper-checked,
+body .choice-card.ant-checkbox-wrapper-checked {
+  border-color: var(--accent);
+  background: var(--bg-raised);
+}
+
+body .choice-card.ant-radio-wrapper-disabled {
+  cursor: default;
+}
+
+.choice-card > span:last-child {
+  min-width: 0;
+}
+
+.choice-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.choice-desc {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.smtp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.dialog-buttons {
+  display: inline-flex;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .row-actions .icon-btn {
@@ -851,16 +1065,6 @@ body .icon-btn[aria-disabled='true'] {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* ---------- Already open ---------- */
-.fullscreen-center {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  box-sizing: border-box;
 }
 
 /* Lockup: mark plus wordmark, "Mesh" in the accent (design's Logo.html). */
@@ -1208,7 +1412,7 @@ body .ant-drawer-content-wrapper {
   margin: 0;
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 14px;
+  padding: 12px 16px;
   overflow-x: auto;
   border-radius: 12px;
   background: var(--code-bg);
@@ -1226,7 +1430,7 @@ body .ant-drawer-content-wrapper {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--border);
   border-radius: 12px;
 }
@@ -1563,20 +1767,6 @@ body .ant-btn.is-pressed {
   text-decoration: underline;
 }
 
-.job-results {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.job-result {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-}
-
 /* An account that can't sign in steps back to the secondary text colour: readable (7:1), just quieter. */
 body .row-off > td,
 body .row-off > td .strong {
@@ -1609,4 +1799,50 @@ body .row-off > td .strong {
 .mono,
 .mono input {
   font-family: var(--mono);
+}
+
+.channel-icon {
+  flex: none;
+  display: inline-block;
+}
+
+.channel-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body .channel-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.placeholder-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.message-preview {
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--bg-raised);
+  font-size: 14px;
+}
+
+.message-preview p {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.kv[hidden] {
+  display: none;
+}
+
+@media (max-width: 575px) {
+  .dialog-form .kv {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

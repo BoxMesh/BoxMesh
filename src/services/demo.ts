@@ -1,7 +1,7 @@
 import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios'
-import type { CommandRule, Settings } from '../types/admin'
+import type { CommandRule } from '../types/admin'
+import type { Alert, AlertChannel, AlertRule, ChannelInput } from '../types/alert'
 import type { TimeRange } from '../types/dashboard'
-import type { JobState } from '../types/ops'
 import type { FileEntry, FileTransfer, NewFileTransfer, Shell } from '../types/remote'
 import { blockedBy } from '../utils/commands'
 import { MINUTE, fromNow } from '../utils/time'
@@ -39,14 +39,14 @@ export function stopDemo() {
 // Everything a demo visitor changes lives here and is gone on reload. That is the point: it keeps the
 // demo honest about being a demo, and nothing can leak into a real deployment.
 const state = {
-  jobs: structuredClone(seed.jobs),
-  certificates: structuredClone(seed.certificates),
   tokens: structuredClone(seed.enrollmentTokens),
   accounts: structuredClone(seed.accounts),
-  settings: structuredClone(seed.settings),
   pending: structuredClone(seed.pendingEnrollments),
   groups: structuredClone(seed.groups),
   commandRules: structuredClone(seed.commandRules),
+  alertRules: structuredClone(seed.alertRules),
+  alerts: structuredClone(seed.alerts),
+  alertChannels: structuredClone(seed.alertChannels),
   // Files copied in the demo, by "host|path", shown on top of the seeded listing.
   copied: {} as Record<string, FileEntry[]>,
   transfers: {} as Record<string, { transfer: FileTransfer; startedAt: number; cancelledAt?: number }>,
@@ -124,6 +124,13 @@ const body = <T>(config: InternalAxiosRequestConfig): T =>
 const param = (config: InternalAxiosRequestConfig, key: string) => String(config.params?.[key] ?? '')
 const id = () => Math.random().toString(36).slice(2, 10)
 
+// Like EdgePanel: secrets are kept server side and never sent back; a webhook keeps its last four characters.
+function stripSecrets<T extends Partial<ChannelInput>>({ botToken, webhookUrl, password, ...rest }: T): Partial<AlertChannel> {
+  void botToken
+  void password
+  return webhookUrl ? { ...rest, webhookTail: webhookUrl.slice(-4) } : rest
+}
+
 const routes: Route[] = [
   [
     'post',
@@ -180,10 +187,9 @@ const routes: Route[] = [
     },
   ],
   ['get', /^\/devices\/([^/]+)$/, (m) => seed.devices.find((d) => d.host === decodeURIComponent(m[1])) ?? null],
-  ['get', /^\/devices\/([^/]+)\/connections$/, (m) => seed.connectionHistory(decodeURIComponent(m[1]))],
-  ['get', /^\/metrics\/summary$/, (_m, c) => seed.resourceUsage((param(c, 'range') || '24h') as TimeRange)],
+  ['get', /^\/devices\/([^/]+)\/metrics$/, (m, c) => seed.deviceMetrics(decodeURIComponent(m[1]), (param(c, 'range') || '24h') as TimeRange)],
+  ['get', /^\/devices\/([^/]+)\/processes$/, (m) => seed.processes(decodeURIComponent(m[1]))],
   ['get', /^\/sessions\/summary$/, () => seed.remoteSessions],
-  ['get', /^\/audit$/, (_m, c) => seed.activity.slice(0, Number(param(c, 'limit')) || 4)],
 
   // ---- Remote ----
   [
@@ -220,50 +226,7 @@ const routes: Route[] = [
   ['get', /^\/devices\/([^/]+)\/services$/, (m) => seed.servicesOn(decodeURIComponent(m[1]))],
   ['post', /^\/devices\/([^/]+)\/desktop$/, (m) => seed.desktopSession(decodeURIComponent(m[1]))],
 
-  // ---- Operations ----
-  ['get', /^\/jobs$/, () => state.jobs],
-  [
-    'post',
-    /^\/jobs$/,
-    (_m, c) => {
-      const input = body<{ name: string; command: string; shell: string; targets: string[]; schedule?: string }>(c)
-      const job = {
-        ...input,
-        id: `job-${1042 + state.jobs.length}`,
-        state: (input.schedule ? 'queued' : 'running') as JobState,
-        startedAt: new Date().toISOString(),
-        results: input.schedule
-          ? []
-          : seed.devices
-              .filter(
-                (d) =>
-                  input.targets.includes(d.host) ||
-                  d.groups.some((g) => input.targets.includes(state.groups.find((x) => x.id === g)?.name ?? '')),
-              )
-              .map((d) => ({
-                host: d.host,
-                state: (d.online ? 'done' : 'failed') as 'done' | 'failed',
-                exitCode: d.online ? 0 : 1,
-                output: d.online ? 'Completed' : 'Agent offline',
-              })),
-      }
-      state.jobs = [job, ...state.jobs]
-      return job
-    },
-  ],
-  ['get', /^\/audit\/entries$/, () => seed.auditLog],
-
   // ---- Admin ----
-  ['get', /^\/certificates$/, () => state.certificates],
-  [
-    'post',
-    /^\/certificates\/([^/]+)\/revoke$/,
-    (m) => {
-      const cert = state.certificates.find((x) => x.host === decodeURIComponent(m[1]))
-      if (cert) cert.revoked = true
-      return cert ?? null
-    },
-  ],
   ['get', /^\/enrollments$/, () => state.pending],
   [
     'post',
@@ -291,6 +254,14 @@ const routes: Route[] = [
       }
       state.tokens = [token, ...state.tokens]
       return token
+    },
+  ],
+  [
+    'delete',
+    /^\/enrollment-tokens\/([^/]+)$/,
+    (m) => {
+      state.tokens = state.tokens.filter((t) => t.id !== decodeURIComponent(m[1]))
+      return null
     },
   ],
   ['get', /^\/users$/, () => state.accounts],
@@ -356,16 +327,97 @@ const routes: Route[] = [
       return null
     },
   ],
-  ['get', /^\/settings$/, () => state.settings],
+  ['get', /^\/alert-rules$/, () => state.alertRules],
   [
-    'put',
-    /^\/settings$/,
+    'post',
+    /^\/alert-rules$/,
     (_m, c) => {
-      state.settings = { ...state.settings, ...body<Partial<Settings>>(c) }
-      return state.settings
+      const rule = { ...body<Omit<AlertRule, 'id'>>(c), id: `ar-${id()}` }
+      state.alertRules = [...state.alertRules, rule]
+      return rule
     },
   ],
-  ['get', /^\/health$/, () => ({ ...seed.health, agentsConnected: seed.devices.filter((d) => d.online).length })],
+  [
+    'patch',
+    /^\/alert-rules\/([^/]+)$/,
+    (m, c) => {
+      const rule = state.alertRules.find((r) => r.id === decodeURIComponent(m[1]))
+      if (rule) Object.assign(rule, body<Partial<AlertRule>>(c))
+      return rule ?? null
+    },
+  ],
+  [
+    'delete',
+    /^\/alert-rules\/([^/]+)$/,
+    (m) => {
+      const gone = decodeURIComponent(m[1])
+      state.alertRules = state.alertRules.filter((r) => r.id !== gone)
+      state.alerts = state.alerts.map((a) => ({ ...a, ruleIds: a.ruleIds.filter((x) => x !== gone) }))
+      return null
+    },
+  ],
+  ['get', /^\/alerts$/, () => state.alerts],
+  [
+    'post',
+    /^\/alerts$/,
+    (_m, c) => {
+      const alert = { ...body<Omit<Alert, 'id'>>(c), id: `al-${id()}` }
+      state.alerts = [...state.alerts, alert]
+      return alert
+    },
+  ],
+  [
+    'patch',
+    /^\/alerts\/([^/]+)$/,
+    (m, c) => {
+      const alert = state.alerts.find((a) => a.id === decodeURIComponent(m[1]))
+      if (alert) Object.assign(alert, body<Partial<Alert>>(c))
+      return alert ?? null
+    },
+  ],
+  [
+    'delete',
+    /^\/alerts\/([^/]+)$/,
+    (m) => {
+      state.alerts = state.alerts.filter((a) => a.id !== decodeURIComponent(m[1]))
+      return null
+    },
+  ],
+  ['get', /^\/alert-channels$/, () => state.alertChannels],
+  [
+    'post',
+    /^\/alert-channels$/,
+    (_m, c) => {
+      const channel = { ...stripSecrets(body<ChannelInput>(c)), id: `ch-${id()}` } as AlertChannel
+      state.alertChannels = [...state.alertChannels, channel]
+      return channel
+    },
+  ],
+  [
+    'patch',
+    /^\/alert-channels\/([^/]+)$/,
+    (m, c) => {
+      const channel = state.alertChannels.find((x) => x.id === decodeURIComponent(m[1]))
+      if (channel) Object.assign(channel, stripSecrets(body<Partial<ChannelInput>>(c)))
+      return channel ?? null
+    },
+  ],
+  [
+    'delete',
+    /^\/alert-channels\/([^/]+)$/,
+    (m) => {
+      const gone = decodeURIComponent(m[1])
+      state.alertChannels = state.alertChannels.filter((x) => x.id !== gone)
+      // An alert keeps its other channels; it only stops sending to the deleted one.
+      state.alerts = state.alerts.map((a) => ({ ...a, channelIds: a.channelIds.filter((x) => x !== gone) }))
+      return null
+    },
+  ],
+  [
+    'post',
+    /^\/alert-channels\/([^/]+)\/test$/,
+    (m) => (state.alertChannels.some((x) => x.id === decodeURIComponent(m[1])) ? {} : null),
+  ],
 ]
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

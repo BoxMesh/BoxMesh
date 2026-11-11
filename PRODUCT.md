@@ -35,7 +35,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 **Fleet**
 - A deployment manages 100 to 1,000 machines. Lists need sorting, filtering by OS, group, tag and status, real bulk actions, and summaries by group; at the upper end, paging has to happen on the server.
-- Machines are organised into groups (departments, sites or any set, e.g. Accounting, Server, Critical systems) and free-form tags. A machine can be in several groups, or none. Groups are created, renamed and deleted on the Devices page; deleting a group never deletes its machines.
+- Machines are organised into groups (departments, sites or any set, e.g. Accounting, Server, Critical systems) and free-form tags. A machine can be in several groups, or none. Groups are created, renamed, filled and deleted on the Groups page; deleting a group never deletes its machines.
 
 **Enrollment**
 1. An admin creates an enrollment token.
@@ -44,9 +44,6 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 4. An admin approves the request (or the token approves automatically).
 5. EdgePanel signs the certificate and the mTLS tunnel opens.
 
-**Certificates**
-- Expiry is flagged the same way on every screen: amber within 30 days, red within 7. A revoked certificate is never flagged.
-
 **Remote access and usage**
 - Internal web apps on agent machines (e.g. Grafana, in-house dashboards) are reached through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
 - BoxMesh is used mainly in desktop browsers. It can be installed as a PWA, and can be open in several tabs or windows at once.
@@ -54,7 +51,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 ## Capabilities and Constraints
 
 **Built in BoxMesh**
-- Screens: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Desktop, Remote Files, Remote Service, Users & Access, Commands. Command & Jobs, Audit, Security & Certificates and System Settings were removed from the console.
+- Screens: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Desktop, Remote Files, Remote Service, Groups, Alerts, Rules, Channels, Users & Access, Command rules, Enrollment tokens. Command & Jobs, Audit, Security & Certificates and System Settings were removed from the console.
 - Sign-in with email and password, and a "Forgot password?" form that requests a reset email.
 - Dark and light themes: the OS setting by default, switchable in the header.
 
@@ -63,8 +60,9 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 - The password-reset request posts to `/forgot-password`, a route EdgePanel does not have yet; the name is a placeholder.
 - Remote Files can open a second device and copy or one-way sync files between the two. It calls `/file-transfers`, another placeholder name EdgePanel does not have yet; only the demo runs it.
 - Remote Desktop has no video stream yet; the frame says so.
-- Commands lists commands nobody may run in Remote Terminal (the Admin included), on every device or only on chosen groups or devices. It calls `/command-rules`, a placeholder name; EdgePanel is expected to refuse a matching `/shell` request with 403 and the rule's reason. Only the demo enforces it today.
-- A few actions are stubbed (updating or disabling a device, editing tags, saving thresholds): they say "<action> isn't available yet." and never fake success.
+- Alerts: a rule is a named condition (CPU, RAM or disk over a limit, or offline, for N minutes). An alert applies rules to all devices, groups or single devices and sends a message, from a template with fields such as {device} and {value}, to channels: Telegram (bot token + chat ID), Discord (webhook) or email (Gmail app password or any SMTP server). EdgePanel is expected to evaluate and send; BoxMesh only configures it through `/alerts`, `/alert-rules` and `/alert-channels`, placeholder names. Secrets are write-only. Only the demo answers today, and its Send test sends nothing.
+- Command rules lists commands nobody may run in Remote Terminal (the Admin included), on every device or only on chosen groups or devices. It calls `/command-rules`, a placeholder name; EdgePanel is expected to refuse a matching `/shell` request with 403 and the rule's reason. Only the demo enforces it today.
+- A few actions are stubbed (updating or disabling a device, ending a process, uploading, downloading, renaming or deleting a file, a desktop screenshot, Ctrl+Alt+Del): they say "<action> isn't available yet." and never fake success.
 
 **Demo mode**
 - "Explore the demo" on the sign-in page runs the whole console against a sample fleet of 12 machines, with no backend. It swaps the shared HTTP adapter, so the demo runs the same screens and services as the real panel.

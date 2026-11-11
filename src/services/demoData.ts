@@ -1,7 +1,7 @@
-import type { Account, Certificate, CommandRule, EnrollmentToken, Health, Settings } from '../types/admin'
-import type { ActivityEvent, RemoteSessions, ResourceUsage, TimeRange } from '../types/dashboard'
-import type { ConnectionEvent, Device, DeviceGroup, OsFamily, PendingEnrollment } from '../types/device'
-import type { AuditEntry, Job } from '../types/ops'
+import type { Alert, AlertChannel, AlertRule } from '../types/alert'
+import type { Account, CommandRule, EnrollmentToken } from '../types/admin'
+import type { RemoteSessions, TimeRange } from '../types/dashboard'
+import type { Device, DeviceGroup, DeviceProcess, MetricPoint, OsFamily, PendingEnrollment, ProcessStatus } from '../types/device'
 import type { DesktopSession, FileEntry, FileListing, RemoteService, Shell } from '../types/remote'
 import { DAY, MINUTE, SECOND, fromNow } from '../utils/time'
 
@@ -83,12 +83,6 @@ const asOnline = (online: boolean) => ({
 
 const UP = 0.78
 
-// Certificate lifetimes, rolled per load: two inside 7 days and three inside 30, shuffled across the
-// fleet, so the Expires column's red and amber always have something to show; the rest are months out.
-const CERT_DAYS = SEEDS.map((_, i) => (i < 2 ? rand(1, 7) : i < 5 ? rand(8, 30) : rand(31, 400))).sort(
-  () => Math.random() - 0.5,
-)
-
 export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, disk, agentVersion], i) => {
   const [osFamily, os, osVersion, osArchitecture] = pick(group === 'Server' ? SERVER_OS : CLIENT_OS)
   return {
@@ -105,7 +99,6 @@ export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, 
     groups: [groupIdOf(group), ...(CRITICAL.includes(host) ? ['g-critical'] : [])],
     tag,
     enrolledAt: fromNow(-(90 + i * 11) * DAY),
-    certExpires: fromNow(CERT_DAYS[i] * DAY),
     cpu,
     ram,
     disk,
@@ -128,43 +121,119 @@ export function fleet(): Device[] {
   return [...devices]
 }
 
-const byRange: Record<TimeRange, ResourceUsage> = {
-  '1h': { cpu: 38, ram: 57, disk: 63 },
-  '24h': { cpu: 44, ram: 61, disk: 64 },
-  '7d': { cpu: 51, ram: 66, disk: 65 },
+const SAMPLES: Record<TimeRange, [count: number, stepMs: number]> = {
+  '1h': [60, MINUTE],
+  '24h': [96, 15 * MINUTE],
+  '7d': [168, 60 * MINUTE],
 }
 
-export const resourceUsage = (range: TimeRange): ResourceUsage => byRange[range]
+export function deviceMetrics(host: string, range: TimeRange): MetricPoint[] {
+  const device = devices.find((d) => d.host === host)
+  if (!device) return []
+  const [count, step] = SAMPLES[range]
+  let state = [...`${host}${range}`].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 2147483647, 7)
+  const random = () => (state = (state * 48271) % 2147483647) / 2147483647
+  const walkBack = (now: number, swing: number, drift = 0, max = 100, pull = 0.08) => {
+    const out = [now]
+    for (let i = 1; i < count; i++)
+      out.push(Math.max(0.1, Math.min(max, out[i - 1] + (random() - 0.5) * swing + (now - out[i - 1]) * pull - drift)))
+    return out.reverse()
+  }
+  const cpu = walkBack(device.cpu, 16)
+  const ram = walkBack(device.ram, 6)
+  const disk = walkBack(device.disk, 0.8, range === '7d' ? 0.04 : range === '24h' ? 0.02 : 0, 100, 0)
+  const link = device.osFamily === 'Linux' ? 80 : 12
+  const netIn = walkBack(link * 0.4, link * 0.3, 0, link)
+  const netOut = walkBack(link * 0.15, link * 0.15, 0, link)
+  const end = Date.parse(device.lastSeen)
+  const pct = (v: number) => Math.max(1, Math.round(v))
+  const mbps = (v: number) => Math.round(v * 10) / 10
+  return cpu.map((_, i) => ({
+    at: new Date(end - (count - 1 - i) * step).toISOString(),
+    cpu: pct(cpu[i]),
+    ram: pct(ram[i]),
+    disk: pct(disk[i]),
+    netIn: mbps(netIn[i]),
+    netOut: mbps(netOut[i]),
+  }))
+}
+
+type ProcessSeed = [name: string, user: string, cpu: number, memoryMb: number, status?: ProcessStatus]
+
+const PROCESSES: Record<OsFamily, ProcessSeed[]> = {
+  Windows: [
+    ['System', 'SYSTEM', 0.4, 0.1],
+    ['svchost.exe', 'SYSTEM', 0.8, 42],
+    ['svchost.exe', 'NETWORK SERVICE', 0.3, 18],
+    ['svchost.exe', 'LOCAL SERVICE', 0.2, 12],
+    ['lsass.exe', 'SYSTEM', 0.2, 22],
+    ['csrss.exe', 'SYSTEM', 0.1, 6],
+    ['dwm.exe', 'DWM-1', 1.1, 64],
+    ['explorer.exe', 'operator', 1.2, 96],
+    ['BoxAgent.exe', 'SYSTEM', 0.6, 38],
+    ['MsMpEng.exe', 'SYSTEM', 2.4, 210],
+    ['SearchIndexer.exe', 'SYSTEM', 0.5, 48],
+    ['chrome.exe', 'operator', 6.5, 420],
+    ['chrome.exe', 'operator', 2.1, 180],
+    ['OUTLOOK.EXE', 'operator', 1.5, 260],
+    ['EXCEL.EXE', 'operator', 0.9, 140, 'not-responding'],
+    ['Teams.exe', 'operator', 3.2, 350],
+    ['PhoneExperienceHost.exe', 'operator', 0, 24, 'suspended'],
+  ],
+  Linux: [
+    ['systemd', 'root', 0.1, 12],
+    ['systemd-journald', 'root', 0.2, 40],
+    ['sshd', 'root', 0, 6],
+    ['cron', 'root', 0, 3],
+    ['rsyslogd', 'syslog', 0.1, 8],
+    ['boxagent', 'root', 0.5, 34],
+    ['dockerd', 'root', 0.7, 96],
+    ['containerd', 'root', 0.4, 48],
+    ['postgres', 'postgres', 8.2, 820],
+    ['postgres', 'postgres', 3.1, 240],
+    ['postgres', 'postgres', 1.4, 120],
+    ['nginx', 'www-data', 1.2, 28],
+    ['nginx', 'www-data', 0.9, 26],
+    ['node', 'app', 4.6, 310],
+  ],
+  macOS: [
+    ['kernel_task', 'root', 3, 1200],
+    ['launchd', 'root', 0.1, 18],
+    ['WindowServer', '_windowserver', 4.2, 380],
+    ['mds_stores', 'root', 1.1, 160],
+    ['boxagent', 'root', 0.5, 34],
+    ['Finder', 'operator', 0.3, 120],
+    ['Dock', 'operator', 0.2, 60],
+    ['Safari', 'operator', 2.4, 640],
+    ['Slack', 'operator', 1.8, 420],
+    ['Final Cut Pro', 'operator', 12.5, 2400],
+  ],
+}
+
+/** A fresh sample per call, so the table moves like Task Manager while it polls. */
+export function processes(host: string): DeviceProcess[] {
+  const device = devices.find((d) => d.host === host)
+  if (!device?.online) return []
+  const load = device.cpu / 40
+  return PROCESSES[device.osFamily].map(([name, user, cpu, memoryMb, status = 'running'], i) => ({
+    pid: i === 0 ? (device.osFamily === 'Windows' ? 4 : 1) : 400 + i * 389,
+    name,
+    user,
+    status,
+    cpu: status === 'suspended' ? 0 : Math.round(cpu * load * (0.6 + Math.random() * 0.8) * 10) / 10,
+    memoryMb: Math.round(memoryMb * (0.95 + Math.random() * 0.1) * 10) / 10,
+  }))
+}
 
 export const remoteSessions: RemoteSessions = {
   reconnects24h: 7,
   summary: '2 terminals · 1 desktop',
 }
 
-export const activity: ActivityEvent[] = [
-  { text: 'ops@company.com ran "Get-Service" on 3 devices', at: fromNow(-4 * MINUTE), failed: false },
-  { text: 'CAD-WS-01 crossed the 90% RAM threshold', at: fromNow(-26 * MINUTE), failed: true },
-  { text: 'admin@company.com approved enrollment for WH-PC-02', at: fromNow(-2 * 60 * MINUTE), failed: false },
-  { text: 'ACC-PC-03 lost its heartbeat', at: fromNow(-46 * MINUTE), failed: true },
-  { text: 'Nightly backup job finished on SRV-BAK-01', at: fromNow(-7 * 60 * MINUTE), failed: false },
-]
-
 export const pendingEnrollments: PendingEnrollment[] = [
   { host: 'ACC-PC-04', os: 'Windows 11 Pro 24H2 · x64', ip: '192.168.11.24' },
   { host: 'SRV-APP-02', os: 'Ubuntu 24.04 LTS · arm64', ip: '192.168.20.31' },
 ]
-
-export const connectionHistory = (host: string): ConnectionEvent[] => {
-  const device = devices.find((d) => d.host === host)
-  const publicIp = device?.osFamily === 'Windows' ? '203.0.113.42' : '203.0.113.17'
-  const base: ConnectionEvent[] = [
-    { event: 'Tunnel established', at: fromNow(-6 * 60 * MINUTE), publicIp, duration: '6 h 02 m' },
-    { event: 'Reconnected after network drop', at: fromNow(-14 * 60 * MINUTE), publicIp, duration: '7 h 48 m' },
-    { event: 'Certificate renewed', at: fromNow(-3 * DAY), publicIp, duration: '—' },
-    { event: 'Tunnel established', at: fromNow(-5 * DAY), publicIp, duration: '2 d 04 h' },
-  ]
-  return device?.online ? base : [{ event: 'Tunnel closed', at: device?.lastSeen ?? fromNow(-DAY), publicIp, duration: '—' }, ...base]
-}
 
 // ---------- Remote ----------
 
@@ -287,69 +356,7 @@ export function runShell(host: string, shell: Shell, command: string) {
   }
 }
 
-// ---------- Operations ----------
-
-export const jobs: Job[] = [
-  {
-    id: 'job-1041',
-    name: 'Collect agent logs',
-    command: 'Get-Content C:\\agent.log -Tail 200',
-    shell: 'PowerShell',
-    targets: ['Accounting'],
-    state: 'done',
-    startedAt: fromNow(-35 * MINUTE),
-    results: [
-      { host: 'ACC-PC-01', state: 'done', exitCode: 0, output: '200 lines collected' },
-      { host: 'ACC-PC-02', state: 'done', exitCode: 0, output: '200 lines collected' },
-      { host: 'ACC-PC-03', state: 'failed', exitCode: 1, output: 'Agent offline' },
-    ],
-  },
-  {
-    id: 'job-1040',
-    name: 'Disk cleanup',
-    command: 'cleanmgr /sagerun:1',
-    shell: 'CMD',
-    targets: ['CAD Workshop'],
-    state: 'running',
-    startedAt: fromNow(-3 * MINUTE),
-    results: [
-      { host: 'CAD-WS-01', state: 'running', exitCode: 0, output: 'Working…' },
-      { host: 'CAD-WS-02', state: 'done', exitCode: 0, output: 'Freed 14.2 GB' },
-    ],
-  },
-  {
-    id: 'job-1039',
-    name: 'Nightly package update',
-    command: 'apt-get update && apt-get -y upgrade',
-    shell: 'Bash',
-    targets: ['Server'],
-    state: 'queued',
-    startedAt: fromNow(9 * 60 * MINUTE),
-    schedule: 'Every day at 02:00',
-    results: [],
-  },
-]
-
-export const auditLog: AuditEntry[] = [
-  { id: 'a-9001', at: fromNow(-4 * MINUTE), actor: 'ops@company.com', action: 'Ran command', target: 'ACC-PC-01', outcome: 'ok', ip: '192.168.1.5' },
-  { id: 'a-9000', at: fromNow(-26 * MINUTE), actor: 'system', action: 'Threshold crossed', target: 'CAD-WS-01', outcome: 'failed', ip: '—' },
-  { id: 'a-8999', at: fromNow(-52 * MINUTE), actor: 'ops@company.com', action: 'Opened terminal', target: 'SRV-DB-01', outcome: 'ok', ip: '192.168.1.5' },
-  { id: 'a-8998', at: fromNow(-2 * 60 * MINUTE), actor: 'admin@company.com', action: 'Approved enrollment', target: 'WH-PC-02', outcome: 'ok', ip: '192.168.1.2' },
-  { id: 'a-8997', at: fromNow(-3 * 60 * MINUTE), actor: 'viewer@company.com', action: 'Opened remote desktop', target: 'ACC-PC-02', outcome: 'failed', ip: '192.168.1.9' },
-  { id: 'a-8996', at: fromNow(-6 * 60 * MINUTE), actor: 'admin@company.com', action: 'Created enrollment token', target: 'Accounting', outcome: 'ok', ip: '192.168.1.2' },
-  { id: 'a-8995', at: fromNow(-DAY), actor: 'ops@company.com', action: 'Downloaded file', target: 'SRV-BAK-01:/var/log/syslog', outcome: 'ok', ip: '192.168.1.5' },
-  { id: 'a-8994', at: fromNow(-DAY - 60 * MINUTE), actor: 'system', action: 'Certificate renewed', target: 'SRV-MON-01', outcome: 'ok', ip: '—' },
-]
-
 // ---------- Admin ----------
-
-export const certificates: Certificate[] = devices.map((d, i) => ({
-  host: d.host,
-  serial: `3F:${(10 + i).toString(16).toUpperCase()}:A9:${(0x5c + i).toString(16).toUpperCase()}`,
-  issuedAt: d.enrolledAt,
-  expiresAt: d.certExpires,
-  revoked: false,
-}))
 
 export const enrollmentTokens: EnrollmentToken[] = [
   {
@@ -378,22 +385,6 @@ export const accounts: Account[] = [
   { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Operator', lastSignIn: fromNow(-21 * DAY), disabled: true, access: { groupIds: [], hosts: [] } },
 ]
 
-export const settings: Settings = {
-  heartbeatSeconds: 30,
-  offlineAfterMinutes: 10,
-  logRetentionDays: 90,
-  metricRetentionDays: 30,
-  autoApproveEnrollment: false,
-}
-
-export const health: Health = {
-  version: '0.9.4',
-  uptime: '41 days 3 h',
-  dbSizeMb: 742,
-  agentsConnected: devices.filter((d) => d.online).length,
-  lastBackup: fromNow(-9 * 60 * MINUTE),
-}
-
 // ---------- Blocked commands ----------
 
 export const commandRules: CommandRule[] = [
@@ -404,4 +395,47 @@ export const commandRules: CommandRule[] = [
   { id: 'cr-5', pattern: 'reg delete hklm', match: 'contains', shells: ['CMD'], reason: 'Removes system registry keys.', groupIds: [], hosts: [] },
   { id: 'cr-6', pattern: 'systemctl stop', match: 'starts', shells: ['Bash'], reason: 'Stops a service on a critical system. Plan it with IT.', groupIds: ['g-critical'], hosts: [] },
   { id: 'cr-7', pattern: 'dropdb', match: 'starts', shells: ['Bash'], reason: 'Deletes a production database.', groupIds: [], hosts: ['SRV-DB-01'] },
+]
+
+export const alertChannels: AlertChannel[] = [
+  { id: 'ch-1', kind: 'telegram', name: 'IT on-call', chatId: '-1002233445566' },
+  { id: 'ch-2', kind: 'email', name: 'IT mailbox', smtpHost: 'smtp.gmail.com', smtpPort: 587, username: 'alerts.company@gmail.com', to: ['it@company.com'] },
+  { id: 'ch-3', kind: 'discord', name: '#server-alerts', webhookTail: 'k9Qz' },
+]
+
+export const alertRules: AlertRule[] = [
+  { id: 'ar-1', name: 'CPU running hot', metric: 'cpu', threshold: 90, minutes: 5 },
+  { id: 'ar-2', name: 'RAM almost full', metric: 'ram', threshold: 90, minutes: 10 },
+  { id: 'ar-3', name: 'Disk almost full', metric: 'disk', threshold: 85, minutes: 15 },
+  { id: 'ar-4', name: 'Agent offline', metric: 'offline', threshold: 0, minutes: 5 },
+]
+
+export const alerts: Alert[] = [
+  {
+    id: 'al-1',
+    name: 'Servers',
+    ruleIds: ['ar-1', 'ar-3', 'ar-4'],
+    groupIds: ['g-server'],
+    hosts: [],
+    channelIds: ['ch-1', 'ch-3'],
+    message: '⚠️ {rule} on {device} ({alias})\n{condition}. Now: {value}.\n{time}',
+  },
+  {
+    id: 'al-2',
+    name: 'Critical systems down',
+    ruleIds: ['ar-4'],
+    groupIds: ['g-critical'],
+    hosts: [],
+    channelIds: ['ch-1', 'ch-2'],
+    message: '🚨 {device} is offline. Groups: {groups}. Since {time}.',
+  },
+  {
+    id: 'al-3',
+    name: 'Database memory',
+    ruleIds: ['ar-2'],
+    groupIds: [],
+    hosts: ['SRV-DB-01'],
+    channelIds: ['ch-3'],
+    message: '{device}: {condition} ({value})',
+  },
 ]

@@ -88,6 +88,9 @@ const palettes = {
 }
 
 // Status colours for inline props (Badge dots, Progress, Statistic, Timeline); they follow the active theme.
+/** The browser's title-bar colour (`<meta name="theme-color">`), the page background of each theme. */
+export const THEME_COLOR: Record<ThemeMode, string> = { dark: '#101416', light: '#ffffff' }
+
 export const tone = {
   positive: 'var(--positive)',
   warning: 'var(--warning)',

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { App, Breadcrumb, Button, Card, Dropdown, Table, Tag, type TableProps } from 'antd'
 import { useState, type ReactNode } from 'react'
 import { Icon, Th } from '../../components/Icon'
+import { useNotSupported } from '../../hooks/useNotSupported'
 import { userMessage } from '../../services/http'
 import { filesQuery } from '../../services/queries'
 import type { Device } from '../../types/device'
@@ -51,6 +52,7 @@ export default function FileBrowser({
   drop,
 }: Props) {
   const { message } = App.useApp()
+  const notSupported = useNotSupported()
   const [over, setOver] = useState(false)
   const sep = sepOf(device)
   const root = rootOf(device)
@@ -105,7 +107,7 @@ export default function FileBrowser({
       render: (_, entry) => (
         <div className="row-actions">
           {entry.kind === 'file' ? (
-            <Button size="small" onClick={() => message.success(`Downloading ${entry.name}`)}>
+            <Button size="small" onClick={() => notSupported('Downloading files')}>
               Download
             </Button>
           ) : null}
@@ -124,7 +126,7 @@ export default function FileBrowser({
                       () => message.success('Path copied'),
                       () => message.error('Copy failed. Select the path and copy it manually.'),
                     )
-                  : message.info(`${key === 'delete' ? 'Deleting' : 'Renaming'} isn't available in the demo.`),
+                  : notSupported(key === 'delete' ? 'Deleting files' : 'Renaming files'),
             }}
           >
             <button type="button" className="icon-btn" aria-label={`More actions for ${entry.name}`}>

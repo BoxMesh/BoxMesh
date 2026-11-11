@@ -1,25 +1,25 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
-import { App, Button, Card, Form, Input, Modal, Popconfirm, Segmented, Select, Table, Tag, Tooltip, type TableProps } from 'antd'
+import { App, Button, Card, Checkbox, Form, Input, Modal, Popconfirm, Radio, Segmented, Table, Tag, Tooltip, type TableProps } from 'antd'
 import { useState } from 'react'
 import DevicePicker from '../../components/DevicePicker'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
+import ScopeFields from '../../components/ScopeFields'
 import { createCommandRule, deleteCommandRule, updateCommandRule, type NewCommandRule } from '../../services/adminService'
 import { commandRulesQuery, devicesQuery, groupsQuery } from '../../services/queries'
 import type { CommandMatch, CommandRule } from '../../types/admin'
 import type { Device, DeviceGroup } from '../../types/device'
 import type { Shell } from '../../types/remote'
 import { blockedBy, regexError } from '../../utils/commands'
+import { scopeOf, type Scope } from '../../utils/devices'
 
 const SHELLS: Shell[] = ['PowerShell', 'CMD', 'Bash']
-const MATCHES: { value: CommandMatch; label: string; help: string }[] = [
-  { value: 'starts', label: 'Starts with', help: 'The command begins with these words. "format" blocks "format C:", not "Format-Table".' },
-  { value: 'contains', label: 'Contains', help: 'These words appear anywhere, so it also catches "echo hi && shutdown".' },
-  { value: 'regex', label: 'Regex', help: 'A regular expression, not case-sensitive.' },
+const MATCHES: { value: CommandMatch; label: string; short: string; help: string }[] = [
+  { value: 'starts', label: 'Starts with', short: 'Begins with these words', help: 'The command begins with these words. "format" blocks "format C:", not "Format-Table".' },
+  { value: 'contains', label: 'Contains', short: 'Anywhere in the line', help: 'These words appear anywhere, so it also catches "echo hi && shutdown".' },
+  { value: 'regex', label: 'Regex', short: 'A regular expression', help: 'A regular expression, not case-sensitive.' },
 ]
 const matchLabel = (m: CommandMatch) => MATCHES.find((x) => x.value === m)!.label
-type Scope = 'all' | 'groups' | 'hosts'
-const scopeOf = (r: Pick<CommandRule, 'groupIds' | 'hosts'>): Scope => (r.groupIds.length ? 'groups' : r.hosts.length ? 'hosts' : 'all')
 const EMPTY: NewCommandRule = { pattern: '', match: 'starts', shells: [], reason: '', groupIds: [], hosts: [] }
 
 // Records only show; adding and changing a rule happen in the rule dialog, like users.
@@ -114,7 +114,7 @@ export default function CommandsPage() {
   return (
     <div className="stack">
       <PageHeader
-        title="Commands"
+        title="Command rules"
         subtitle="Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. EdgePanel refuses a matching command before it reaches the device, and the terminal shows the reason."
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEditing('new')}>
@@ -129,7 +129,6 @@ export default function CommandsPage() {
           <Segmented<Shell> aria-label="Shell to test in" options={SHELLS} value={testShell} onChange={setTestShell} />
           <Input
             className="mono"
-            prefix={<Icon name="terminal" size={14} />}
             placeholder="e.g. shutdown /r /t 0"
             aria-label="Command to test"
             allowClear
@@ -184,12 +183,19 @@ interface DialogProps {
 
 type Fields = NewCommandRule & { scope: Scope }
 
+const MATCH_VERB: Record<CommandMatch, string> = { starts: 'starts with', contains: 'contains', regex: 'matches' }
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
+
 function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const [form] = Form.useForm<Fields>()
   const match = Form.useWatch('match', form) ?? 'starts'
+  const pattern = Form.useWatch('pattern', form) ?? ''
+  const shells = Form.useWatch('shells', form) ?? []
   const scope = Form.useWatch('scope', form) ?? 'all'
+  const groupIds = Form.useWatch('groupIds', form) ?? []
+  const hosts = Form.useWatch('hosts', form) ?? []
   const isNew = rule === 'new'
   const current = rule && rule !== 'new' ? rule : null
 
@@ -215,109 +221,97 @@ function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
       hosts: scope === 'hosts' ? values.hosts : [],
     })
 
+  const where =
+    scope === 'groups'
+      ? groupIds.length ? `on ${plural(groupIds.length, 'group')}` : 'on the groups you pick'
+      : scope === 'hosts'
+        ? hosts.length ? `on ${plural(hosts.length, 'device')}` : 'on the devices you pick'
+        : 'on every device'
+  const sentence = `Blocks any command that ${MATCH_VERB[match]} "${pattern.trim() || '…'}", in ${shells.length ? shells.join(', ') : 'every shell'}, ${where}.`
+
   return (
-    <Modal
-      title={isNew ? 'Add a rule' : `Edit "${current?.pattern}"`}
-      open={Boolean(rule)}
-      onCancel={onClose}
-      width={640}
-      destroyOnHidden
-      footer={
-        <div className="drawer-footer">
-          <span className="screen-spacer" />
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" loading={save.isPending} onClick={() => form.submit()}>
-            {isNew ? 'Add rule' : 'Save changes'}
-          </Button>
-        </div>
-      }
-    >
+    <Modal title={isNew ? 'Add a command rule' : `Edit "${current?.pattern}"`} open={Boolean(rule)} onCancel={onClose} width={680} destroyOnHidden footer={null}>
       <Form<Fields>
         form={form}
+        className="dialog-form"
         layout="vertical"
         requiredMark={false}
         initialValues={{ ...(current ?? EMPTY), scope: scopeOf(current ?? EMPTY) }}
         onFinish={submit}
       >
-        <Form.Item label="Match" name="match" extra={MATCHES.find((m) => m.value === match)?.help}>
-          <Segmented<CommandMatch> block options={MATCHES.map(({ value, label }) => ({ value, label }))} />
-        </Form.Item>
-        <Form.Item
-          name="pattern"
-          label="Command"
-          dependencies={['match', 'scope', 'groupIds', 'hosts']}
-          rules={[
-            { required: true, whitespace: true, message: 'Enter a command.' },
-            ({ getFieldValue }) => ({
-              validator: (_, value: string) => {
-                if (!value?.trim()) return Promise.resolve()
-                const kind = getFieldValue('match') as CommandMatch
-                const error = kind === 'regex' ? regexError(value) : null
-                if (error) return Promise.reject(new Error(`Not a valid regex: ${error}`))
-                const where = getFieldValue('scope') as Scope
-                const groupIds = where === 'groups' ? key(getFieldValue('groupIds') ?? []) : ''
-                const hosts = where === 'hosts' ? key(getFieldValue('hosts') ?? []) : ''
-                const twin = rules.find(
-                  (r) =>
-                    r.id !== current?.id &&
-                    r.match === kind &&
-                    same(r.pattern, value) &&
-                    key(r.groupIds) === groupIds &&
-                    key(r.hosts) === hosts,
-                )
-                return twin ? Promise.reject(new Error('There is already a rule for this.')) : Promise.resolve()
-              },
-            }),
-          ]}
-        >
-          <Input className="mono" placeholder={match === 'regex' ? String.raw`e.g. rm\s+-rf\s+/` : 'e.g. shutdown'} autoComplete="off" />
-        </Form.Item>
-        <Form.Item name="shells" label="Shells">
-          <Select
-            mode="multiple"
-            allowClear
-            placeholder="All shells"
-            aria-label="Shells"
-            options={SHELLS.map((s) => ({ value: s, label: s }))}
-          />
-        </Form.Item>
-        <Form.Item name="scope" label="Applies to">
-          <Segmented<Scope>
-            block
-            options={[
-              { value: 'all', label: 'All devices' },
-              { value: 'groups', label: 'Groups' },
-              { value: 'hosts', label: 'Devices' },
+        <section className="form-section">
+          <h3>Command</h3>
+          <p className="section-hint" aria-live="polite">
+            {sentence}
+          </p>
+          <Form.Item
+            name="pattern"
+            label={match === 'regex' ? 'Pattern' : 'Command'}
+            dependencies={['match', 'scope', 'groupIds', 'hosts']}
+            rules={[
+              { required: true, whitespace: true, message: 'Enter a command.' },
+              ({ getFieldValue }) => ({
+                validator: (_, value: string) => {
+                  if (!value?.trim()) return Promise.resolve()
+                  const kind = getFieldValue('match') as CommandMatch
+                  const error = kind === 'regex' ? regexError(value) : null
+                  if (error) return Promise.reject(new Error(`Not a valid regex: ${error}`))
+                  const scoped = getFieldValue('scope') as Scope
+                  const groupKey = scoped === 'groups' ? key(getFieldValue('groupIds') ?? []) : ''
+                  const hostKey = scoped === 'hosts' ? key(getFieldValue('hosts') ?? []) : ''
+                  const twin = rules.find(
+                    (r) => r.id !== current?.id && r.match === kind && same(r.pattern, value) && key(r.groupIds) === groupKey && key(r.hosts) === hostKey,
+                  )
+                  return twin ? Promise.reject(new Error('There is already a rule for this.')) : Promise.resolve()
+                },
+              }),
             ]}
-          />
-        </Form.Item>
-        {scope === 'groups' ? (
-          <Form.Item name="groupIds" rules={[{ required: true, type: 'array', min: 1, message: 'Pick at least one group.' }]}>
-            <Select
-              mode="multiple"
-              allowClear
-              placeholder="Pick groups"
-              aria-label="Groups"
-              optionFilterProp="label"
-              options={groups.map((g) => ({ value: g.id, label: g.name }))}
-            />
+          >
+            <Input className="mono" placeholder={match === 'regex' ? String.raw`e.g. rm\s+-rf\s+/` : 'e.g. shutdown'} autoComplete="off" />
           </Form.Item>
-        ) : null}
-        {scope === 'hosts' ? (
-          <Form.Item name="hosts" rules={[{ required: true, type: 'array', min: 1, message: 'Pick at least one device.' }]}>
-            <Select
-              mode="multiple"
-              allowClear
-              placeholder="Pick devices"
-              aria-label="Devices"
-              optionFilterProp="label"
-              options={devices.map((d) => ({ value: d.host, label: `${d.host} · ${d.alias}` }))}
-            />
+          <Form.Item name="match" label="Match" extra={MATCHES.find((m) => m.value === match)?.help}>
+            <Radio.Group className="choice-cards">
+              {MATCHES.map((m) => (
+                <Radio key={m.value} value={m.value} className="choice-card">
+                  <span className="choice-title">{m.label}</span>
+                  <span className="choice-desc">{m.short}</span>
+                </Radio>
+              ))}
+            </Radio.Group>
           </Form.Item>
-        ) : null}
-        <Form.Item name="reason" label="Reason" extra="Shown in the terminal to whoever runs it.">
-          <Input.TextArea rows={2} maxLength={200} placeholder="e.g. Restarts the machine. Ask IT to schedule it." />
-        </Form.Item>
+        </section>
+
+        <section className="form-section">
+          <h3>Where</h3>
+          <p className="section-hint">Which devices and shells refuse it. Leave every shell unticked to block it in all of them.</p>
+          <ScopeFields scope={scope} groups={groups} devices={devices} label="Devices" />
+          <Form.Item name="shells" label="Shells">
+            <Checkbox.Group className="choice-cards">
+              {SHELLS.map((s) => (
+                <Checkbox key={s} value={s} className="choice-card">
+                  <span className="choice-title mono">{s}</span>
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+          </Form.Item>
+        </section>
+
+        <section className="form-section">
+          <h3>Reason</h3>
+          <p className="section-hint">Shown in the terminal to whoever runs it, so they know what to do instead.</p>
+          <Form.Item name="reason">
+            <Input.TextArea rows={2} maxLength={200} placeholder="e.g. Restarts the machine. Ask IT to schedule it." aria-label="Reason" />
+          </Form.Item>
+        </section>
+
+        <div className="dialog-footer">
+          <span className="dialog-buttons">
+            <Button onClick={onClose}>Cancel</Button>
+            <Button type="primary" htmlType="submit" loading={save.isPending}>
+              {isNew ? 'Add rule' : 'Save changes'}
+            </Button>
+          </span>
+        </div>
       </Form>
     </Modal>
   )

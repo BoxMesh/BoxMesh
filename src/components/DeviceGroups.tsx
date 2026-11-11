@@ -64,7 +64,7 @@ export default function DeviceGroups({ device, groups }: { device: Device; group
             value={value.filter((id) => names.has(id))}
             options={groups.map((g) => ({ value: g.id, label: g.name }))}
             optionFilterProp="label"
-            notFoundContent={<span className="muted">No groups yet. Create one with Manage groups.</span>}
+            notFoundContent={<span className="muted">No groups yet. Create one on the Groups page.</span>}
             onChange={(ids: string[]) => {
               setValue(ids)
               save.mutate(ids)

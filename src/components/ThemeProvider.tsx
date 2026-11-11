@@ -1,11 +1,10 @@
 import { ConfigProvider } from 'antd'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
-import { buildTheme, type ThemeMode } from '../config/theme'
+import { buildTheme, THEME_COLOR, type ThemeMode } from '../config/theme'
 import { ThemeModeContext, type ThemeOrigin } from '../hooks/useThemeMode'
 
 const STORAGE_KEY = 'boxmesh-theme'
-const THEME_COLOR: Record<ThemeMode, string> = { dark: '#101416', light: '#ffffff' }
 
 // index.html sets data-theme before first paint (saved choice, else the OS preference); start from it.
 const initialMode = (): ThemeMode => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark')

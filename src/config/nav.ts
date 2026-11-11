@@ -4,9 +4,13 @@ import type { NavGroup } from '../types/nav'
 export const navGroups: NavGroup[] = [
   {
     title: 'Overview',
+    items: [{ icon: 'dashboard', label: 'Dashboard', path: '/dashboard' }],
+  },
+  {
+    title: 'Device',
     items: [
-      { icon: 'dashboard', label: 'Dashboard', path: '/dashboard' },
       { icon: 'devices', label: 'Devices', path: '/devices' },
+      { icon: 'tag', label: 'Groups', path: '/groups' },
     ],
   },
   {
@@ -19,10 +23,19 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
+    title: 'Alert',
+    items: [
+      { icon: 'bell', label: 'Alerts', path: '/alerts' },
+      { icon: 'warning', label: 'Rules', path: '/alert-rules' },
+      { icon: 'mail', label: 'Channels', path: '/alert-channels' },
+    ],
+  },
+  {
     title: 'Admin',
     items: [
       { icon: 'users', label: 'Users & Access', path: '/users' },
-      { icon: 'lock', label: 'Commands', path: '/commands' },
+      { icon: 'lock', label: 'Command rules', path: '/commands' },
+      { icon: 'security', label: 'Enrollment tokens', path: '/enrollment-tokens' },
     ],
   },
 ]

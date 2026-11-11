@@ -1,8 +1,9 @@
 import { isAxiosError } from 'axios'
-import type { ConnectionEvent, Device, DeviceGroup, PendingEnrollment } from '../types/device'
+import type { TimeRange } from '../types/dashboard'
+import type { Device, DeviceGroup, DeviceProcess, MetricPoint, PendingEnrollment } from '../types/device'
 import { http } from './http'
 
-// Endpoints follow the canvas's proposed EdgePanel API; /connections and /enrollments are not in it yet.
+// Endpoints follow the canvas's proposed EdgePanel API; /metrics, /processes and /enrollments are not in it yet.
 
 export async function getDevices() {
   const { data } = await http.get<Device[]>('/devices')
@@ -20,8 +21,13 @@ export async function getDevice(host: string) {
   }
 }
 
-export async function getConnectionHistory(host: string) {
-  const { data } = await http.get<ConnectionEvent[]>(`/devices/${encodeURIComponent(host)}/connections`)
+export async function getDeviceMetrics(host: string, range: TimeRange) {
+  const { data } = await http.get<MetricPoint[]>(`/devices/${encodeURIComponent(host)}/metrics`, { params: { range } })
+  return data
+}
+
+export async function getProcesses(host: string) {
+  const { data } = await http.get<DeviceProcess[]>(`/devices/${encodeURIComponent(host)}/processes`)
   return data
 }
 

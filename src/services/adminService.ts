@@ -1,15 +1,5 @@
-import type { Account, Certificate, CommandRule, DeviceAccess, EnrollmentToken, Health, Role, Settings } from '../types/admin'
+import type { Account, CommandRule, DeviceAccess, EnrollmentToken, Role } from '../types/admin'
 import { http } from './http'
-
-export async function getCertificates() {
-  const { data } = await http.get<Certificate[]>('/certificates')
-  return data
-}
-
-export async function revokeCertificate(host: string) {
-  const { data } = await http.post<Certificate>(`/certificates/${encodeURIComponent(host)}/revoke`, {})
-  return data
-}
 
 export async function getTokens() {
   const { data } = await http.get<EnrollmentToken[]>('/enrollment-tokens')
@@ -26,6 +16,10 @@ export interface NewToken {
 export async function createToken(input: NewToken) {
   const { data } = await http.post<EnrollmentToken>('/enrollment-tokens', input)
   return data
+}
+
+export async function revokeToken(id: string) {
+  await http.delete(`/enrollment-tokens/${encodeURIComponent(id)}`)
 }
 
 export async function getUsers() {
@@ -67,19 +61,4 @@ export async function updateCommandRule(id: string, patch: Partial<NewCommandRul
 
 export async function deleteCommandRule(id: string) {
   await http.delete(`/command-rules/${encodeURIComponent(id)}`)
-}
-
-export async function getSettings() {
-  const { data } = await http.get<Settings>('/settings')
-  return data
-}
-
-export async function saveSettings(settings: Settings) {
-  const { data } = await http.put<Settings>('/settings', settings)
-  return data
-}
-
-export async function getHealth() {
-  const { data } = await http.get<Health>('/health')
-  return data
 }

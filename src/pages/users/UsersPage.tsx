@@ -149,7 +149,7 @@ export default function UsersPage() {
               { type: 'email', message: 'Enter a valid email.' },
             ]}
           >
-            <Input prefix={<Icon name="mail" />} autoComplete="off" />
+            <Input type="email" autoComplete="off" placeholder="name@company.com" />
           </Form.Item>
           <Form.Item name="access" label="What they can reach">
             {/* Form.Item passes value and onChange; until something is picked they reach no device. */}

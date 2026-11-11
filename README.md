@@ -38,7 +38,7 @@ about it, so what you click is the same code that will talk to EdgePanel — the
 branch to drift out of step.
 
 - A **Demo data** tag sits in the header for as long as it is on.
-- Changes you make — tokens, jobs, approvals, settings — are held in memory and gone on reload.
+- Changes you make — groups, tokens, approvals, rules, alerts — are held in memory and gone on reload.
 - The flag lives in `sessionStorage`, so the demo ends with the browser tab.
 - Signing out reloads the page, which puts the real HTTP adapter back.
 
@@ -111,14 +111,22 @@ These are the endpoints the app calls today:
 | POST | `/api/log-out` → EdgePanel `/log-out` (clears both cookies) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
-| GET | `/api/devices/{host}/connections` |
 | PUT | `/api/devices/{host}/groups` (`{ groupIds }`, replaces the device's groups) |
+| GET | `/api/devices/{host}/metrics?range=1h\|24h\|7d` (`[{ at, cpu, ram, disk, netIn, netOut }]`, percent and Mbps; placeholder name) |
+| GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; placeholder name) |
 | GET · POST | `/api/groups` (`{ name }` to create) |
 | PATCH · DELETE | `/api/groups/{id}` (rename with `{ name }`; delete keeps the devices) |
 | GET | `/api/enrollments?status=pending` |
-| GET | `/api/metrics/summary?range=1h\|24h\|7d` |
+| GET · POST | `/api/enrollment-tokens` (`{ group, lifetime, requiresApproval }` to create; the reply holds the only full copy) |
+| DELETE | `/api/enrollment-tokens/{id}` (revoke; placeholder name) |
 | GET | `/api/sessions/summary` |
-| GET | `/api/audit?limit=` |
+| GET · POST | `/api/alerts` (`{ name, ruleIds, groupIds, hosts, channelIds, message, enabled }`, both scope lists empty = every device; placeholder name) |
+| PATCH · DELETE | `/api/alerts/{id}` |
+| GET · POST | `/api/alert-rules` (`{ name, metric: cpu\|ram\|disk\|offline, threshold, minutes }`; delete drops the rule from every alert; placeholder name) |
+| PATCH · DELETE | `/api/alert-rules/{id}` |
+| GET · POST | `/api/alert-channels` (`{ kind: telegram\|discord\|email, name, enabled, chatId, botToken, webhookUrl, smtpHost, smtpPort, username, password, to }`; secrets are write-only, reads return `webhookTail` instead; placeholder name) |
+| PATCH · DELETE | `/api/alert-channels/{id}` (an omitted secret keeps the saved one; delete drops the channel from every alert) |
+| POST | `/api/alert-channels/{id}/test` (sends a test message) |
 | GET · POST | `/api/command-rules` (`{ pattern, match: starts\|contains\|regex, shells, reason, groupIds, hosts }`, both lists empty = every device; placeholder name) |
 | PATCH · DELETE | `/api/command-rules/{id}` |
 | POST | `/api/devices/{host}/shell` refuses a command a rule matches with 403 `{ error }` (the reason the terminal shows) |

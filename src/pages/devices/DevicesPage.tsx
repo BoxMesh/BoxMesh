@@ -10,7 +10,6 @@ import { devicesQuery, groupsQuery } from '../../services/queries'
 import type { Device, DeviceFilter } from '../../types/device'
 import { filterDevices } from '../../utils/devices'
 import EnrollDrawer from './EnrollDrawer'
-import GroupsDrawer from './GroupsDrawer'
 
 const ALL = { value: '', label: 'All' }
 const OS_OPTIONS = [ALL, { value: 'Windows', label: 'Windows' }, { value: 'Linux', label: 'Linux' }, { value: 'macOS', label: 'macOS' }]
@@ -24,7 +23,6 @@ const REMOTE_ACTIONS = [
 export default function DevicesPage() {
   const [params, setParams] = useSearchParams()
   const [enrollOpen, setEnrollOpen] = useState(false)
-  const [groupsOpen, setGroupsOpen] = useState(false)
   const { data: devices } = useSuspenseQuery(devicesQuery)
   const { data: groups } = useSuspenseQuery(groupsQuery)
 
@@ -124,9 +122,9 @@ export default function DevicesPage() {
         subtitle={`${devices.length} devices enrolled`}
         actions={
           <>
-            <Button icon={<Icon name="tag" size={14} />} onClick={() => setGroupsOpen(true)}>
-              Manage groups
-            </Button>
+            <Link to="/groups">
+              <Button icon={<Icon name="tag" size={14} />}>Manage groups</Button>
+            </Link>
             <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEnrollOpen(true)}>
               Enroll agent
             </Button>
@@ -161,7 +159,6 @@ export default function DevicesPage() {
       </Card>
 
       <EnrollDrawer open={enrollOpen} onClose={() => setEnrollOpen(false)} groups={groups.map((g) => g.name)} />
-      <GroupsDrawer open={groupsOpen} onClose={() => setGroupsOpen(false)} groups={groups} devices={devices} />
     </div>
   )
 }

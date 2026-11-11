@@ -1,13 +1,5 @@
 import type { Shell } from './remote'
 
-export interface Certificate {
-  host: string
-  serial: string
-  issuedAt: string
-  expiresAt: string
-  revoked: boolean
-}
-
 export interface EnrollmentToken {
   id: string
   /** Shown once on creation; later only the last characters are kept. */
@@ -54,21 +46,4 @@ export interface CommandRule {
   /** Where it applies: these groups, or these single devices. Both empty means every device. */
   groupIds: string[]
   hosts: string[]
-}
-
-export interface Settings {
-  heartbeatSeconds: number
-  offlineAfterMinutes: number
-  logRetentionDays: number
-  metricRetentionDays: number
-  autoApproveEnrollment: boolean
-}
-
-export interface Health {
-  version: string
-  uptime: string
-  dbSizeMb: number
-  agentsConnected: number
-  /** ISO 8601 */
-  lastBackup: string
 }

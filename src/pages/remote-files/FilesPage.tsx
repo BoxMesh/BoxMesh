@@ -6,6 +6,7 @@ import DevicePicker, { DeviceOffline, PickFirst } from '../../components/DeviceP
 import { Icon } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { useDeviceParam } from '../../hooks/useDeviceParam'
+import { useNotSupported } from '../../hooks/useNotSupported'
 import { filesQuery, transferQuery } from '../../services/queries'
 import { startTransfer } from '../../services/remoteService'
 import type { Device } from '../../types/device'
@@ -95,7 +96,7 @@ export default function FilesPage() {
 }
 
 function OneDevice({ device }: { device: Device }) {
-  const { message } = App.useApp()
+  const notSupported = useNotSupported()
   const [path, setPath] = useState(rootOf(device))
   return (
     <FileBrowser
@@ -104,8 +105,8 @@ function OneDevice({ device }: { device: Device }) {
       onPath={setPath}
       tools={
         <Upload
-          beforeUpload={(file) => {
-            message.success(`${file.name} uploaded to ${path}`)
+          beforeUpload={() => {
+            notSupported('Uploading files')
             return false
           }}
           showUploadList={false}

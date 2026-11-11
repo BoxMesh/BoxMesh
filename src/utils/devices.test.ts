@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Device } from '../types/device'
-import { filterDevices, issuesOf, reachable, summarize, triage } from './devices'
+import { filterDevices, issuesOf, membershipChanges, reachable, summarize, triage } from './devices'
 import { DAY, fromNow, MINUTE } from './time'
 
 const NOW = Date.parse('2026-11-03T12:00:00Z')
@@ -9,7 +9,7 @@ const iso = (offsetMs: number) => fromNow(offsetMs, NOW)
 const base: Device = {
   host: 'PC-001', alias: 'Front desk', os: 'Windows 11 Pro', osVersion: '24H2', osArchitecture: 'x64', osFamily: 'Windows',
   ip: '192.168.1.11', mac: 'AA:BB:CC:00:00:01', online: true, agentVersion: 'v1.4.2', agentOutdated: false,
-  groups: ['g-office'], tag: 'floor 1', lastSeen: iso(-5_000), enrolledAt: iso(-DAY), certExpires: iso(90 * DAY),
+  groups: ['g-office'], tag: 'floor 1', lastSeen: iso(-5_000), enrolledAt: iso(-DAY),
   cpu: 10, ram: 10, disk: 10, latencyMs: 20,
   hardware: { cpu: '', ram: '', disk: '', uptime: '' },
 }
@@ -22,13 +22,8 @@ describe('issuesOf', () => {
   it('reports only the lost heartbeat for offline devices', () => {
     expect(issuesOf(dev({ online: false, cpu: 99 })).map((i) => i.kind)).toEqual(['offline'])
   })
-  it('flags a certificate by its expiry band and an outdated agent', () => {
-    const issues = issuesOf(dev({ certExpires: iso(5 * DAY), agentOutdated: true }), NOW)
-    expect(issues.map((i) => [i.kind, i.level])).toEqual([
-      ['cert', 'error'],
-      ['agent', 'warning'],
-    ])
-    expect(issuesOf(dev({ certExpires: iso(20 * DAY) }), NOW).map((i) => i.level)).toEqual(['warning'])
+  it('flags an outdated agent as a warning', () => {
+    expect(issuesOf(dev({ agentOutdated: true })).map((i) => [i.kind, i.level])).toEqual([['agent', 'warning']])
   })
 })
 
@@ -41,7 +36,6 @@ describe('triage', () => {
         dev({ host: 'DISK', disk: 90 }),
         dev({ host: 'CPU', cpu: 95, disk: 90 }),
       ],
-      NOW,
     )
     expect(rows.map((r) => [r.device.host, r.severity])).toEqual([
       ['CPU', 'critical'],
@@ -69,17 +63,27 @@ describe('filterDevices', () => {
 })
 
 describe('summarize', () => {
-  it('counts devices, issues and expiring certificates', () => {
+  it('counts devices, offline time and latency', () => {
     const s = summarize(
       [
         dev({ cpu: 95, latencyMs: 30 }),
-        dev({ latencyMs: 10, certExpires: iso(3 * DAY) }),
+        dev({ latencyMs: 10 }),
         dev({ online: false, lastSeen: iso(-20 * MINUTE) }),
       ],
       NOW,
     )
     expect(s).toMatchObject({ total: 3, online: 2, offline: 1, staleOffline: 1, avgLatency: 20 })
-    expect(s.expiringCerts.map((d) => d.latencyMs)).toEqual([10])
+  })
+})
+
+describe('membershipChanges', () => {
+  it('touches only the devices that join or leave, and keeps their other groups', () => {
+    const list = [dev({ host: 'A', groups: ['g-1', 'g-2'] }), dev({ host: 'B', groups: ['g-2'] }), dev({ host: 'C', groups: ['g-1'] })]
+    expect(membershipChanges(list, 'g-1', ['A', 'B'])).toEqual([
+      { host: 'B', groupIds: ['g-2', 'g-1'] },
+      { host: 'C', groupIds: [] },
+    ])
+    expect(membershipChanges(list, 'g-1', ['A', 'C'])).toEqual([])
   })
 })
 
