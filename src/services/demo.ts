@@ -1,8 +1,9 @@
 import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios'
-import type { Settings } from '../types/admin'
+import type { CommandRule, Settings } from '../types/admin'
 import type { TimeRange } from '../types/dashboard'
 import type { JobState } from '../types/ops'
 import type { FileEntry, FileTransfer, NewFileTransfer, Shell } from '../types/remote'
+import { blockedBy } from '../utils/commands'
 import { MINUTE, fromNow } from '../utils/time'
 import * as seed from './demoData'
 import { http } from './http'
@@ -45,6 +46,7 @@ const state = {
   settings: structuredClone(seed.settings),
   pending: structuredClone(seed.pendingEnrollments),
   groups: structuredClone(seed.groups),
+  commandRules: structuredClone(seed.commandRules),
   // Files copied in the demo, by "host|path", shown on top of the seeded listing.
   copied: {} as Record<string, FileEntry[]>,
   transfers: {} as Record<string, { transfer: FileTransfer; startedAt: number; cancelledAt?: number }>,
@@ -100,6 +102,16 @@ function readDemoTransfer(transferId: string): FileTransfer | null {
       if (share >= 1) return { ...item, copied: item.size, state: 'done' as const }
       return { ...item, copied: Math.round(item.size * share), state: record.cancelledAt ? ('cancelled' as const) : item.state }
     }),
+  }
+}
+
+/** Returned by a route to answer with an error status, the way EdgePanel refuses a request. */
+class Refused {
+  readonly status: number
+  readonly error: string
+  constructor(status: number, error: string) {
+    this.status = status
+    this.error = error
   }
 }
 
@@ -179,7 +191,11 @@ const routes: Route[] = [
     /^\/devices\/([^/]+)\/shell$/,
     (m, c) => {
       const { shell, command } = body<{ shell: Shell; command: string }>(c)
-      return seed.runShell(decodeURIComponent(m[1]), shell, command)
+      const host = decodeURIComponent(m[1])
+      const device = seed.devices.find((d) => d.host === host) ?? { host, groups: [] }
+      const rule = blockedBy(state.commandRules, device, shell, command)
+      if (rule) return new Refused(403, `Blocked: this command matches "${rule.pattern}". ${rule.reason}`.trim())
+      return seed.runShell(host, shell, command)
     },
   ],
   [
@@ -313,6 +329,33 @@ const routes: Route[] = [
       return null
     },
   ],
+  ['get', /^\/command-rules$/, () => state.commandRules],
+  [
+    'post',
+    /^\/command-rules$/,
+    (_m, c) => {
+      const rule = { ...body<Omit<CommandRule, 'id'>>(c), id: `cr-${id()}` }
+      state.commandRules = [...state.commandRules, rule]
+      return rule
+    },
+  ],
+  [
+    'patch',
+    /^\/command-rules\/([^/]+)$/,
+    (m, c) => {
+      const rule = state.commandRules.find((r) => r.id === decodeURIComponent(m[1]))
+      if (rule) Object.assign(rule, body<Partial<CommandRule>>(c))
+      return rule ?? null
+    },
+  ],
+  [
+    'delete',
+    /^\/command-rules\/([^/]+)$/,
+    (m) => {
+      state.commandRules = state.commandRules.filter((r) => r.id !== decodeURIComponent(m[1]))
+      return null
+    },
+  ],
   ['get', /^\/settings$/, () => state.settings],
   [
     'put',
@@ -344,7 +387,10 @@ const adapter: AxiosAdapter = async (config) => {
 
   for (const [verb, pattern, handler] of routes) {
     const match = path.match(pattern)
-    if (verb === method && match) return envelope(200, { data: handler(match, config) })
+    if (verb !== method || !match) continue
+    const out = handler(match, config)
+    if (!(out instanceof Refused)) return envelope(200, { data: out })
+    throw new AxiosError(out.error, AxiosError.ERR_BAD_REQUEST, config, null, envelope(out.status, { error: out.error }))
   }
 
   const response = envelope(404, { error: `No demo route for ${method.toUpperCase()} ${path}` })

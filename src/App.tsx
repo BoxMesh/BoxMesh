@@ -2,6 +2,7 @@ import { Result } from 'antd'
 import { lazy } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router'
 import AppLayout from './layouts/AppLayout'
+import CommandsPage from './pages/commands/CommandsPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import DeviceDetailPage from './pages/device-detail/DeviceDetailPage'
 import DevicesPage from './pages/devices/DevicesPage'
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="remote-services" element={<ServicesPage />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="users/:id" element={<UserPage />} />
+        <Route path="commands" element={<CommandsPage />} />
         <Route
           path="*"
           element={<Result status="404" title="Page not found" subTitle="Check the address, or pick a page from the menu." />}

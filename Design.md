@@ -326,6 +326,18 @@ Ring per event: success green = normal, error = failure or offline. Time 12 px s
   Django's two-list picker). No drag and drop: on a phone it fights the scroll. Below 576 px the lists stack, 320 px
   each, and the arrows turn to point down and up.
 
+### Commands (`pages/commands/CommandsPage.tsx`, `utils/commands.ts`)
+- Rules for commands nobody can run in Remote Terminal, the Admin included. A rule has a command, a match (Starts
+  with: whole words, so "format" doesn't catch "Format-Table"; Contains: anywhere, catching chained commands; Regex:
+  not case-sensitive), shells (none picked = all shells), where it applies (a Segmented: All devices, Groups or Devices, then a multi-select for the last two; one at a time, and the other list is dropped on save), and a reason. There is no on/off: every listed rule blocks, and deleting it allows the command again. Case and runs of spaces are
+  ignored.
+- "Test a command" card on top: a device picker (`DevicePicker`), a shell Segmented and a monospace input; below it an error tag "Blocked" with the rule
+  and reason, or a success tag "Allowed". It runs the same `blockedBy()` the demo uses.
+- The table only shows (command, match, shells, Applies to: "All devices" muted, or group tags in info colour, or device tags in neutral, then reason). Actions: Edit opens the 640 px rule dialog; Delete asks first. The dialog checks regexes compile and
+  that the same command and match aren't already a rule.
+- The terminal prints a refused command's reason in red: EdgePanel answers 403 with `{ error }`, and the terminal shows
+  that text instead of the generic permission message.
+
 ### Drawer
 Forms open in a drawer from the right (Enroll agent, New job, Create token, Invite person). An issued secret stays on
 screen in the drawer with a "Copy" button until the drawer closes.
@@ -380,7 +392,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 **Sider groups**
 - Overview: Dashboard, Devices
 - Remote: Remote Terminal, Remote Desktop, Remote Files, Remote Service
-- Admin: Users & Access
+- Admin: Users & Access, Commands
 
 | Screen | Route | What is on it |
 |---|---|---|
@@ -392,6 +404,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
 | Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload. Two devices: two panes, copy and sync between them, Transfers |
 | Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
+| Commands | `/commands` | Test a command (shell + command, live Blocked / Allowed answer); read-only rules table (command, match, shells, applies to, reason) with Edit and Delete; Add rule / edit dialog |
 | Users & Access | `/users` | Role cards (Admin, Operator); a read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Invite dialog (email, what they can reach; joins as Operator) |
 
 ---
@@ -402,7 +415,7 @@ EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }`
 (all under `VITE_API_URL`, default `/api`): `/log-in`, `/log-out`, `/forgot-password` (placeholder name), `/devices`
 and `/devices/{host}` with `/connections`, `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
 `/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/certificates`, `/metrics/summary`, `/sessions/summary`, `/jobs`, `/audit`, `/users`,
-`/settings`, `/health`, `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
+`/settings`, `/health`, `/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, `/ws/desktop/{id}`); internal web apps go
 through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.

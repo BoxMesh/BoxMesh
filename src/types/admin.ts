@@ -1,3 +1,5 @@
+import type { Shell } from './remote'
+
 export interface Certificate {
   host: string
   serial: string
@@ -35,6 +37,23 @@ export interface Account {
   lastSignIn: string
   disabled: boolean
   access: DeviceAccess
+}
+
+export type CommandMatch = 'starts' | 'contains' | 'regex'
+
+/** A command nobody may run in Remote Terminal. EdgePanel checks every command against these before relaying it. */
+export interface CommandRule {
+  id: string
+  pattern: string
+  /** starts: the command begins with the pattern as whole words; contains: anywhere; regex: a case-insensitive regex. */
+  match: CommandMatch
+  /** Empty means every shell. */
+  shells: Shell[]
+  /** Shown to the person whose command is refused. */
+  reason: string
+  /** Where it applies: these groups, or these single devices. Both empty means every device. */
+  groupIds: string[]
+  hosts: string[]
 }
 
 export interface Settings {

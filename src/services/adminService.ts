@@ -1,4 +1,4 @@
-import type { Account, Certificate, DeviceAccess, EnrollmentToken, Health, Role, Settings } from '../types/admin'
+import type { Account, Certificate, CommandRule, DeviceAccess, EnrollmentToken, Health, Role, Settings } from '../types/admin'
 import { http } from './http'
 
 export async function getCertificates() {
@@ -45,6 +45,28 @@ export async function updateUser(id: string, patch: Partial<Pick<Account, 'disab
 
 export async function deleteUser(id: string) {
   await http.delete(`/users/${encodeURIComponent(id)}`)
+}
+
+export type NewCommandRule = Omit<CommandRule, 'id'>
+
+export async function getCommandRules() {
+  const { data } = await http.get<Partial<CommandRule>[]>('/command-rules')
+  // A rule saved before scopes existed has no groupIds or hosts: it applies everywhere, it doesn't crash the page.
+  return data.map((r) => ({ match: 'starts', reason: '', ...r, shells: r.shells ?? [], groupIds: r.groupIds ?? [], hosts: r.hosts ?? [] }) as CommandRule)
+}
+
+export async function createCommandRule(input: NewCommandRule) {
+  const { data } = await http.post<CommandRule>('/command-rules', input)
+  return data
+}
+
+export async function updateCommandRule(id: string, patch: Partial<NewCommandRule>) {
+  const { data } = await http.patch<CommandRule>(`/command-rules/${encodeURIComponent(id)}`, patch)
+  return data
+}
+
+export async function deleteCommandRule(id: string) {
+  await http.delete(`/command-rules/${encodeURIComponent(id)}`)
 }
 
 export async function getSettings() {

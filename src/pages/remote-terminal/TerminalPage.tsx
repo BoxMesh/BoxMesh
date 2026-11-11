@@ -2,6 +2,7 @@ import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
 import '@xterm/xterm/css/xterm.css'
 import { Card, Segmented } from 'antd'
+import { isAxiosError } from 'axios'
 import { useEffect, useRef, useState } from 'react'
 import DevicePicker, { DeviceOffline, PickFirst } from '../../components/DevicePicker'
 import PageHeader from '../../components/PageHeader'
@@ -135,7 +136,9 @@ function Session({ device }: { device: Device }) {
         const result = await runCommand(device.host, shellRef.current, command)
         if (result.output) terminal.writeln(result.exitCode === 0 ? result.output : `\x1b[31m${result.output}\x1b[0m`)
       } catch (error) {
-        terminal.writeln(`\x1b[31m${userMessage(error)}\x1b[0m`)
+        // A blocked command comes back as 403 with the rule's reason; show that, not a generic permission error.
+        const refused = isAxiosError<{ error?: string }>(error) && error.response?.status === 403 && error.response.data?.error
+        terminal.writeln(`\x1b[31m${refused || userMessage(error)}\x1b[0m`)
       } finally {
         busy.current = false
         prompt()

@@ -22,6 +22,7 @@ export const navGroups: NavGroup[] = [
     title: 'Admin',
     items: [
       { icon: 'users', label: 'Users & Access', path: '/users' },
+      { icon: 'lock', label: 'Commands', path: '/commands' },
     ],
   },
 ]

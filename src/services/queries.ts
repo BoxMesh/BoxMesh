@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query'
 import type { TimeRange } from '../types/dashboard'
-import { getUsers } from './adminService'
+import { getCommandRules, getUsers } from './adminService'
 import { getRecentActivity, getRemoteSessions, getResourceUsage } from './dashboardService'
 import { getConnectionHistory, getDevice, getDevices, getGroups, getPendingEnrollments } from './deviceService'
 import { getFiles, getServices, getTransfer } from './remoteService'
@@ -36,6 +36,7 @@ export const servicesQuery = (host: string) =>
 // ---- Admin ----
 
 export const usersQuery = queryOptions({ queryKey: ['users'], queryFn: getUsers })
+export const commandRulesQuery = queryOptions({ queryKey: ['command-rules'], queryFn: getCommandRules })
 
 // Polled once a second while any file is still copying, then left alone.
 export const transferQuery = (id: string) =>

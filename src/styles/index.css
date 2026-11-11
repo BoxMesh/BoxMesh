@@ -1582,3 +1582,31 @@ body .row-off > td,
 body .row-off > td .strong {
   color: var(--text-secondary);
 }
+
+/* Commands: the "Test a command" row and its live answer. */
+.rule-test {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.rule-test .ant-input-affix-wrapper {
+  flex: 1;
+  min-width: min(100%, 240px);
+}
+
+.rule-test-result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  min-height: 24px;
+}
+
+/* A command typed into a field reads as code. */
+.mono,
+.mono input {
+  font-family: var(--mono);
+}

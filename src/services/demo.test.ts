@@ -20,8 +20,14 @@ describe('demo mode', () => {
   it('answers a known command and refuses an unknown one', async () => {
     const known = await runCommand('SRV-DB-01', 'Bash', 'hostname')
     expect(known).toMatchObject({ output: 'SRV-DB-01', exitCode: 0 })
-    const unknown = await runCommand('SRV-DB-01', 'Bash', 'rm -rf /')
+    const unknown = await runCommand('SRV-DB-01', 'Bash', 'make coffee')
     expect(unknown.exitCode).toBe(1)
+  })
+
+  it('refuses a blocked command with 403 and the rule', async () => {
+    await expect(runCommand('SRV-DB-01', 'Bash', 'rm -rf /')).rejects.toMatchObject({
+      response: { status: 403, data: { error: expect.stringContaining('Deletes the whole file system') } },
+    })
   })
 
   it('issues a token in full exactly once', async () => {

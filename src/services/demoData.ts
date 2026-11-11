@@ -1,4 +1,4 @@
-import type { Account, Certificate, EnrollmentToken, Health, Settings } from '../types/admin'
+import type { Account, Certificate, CommandRule, EnrollmentToken, Health, Settings } from '../types/admin'
 import type { ActivityEvent, RemoteSessions, ResourceUsage, TimeRange } from '../types/dashboard'
 import type { ConnectionEvent, Device, DeviceGroup, OsFamily, PendingEnrollment } from '../types/device'
 import type { AuditEntry, Job } from '../types/ops'
@@ -393,3 +393,15 @@ export const health: Health = {
   agentsConnected: devices.filter((d) => d.online).length,
   lastBackup: fromNow(-9 * 60 * MINUTE),
 }
+
+// ---------- Blocked commands ----------
+
+export const commandRules: CommandRule[] = [
+  { id: 'cr-1', pattern: 'shutdown', match: 'starts', shells: [], reason: 'Restarts or powers off the machine. Ask IT to schedule it.', groupIds: [], hosts: [] },
+  { id: 'cr-2', pattern: 'format', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Erases a whole drive.', groupIds: [], hosts: [] },
+  { id: 'cr-3', pattern: 'diskpart', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Changes disk partitions.', groupIds: [], hosts: [] },
+  { id: 'cr-4', pattern: String.raw`rm\s+-(rf|fr)\s+/(\s|$)`, match: 'regex', shells: ['Bash'], reason: 'Deletes the whole file system.', groupIds: [], hosts: [] },
+  { id: 'cr-5', pattern: 'reg delete hklm', match: 'contains', shells: ['CMD'], reason: 'Removes system registry keys.', groupIds: [], hosts: [] },
+  { id: 'cr-6', pattern: 'systemctl stop', match: 'starts', shells: ['Bash'], reason: 'Stops a service on a critical system. Plan it with IT.', groupIds: ['g-critical'], hosts: [] },
+  { id: 'cr-7', pattern: 'dropdb', match: 'starts', shells: ['Bash'], reason: 'Deletes a production database.', groupIds: [], hosts: ['SRV-DB-01'] },
+]

@@ -23,6 +23,7 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 | Devices (list, detail, enrollment) | yes | missing |
 | Remote Terminal, Desktop, Files, Service | yes | missing |
 | Users & Access | yes | missing |
+| Commands | yes | missing |
 
 Remote Desktop has no video stream yet: the UI runs, and the frame says so.
 
@@ -118,6 +119,9 @@ These are the endpoints the app calls today:
 | GET | `/api/metrics/summary?range=1h\|24h\|7d` |
 | GET | `/api/sessions/summary` |
 | GET | `/api/audit?limit=` |
+| GET · POST | `/api/command-rules` (`{ pattern, match: starts\|contains\|regex, shells, reason, groupIds, hosts }`, both lists empty = every device; placeholder name) |
+| PATCH · DELETE | `/api/command-rules/{id}` |
+| POST | `/api/devices/{host}/shell` refuses a command a rule matches with 403 `{ error }` (the reason the terminal shows) |
 
 ## Docker
 

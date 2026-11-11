@@ -54,7 +54,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 ## Capabilities and Constraints
 
 **Built in BoxMesh**
-- Screens: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Desktop, Remote Files, Remote Service, Users & Access. Command & Jobs, Audit, Security & Certificates and System Settings were removed from the console.
+- Screens: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Desktop, Remote Files, Remote Service, Users & Access, Commands. Command & Jobs, Audit, Security & Certificates and System Settings were removed from the console.
 - Sign-in with email and password, and a "Forgot password?" form that requests a reset email.
 - Dark and light themes: the OS setting by default, switchable in the header.
 
@@ -63,6 +63,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 - The password-reset request posts to `/forgot-password`, a route EdgePanel does not have yet; the name is a placeholder.
 - Remote Files can open a second device and copy or one-way sync files between the two. It calls `/file-transfers`, another placeholder name EdgePanel does not have yet; only the demo runs it.
 - Remote Desktop has no video stream yet; the frame says so.
+- Commands lists commands nobody may run in Remote Terminal (the Admin included), on every device or only on chosen groups or devices. It calls `/command-rules`, a placeholder name; EdgePanel is expected to refuse a matching `/shell` request with 403 and the rule's reason. Only the demo enforces it today.
 - A few actions are stubbed (updating or disabling a device, editing tags, saving thresholds): they say "<action> isn't available yet." and never fake success.
 
 **Demo mode**
