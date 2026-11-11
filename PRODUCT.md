@@ -14,7 +14,7 @@ Roles:
 - **Admin**: everything, plus managing users. There is exactly one Admin.
 - **Operator**: runs commands and opens remote sessions, but only on the devices the Admin gives them: whole groups (including devices added to those groups later) and/or single devices. An Operator with nothing assigned reaches no device. Everyone invited joins as an Operator.
 
-Their job: know which machines are healthy, find the ones that need attention, reach any machine without a VPN or inbound ports, and keep every agent's certificate trusted and current.
+Their job: know which machines are healthy, find the ones that need attention, reach any machine without a VPN or inbound ports, and hear about trouble on Telegram, Discord or email.
 
 ## Product Purpose
 
@@ -62,7 +62,7 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 - Remote Desktop has no video stream yet; the frame says so.
 - Alerts: a rule is a named condition (CPU, RAM or disk over a limit, or offline, for N minutes). An alert applies rules to all devices, groups or single devices and sends a message, from a template with fields such as {device} and {value}, to channels: Telegram (bot token + chat ID), Discord (webhook) or email (Gmail app password or any SMTP server). EdgePanel is expected to evaluate and send; BoxMesh only configures it through `/alerts`, `/alert-rules` and `/alert-channels`, placeholder names. Secrets are write-only. Only the demo answers today, and its Send test sends nothing.
 - Command rules lists commands nobody may run in Remote Terminal (the Admin included), on every device or only on chosen groups or devices. It calls `/command-rules`, a placeholder name; EdgePanel is expected to refuse a matching `/shell` request with 403 and the rule's reason. Only the demo enforces it today.
-- A few actions are stubbed (updating or disabling a device, ending a process, uploading, downloading, renaming or deleting a file, a desktop screenshot, Ctrl+Alt+Del): they say "<action> isn't available yet." and never fake success.
+- A few actions are stubbed (ending a process, uploading, downloading, renaming or deleting a file, a desktop screenshot, Ctrl+Alt+Del): they say "<action> isn't available yet." and never fake success.
 
 **Demo mode**
 - "Explore the demo" on the sign-in page runs the whole console against a sample fleet of 12 machines, with no backend. It swaps the shared HTTP adapter, so the demo runs the same screens and services as the real panel.
@@ -95,8 +95,8 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 
 ## Product Principles
 
-1. **Health and trust come first.** What is online, what needs attention, and whether certificates are valid outrank everything else on screen.
-2. **Every remote action goes through the agent tunnel and respects roles and per-device permissions.** Trust decisions (approving an agent, revoking a certificate) show enough identity to decide on, and ask for confirmation.
+1. **Health comes first.** What is online and what needs attention outrank everything else on screen.
+2. **Every remote action goes through the agent tunnel and respects roles and per-device permissions.** Trust decisions (approving an agent, revoking an enrollment token) show enough identity to decide on, and ask for confirmation.
 3. **Show the true state.** Unbuilt features, offline machines and stale data are labelled as such, and success is never faked.
 4. **Built for fleets of hundreds.** Finding, filtering and acting on many machines at once is the normal case, not the exception.
 5. **Every string is translatable.** English and Vietnamese ship together, with no hard-coded copy. (Not met yet: see Language above.)

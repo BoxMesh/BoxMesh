@@ -118,7 +118,7 @@ export default function FileBrowser({
                 { key: 'rename', label: 'Rename' },
                 { key: 'copy', label: 'Copy path' },
                 { type: 'divider' },
-                { key: 'delete', label: 'Delete', danger: true },
+                { key: 'delete', label: 'Delete' },
               ],
               onClick: ({ key }) =>
                 key === 'copy'

@@ -1,8 +1,10 @@
-import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
-import { App, Button, Card, Input, Radio, Table, Tooltip, type TableProps } from 'antd'
-import { useEffect, useState } from 'react'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import { Button, Card, Input, Radio, Table, Tooltip, type TableProps } from 'antd'
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
 import DeviceGroups from '../../components/DeviceGroups'
+import AgentVersion from '../../components/AgentVersion'
+import StatusButton from '../../components/StatusButton'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { navItem } from '../../config/nav'
@@ -93,18 +95,7 @@ export default function DevicesPage() {
     {
       title: <Th icon="box" label="Agent" />,
       key: 'agent',
-      render: (_, d) =>
-        d.agentOutdated ? (
-          <Tooltip title="A newer agent has been released">
-            {/* role + label: the icon is the whole message, so it has to reach a screen reader too. */}
-            <span className="agent-outdated" role="img" aria-label={`${d.agentVersion}, update available`}>
-              {d.agentVersion}
-              <Icon name="warning" size={13} />
-            </span>
-          </Tooltip>
-        ) : (
-          d.agentVersion
-        ),
+      render: (_, d) => <AgentVersion device={d} />,
     },
     {
       title: <Th icon="pulse" label="Status" />,
@@ -160,58 +151,6 @@ export default function DevicesPage() {
 
       <EnrollDrawer open={enrollOpen} onClose={() => setEnrollOpen(false)} groups={groups.map((g) => g.name)} />
     </div>
-  )
-}
-
-function StatusButton({ device }: { device: Device }) {
-  const { message } = App.useApp()
-  const queryClient = useQueryClient()
-  // The device list carries what a machine is; whether its agent is actually there is only known once
-  // that agent reports in. So a row starts Offline and turns Online when its own check lands, and the
-  // waits are spread out, the way a thousand agents report in rather than all at once.
-  // shortcut: EdgePanel has no /ws/events yet, so reporting in is a timer that resolves to what the
-  // list already said. Swap the timeout for that subscription once the endpoint exists.
-  const [online, setOnline] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setOnline(device.online), 500 + Math.random() * 2500)
-    return () => clearTimeout(timer)
-  }, [device.online])
-  // EdgePanel has no ping endpoint. The fleet list already says whether a device answers and how fast,
-  // so a ping re-reads that list past the cache: the row's own dot and the message then agree.
-  const ping = useMutation({
-    mutationFn: async () => {
-      const fresh = await queryClient.fetchQuery({ ...devicesQuery, staleTime: 0 })
-      return fresh.find((d) => d.host === device.host) ?? null
-    },
-    onSuccess: (fresh) => {
-      setOnline(Boolean(fresh?.online))
-      if (fresh?.online) message.success(`${device.host} answered in ${fresh.latencyMs} ms`)
-      else message.warning(`${device.host} did not answer`)
-    },
-    onError: (error) => message.error(error.message),
-  })
-
-  // One control for both jobs: it reads the current state and clicking it checks that state again.
-  // The word carries the state, so colour is the second signal rather than the only one.
-  const waiting = online === null
-  const state = online ? 'Online' : 'Offline'
-  const busy = waiting || ping.isPending
-  return (
-    <Tooltip title={waiting ? `Waiting for ${device.host} to report in` : `Ping ${device.host}`}>
-      <Button
-        size="small"
-        loading={busy}
-        onClick={() => ping.mutate()}
-        aria-label={waiting ? `Waiting for ${device.host} to report in` : `${state} — ping ${device.host}`}
-        // Online and Offline differ in shape, not only hue (index.css): a filled pill with a solid dot against an
-        // empty grey one with a ring. Offline is grey, not red: a switched-off machine is not an error.
-        className={`status-btn ${online ? 'is-online' : 'is-offline'}`}
-      >
-        {busy ? null : <span className="status-dot" aria-hidden="true" />}
-        {state}
-      </Button>
-    </Tooltip>
   )
 }
 

@@ -54,9 +54,9 @@ buttons get an `#ea580c` edge (3.6:1 on white), since the bright fill alone is 2
 
 | Status | Dark | Light | Examples |
 |---|---|---|---|
-| Success | `#12261a` / `#2e5a3a` / `#7fd88f` | `#e6f4ea` / `#a8d5b5` / `#1f7a3a` | Online, trusted cert, exit 0, healthy resource meters (`tone.positive`) |
-| Warning | `#2a2410` / `#5c5020` / `#facc15` | `#fefce8` / `#fde68a` / `#854d0e` | Disk almost full, outdated agent, cert expiring within 30 days |
-| Error | `#2a1418` / `#5c2430` / `#ff6b81` | `#fff1f2` / `#fecdd3` / `#be123c` | Revoked, High CPU/RAM, exit 1, cert expiring within 7 days |
+| Success | `#12261a` / `#2e5a3a` / `#7fd88f` | `#e6f4ea` / `#a8d5b5` / `#1f7a3a` | Online, exit 0, running process, Active token (`tone.positive`) |
+| Warning | `#2a2410` / `#5c5020` / `#facc15` | `#fefce8` / `#fde68a` / `#854d0e` | Disk almost full, outdated agent |
+| Error | `#2a1418` / `#5c2430` / `#ff6b81` | `#fff1f2` / `#fecdd3` / `#be123c` | High CPU/RAM, exit 1, a blocked command |
 | Info | `#142028` / `#2c4250` / `#7ea2b8` | `#e8f2f8` / `#b3d3e6` / `#2f5f7a` | Group tag, running job |
 | Neutral | `bg-raised` / `border-control` / `text-secondary` | same roles | Offline status and offline notices, free-form tag, "Heartbeat lost" |
 
@@ -219,7 +219,7 @@ Gotchas:
 | Icon (row actions) | 28×28, transparent, `text-secondary`, `aria-label` required | `bg-strong`, `text` |
 | Icon (header, back) | 32×32, `bg-raised`, `border` | |
 
-One primary per screen area. A row of the same destructive action (e.g. "Revoke" on every certificate) uses the
+One primary per screen area. A row of the same destructive action (e.g. "Revoke" on every token) uses the
 default button; red appears only on the confirm.
 
 ### Inputs
@@ -266,7 +266,7 @@ dataviz validator in both themes. Grid `border`; alert line dashed `text-seconda
 marks under each chart. Hover or tap shows a crosshair, an 8 px dot per series and a tooltip with the time and values.
 
 ### Tabs
-Underline tabs: active = `accent` text + 2 px underline.
+Underline tabs: active = `accent` text + 2 px underline. Used on Device detail (Processes · Performance), sitting on the card's top edge.
 
 ### Alert
 Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with links.
@@ -366,7 +366,7 @@ Code block: bg `#090b0c` dark / `#101416` light, Geist Mono, radius 12. Terminal
 Relative times ("4 min ago") for last seen and activity.
 
 ### Not-yet-available actions
-Actions EdgePanel has no endpoint for (update agent, disable device, edit tags, end a process, upload, download,
+Actions EdgePanel has no endpoint for (edit tags, end a process, upload, download,
 rename or delete a file, desktop screenshot and Ctrl+Alt+Del) stay visible and toast "<Doing something> isn't available yet." They never fake success.
 
 ### Sign-in page (`/login`)
@@ -418,7 +418,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Dashboard | `/dashboard` | Health strip (fleet health bar, needs attention now, latency); Alert queue grouped Critical / Warning / Offline |
 | Devices | `/devices` | Table with header filters (incl. Groups), group tags with an edit picker, ping status, row remote actions; Manage groups (links to Groups); Enroll agent drawer |
 | Groups | `/groups` | Table: group, devices, members, Add devices (two-list dialog), rename / delete; New group |
-| Device detail | `/devices/:id` | Back, name, alias, status; Terminal (primary), Desktop, Files, Service, "⋯" (Update agent, Disable); no tabs. "Device information" (hostname, OS, IP, MAC, agent version, uptime, enrolled at, Groups with the edit picker). "Resource information" with a 1h / 24h / 7d switch: CPU, RAM and Disk over time (0–100 %, dashed alert line, hardware beside each name) and Network (Received `--series-1`, Sent `--series-2`, Mbps on its own scale, legend with current values); every chart has five time marks and a crosshair tooltip. "Processes" like Task Manager: search, Name, PID, Status, User, CPU (sorted high first), Memory, End task (not supported yet); polls every 5 s, hidden while offline |
+| Device detail | `/devices/:id` | Back, name, alias, the same Online / Offline status button as the Devices table (click to ping, offline included); Terminal (primary), Desktop, Files, Service. A "Device information" card (hostname, OS, IP, MAC, agent version shown as in the Devices table by `AgentVersion`, uptime, enrolled at, Groups with the edit picker). Below it one card with two tabs, like Task Manager (`?tab=performance` keeps the second): **Processes (N)** (default; search, Name, PID, Status, User, CPU sorted high first, Memory, End task not supported yet; polls every 5 s only while open; a note while offline) and **Performance** (1h / 24h / 7d switch; CPU, RAM and Disk over time, 0–100 %, dashed alert line, hardware beside each name; Network with Received `--series-1` filled and Sent `--series-2`, Mbps on its own scale; y labels in a 56 px gutter, time marks on round local times, crosshair tooltip) |
 | Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
 | Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
 | Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload (not available yet). Two devices: two panes, copy and sync between them, Transfers |

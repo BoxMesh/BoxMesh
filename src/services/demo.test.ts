@@ -63,6 +63,7 @@ describe('demo mode', () => {
     expect(points).toHaveLength(96)
     expect(points.at(-1)).toMatchObject({ at: device.lastSeen, cpu: device.cpu, ram: device.ram, disk: device.disk })
     expect(points.every((p) => [p.cpu, p.ram, p.disk].every((v) => v >= 1 && v <= 100))).toBe(true)
+    expect(points.every((p) => p.netIn > 0 && p.netOut > 0)).toBe(true)
     expect(await getDeviceMetrics('SRV-DB-01', '24h')).toEqual(points)
   })
 

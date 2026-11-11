@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Button, Card, Input, Table, Tag, type TableProps } from 'antd'
+import { Button, Input, Table, Tag, type TableProps } from 'antd'
 import { useState } from 'react'
 import { Th } from '../../components/Icon'
 import { useNotSupported } from '../../hooks/useNotSupported'
@@ -15,7 +15,8 @@ const STATUS: Record<ProcessStatus, { label: string; color: string }> = {
 
 const memory = (mb: number) => (mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb.toFixed(1)} MB`)
 
-export default function ProcessesCard({ device }: { device: Device }) {
+/** The Processes tab of the device page, like Task Manager. It polls only while it is the open tab. */
+export default function ProcessesPanel({ device }: { device: Device }) {
   const notSupported = useNotSupported()
   const [q, setQ] = useState('')
   const list = useQuery({ ...processesQuery(device.host), enabled: device.online, refetchInterval: 5000 })
@@ -23,6 +24,14 @@ export default function ProcessesCard({ device }: { device: Device }) {
   const rows = (list.data ?? []).filter(
     (p) => !query || p.name.toLowerCase().includes(query) || p.user.toLowerCase().includes(query) || String(p.pid).includes(query),
   )
+
+  if (!device.online) {
+    return (
+      <p className="muted" style={{ padding: 16, margin: 0 }}>
+        Processes show while the device is online. {device.host} has no open tunnel right now.
+      </p>
+    )
+  }
 
   const columns: TableProps<DeviceProcess>['columns'] = [
     {
@@ -59,45 +68,33 @@ export default function ProcessesCard({ device }: { device: Device }) {
   ]
 
   return (
-    <Card
-      className="table-card"
-      title={device.online && list.data ? `Processes (${list.data.length})` : 'Processes'}
-      extra={device.online ? <span className="muted">Updates every 5 s</span> : null}
-      styles={{ body: { padding: 0 } }}
-    >
-      {!device.online ? (
-        <p className="muted" style={{ padding: 16, margin: 0 }}>
-          Processes show while the device is online. {device.host} has no open tunnel right now.
-        </p>
-      ) : (
-        <>
-          <div className="filters">
-            <Input
-              allowClear
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search name, PID or user"
-              aria-label="Search processes"
-              style={{ maxWidth: 280 }}
-            />
-          </div>
-          <Table<DeviceProcess>
-            columns={columns}
-            dataSource={rows}
-            loading={list.isPending}
-            rowKey="pid"
-            scroll={{ x: 'max-content' }}
-            pagination={{ pageSize: 10, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
-            locale={{
-              emptyText: (
-                <span className="muted">
-                  {list.isError ? `Processes didn't load. ${userMessage(list.error)}` : query ? 'No process matches this search.' : 'No processes reported.'}
-                </span>
-              ),
-            }}
-          />
-        </>
-      )}
-    </Card>
+    <>
+      <div className="filters filters-split">
+        <Input
+          allowClear
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="Search name, PID or user"
+          aria-label="Search processes"
+          style={{ maxWidth: 280 }}
+        />
+        <span className="sub">Updates every 5 s</span>
+      </div>
+      <Table<DeviceProcess>
+        columns={columns}
+        dataSource={rows}
+        loading={list.isPending}
+        rowKey="pid"
+        scroll={{ x: 'max-content' }}
+        pagination={{ pageSize: 10, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
+        locale={{
+          emptyText: (
+            <span className="muted">
+              {list.isError ? `Processes didn't load. ${userMessage(list.error)}` : query ? 'No process matches this search.' : 'No processes reported.'}
+            </span>
+          ),
+        }}
+      />
+    </>
   )
 }

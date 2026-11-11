@@ -20,10 +20,13 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 |---|---|---|
 | Sign in and out (`/login`) | yes | `POST /log-in`, `POST /log-out` — live |
 | Dashboard | yes | missing |
-| Devices (list, detail, enrollment) | yes | missing |
+| Devices (list, detail with processes and performance, enrollment) | yes | missing |
+| Groups | yes | missing |
 | Remote Terminal, Desktop, Files, Service | yes | missing |
+| Alerts, Rules, Channels | yes | missing |
 | Users & Access | yes | missing |
-| Commands | yes | missing |
+| Command rules | yes | missing |
+| Enrollment tokens | yes | missing |
 
 Remote Desktop has no video stream yet: the UI runs, and the frame says so.
 
@@ -37,7 +40,6 @@ one that answers every endpoint in EdgePanel's `{ data }` envelope. No screen, s
 about it, so what you click is the same code that will talk to EdgePanel — there is no demo-only
 branch to drift out of step.
 
-- A **Demo data** tag sits in the header for as long as it is on.
 - Changes you make — groups, tokens, approvals, rules, alerts — are held in memory and gone on reload.
 - The flag lives in `sessionStorage`, so the demo ends with the browser tab.
 - Signing out reloads the page, which puts the real HTTP adapter back.

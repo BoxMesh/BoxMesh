@@ -1,23 +1,26 @@
-import { useSuspenseQuery } from '@tanstack/react-query'
-import { Alert, Button, Dropdown, Result } from 'antd'
-import { Link, useParams } from 'react-router'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import { Button, Card, Result, Tabs } from 'antd'
+import { Link, useParams, useSearchParams } from 'react-router'
 import { Icon } from '../../components/Icon'
-import Status from '../../components/Status'
+import StatusButton from '../../components/StatusButton'
 import { navItem } from '../../config/nav'
-import { useNotSupported } from '../../hooks/useNotSupported'
-import { deviceQuery, groupsQuery } from '../../services/queries'
-import { ago } from '../../utils/time'
-import DeviceOverview from './DeviceOverview'
-import ProcessesCard from './ProcessesCard'
+import { deviceQuery, groupsQuery, processesQuery } from '../../services/queries'
+import DeviceInfo from './DeviceInfo'
+import PerformancePanel from './PerformancePanel'
+import ProcessesPanel from './ProcessesPanel'
 
 // Each remote screen takes the device in `?host=`, so these open straight onto this machine.
 const REMOTE = ['/remote-terminal', '/remote-desktop', '/remote-files', '/remote-services'].map(navItem)
 
+type Tab = 'processes' | 'performance'
+
 export default function DeviceDetailPage() {
   const { id = '' } = useParams()
-  const notSupported = useNotSupported()
+  const [params, setParams] = useSearchParams()
   const { data: device } = useSuspenseQuery(deviceQuery(id))
   const { data: groups } = useSuspenseQuery(groupsQuery)
+  // Shares the Processes tab's cache for the count; without its own interval it doesn't poll on the Performance tab.
+  const { data: processes } = useQuery({ ...processesQuery(id), enabled: Boolean(device?.online) })
 
   if (!device) {
     return (
@@ -30,6 +33,9 @@ export default function DeviceDetailPage() {
     )
   }
 
+  const tab: Tab = params.get('tab') === 'performance' ? 'performance' : 'processes'
+  const openTab = (key: string) => setParams(key === 'performance' ? { tab: key } : {}, { replace: true })
+
   return (
     <div className="stack">
       <div className="page-header">
@@ -39,10 +45,10 @@ export default function DeviceDetailPage() {
           </Link>
           <h1 style={{ margin: 0 }}>{device.host}</h1>
           <span className="muted">{device.alias}</span>
-          <Status online={device.online} />
+          <StatusButton device={device} />
         </div>
         <div className="page-actions">
-          {/* The terminal is what people open a device for, so it leads; rare actions wait in the menu. */}
+          {/* The terminal is what people open a device for, so it leads. */}
           {REMOTE.map((feature, i) => (
             <Link key={feature.path} to={`${feature.path}?host=${encodeURIComponent(device.host)}`}>
               <Button
@@ -54,33 +60,28 @@ export default function DeviceDetailPage() {
               </Button>
             </Link>
           ))}
-          <Dropdown
-            trigger={['click']}
-            placement="bottomRight"
-            menu={{
-              items: [
-                { key: 'update', label: 'Update agent' },
-                { key: 'disable', label: 'Disable', danger: true },
-              ],
-              onClick: ({ key }) => notSupported(key === 'update' ? 'Updating agents' : 'Disabling devices'),
-            }}
-          >
-            <Button icon={<Icon name="more" size={14} />} aria-label="More actions" />
-          </Dropdown>
         </div>
       </div>
 
-      {!device.online ? (
-        <Alert
-          type="info"
-          showIcon
-          title={`${device.host} is offline`}
-          description={`Its last heartbeat was ${ago(device.lastSeen)}. The details below are from that moment and update when the agent reconnects.`}
-        />
-      ) : null}
 
-      <DeviceOverview device={device} groups={groups} />
-      <ProcessesCard device={device} />
+      <DeviceInfo device={device} groups={groups} />
+
+      <Card className="table-card" styles={{ body: { padding: 0 } }}>
+        <Tabs
+          className="device-tabs"
+          activeKey={tab}
+          onChange={openTab}
+          destroyOnHidden
+          items={[
+            {
+              key: 'processes',
+              label: device.online && processes ? `Processes (${processes.length})` : 'Processes',
+              children: <ProcessesPanel device={device} />,
+            },
+            { key: 'performance', label: 'Performance', children: <PerformancePanel device={device} /> },
+          ]}
+        />
+      </Card>
     </div>
   )
 }

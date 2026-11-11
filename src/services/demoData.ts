@@ -142,10 +142,20 @@ export function deviceMetrics(host: string, range: TimeRange): MetricPoint[] {
   const cpu = walkBack(device.cpu, 16)
   const ram = walkBack(device.ram, 6)
   const disk = walkBack(device.disk, 0.8, range === '7d' ? 0.04 : range === '24h' ? 0.02 : 0, 100, 0)
-  const link = device.osFamily === 'Linux' ? 80 : 12
-  const netIn = walkBack(link * 0.4, link * 0.3, 0, link)
-  const netOut = walkBack(link * 0.15, link * 0.15, 0, link)
   const end = Date.parse(device.lastSeen)
+  // Traffic follows the working day: busy from about 8 to 18, quiet at night, never zero. Servers stay busier overnight.
+  const server = device.osFamily === 'Linux'
+  const peak = server ? 60 : 9
+  const floor = server ? 0.35 : 0.08
+  let wobble = 1
+  const traffic = cpu.map((_, i) => {
+    const hour = new Date(end - (count - 1 - i) * step).getHours() + new Date(end - (count - 1 - i) * step).getMinutes() / 60
+    const day = Math.exp(-(((hour - 13) / 4.5) ** 2))
+    wobble = wobble * 0.7 + (0.75 + random() * 0.5) * 0.3
+    return peak * (floor + (1 - floor) * day) * wobble
+  })
+  const netIn = traffic
+  const netOut = traffic.map((v) => v * (server ? 0.45 : 0.25) * (0.9 + random() * 0.2))
   const pct = (v: number) => Math.max(1, Math.round(v))
   const mbps = (v: number) => Math.round(v * 10) / 10
   return cpu.map((_, i) => ({
