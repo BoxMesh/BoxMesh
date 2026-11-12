@@ -44,7 +44,7 @@ src/
   services/            axios client, API calls, query keys, demo mode (demo.ts, demoData.ts)
   config/              theme.ts (both palettes, antd theme, tone.*) and nav.ts
   styles/index.css     CSS variables per theme and everything antd has no token for
-  i18n/                t() and the Japanese dictionaries (ja/<area>.ts)
+  i18n/                t() and the Vietnamese and Japanese dictionaries (vi/<area>.ts, ja/<area>.ts)
   utils/               pure helpers, each with its tests
 ```
 
@@ -59,7 +59,8 @@ src/
   demo mode swaps the axios adapter.
 - Actions EdgePanel can't do yet use `useNotSupported()` and never fake success.
 - UI copy is written in English and wrapped in `t()` from `src/i18n` (`t('{n} devices', { n })`); the English text
-  is the key. Add the Japanese for every new key to the area's file in `src/i18n/ja/`. `src/i18n/i18n.test.ts` fails
+  is the key. Add the Vietnamese and the Japanese for every new key to the area's file in `src/i18n/vi/` and
+  `src/i18n/ja/`. `src/i18n/i18n.test.ts` fails
   on a key with no translation, a dropped `{placeholder}` or a key built at run time. Data (host names, user input,
   demo data) is never translated.
 - The language switches in place, without a reload, so call `t()` only while rendering or handling an event. A label

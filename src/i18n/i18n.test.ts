@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { t } from '.'
 import ja from './ja'
+import vi from './vi'
 
 // Every source file as text, keyed by path. Tests and this folder are left out.
 const sources = Object.entries(
@@ -17,7 +18,10 @@ describe('t', () => {
   })
 })
 
-describe('Japanese', () => {
+describe.each([
+  ['Japanese', ja],
+  ['Vietnamese', vi],
+])('%s', (_, dictionary: Record<string, string>) => {
   it('reads the source files', () => {
     expect(sources.length).toBeGreaterThan(50)
   })
@@ -26,14 +30,14 @@ describe('Japanese', () => {
     const missing = sources.flatMap(([file, text]) =>
       [...text.matchAll(KEY)]
         .map((m) => (m[1] ?? m[2]).replace(/\\(.)/g, '$1'))
-        .filter((key) => !ja[key])
+        .filter((key) => !dictionary[key])
         .map((key) => `${file}: ${key}`),
     )
     expect(missing).toEqual([])
   })
 
   it('keeps every placeholder of the English key', () => {
-    const broken = Object.entries(ja).filter(([en, text]) => (en.match(/\{\w+\}/g) ?? []).some((p) => !text.includes(p)))
+    const broken = Object.entries(dictionary).filter(([en, text]) => (en.match(/\{\w+\}/g) ?? []).some((p) => !text.includes(p)))
     expect(broken).toEqual([])
   })
 

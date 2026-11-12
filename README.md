@@ -92,7 +92,7 @@ src/
   components/          shared components
   services/            axios client, API calls, TanStack Query keys
   types/               shared interfaces
-  i18n/                t() and the Japanese dictionaries; English is the key
+  i18n/                t() and the Vietnamese and Japanese dictionaries; English is the key
   utils/               pure helpers, each with its tests
   config/              theme tokens and the navigation
   styles/              global CSS

@@ -205,7 +205,18 @@ body .app-header .ant-breadcrumb li:last-child {
 }
 
 .lang-select {
-  width: 128px;
+  width: 144px;
+}
+
+/* Phones: the closed select shows only the flag, so the breadcrumb keeps its room. The open list still names each language. */
+@media (max-width: 575px) {
+  .lang-select {
+    width: 72px;
+  }
+
+  .lang-select .lang-name {
+    display: none;
+  }
 }
 
 .lang-option {

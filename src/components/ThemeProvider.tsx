@@ -1,6 +1,7 @@
 import { ConfigProvider } from 'antd'
 import enUS from 'antd/locale/en_US'
 import jaJP from 'antd/locale/ja_JP'
+import viVN from 'antd/locale/vi_VN'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { flushSync } from 'react-dom'
 import { buildTheme, THEME_COLOR, type ThemeMode } from '../config/theme'
@@ -64,7 +65,7 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeModeContext value={value}>
-      <ConfigProvider theme={themeConfig} tag={{ variant: 'outlined' }} locale={useLang() === 'ja' ? jaJP : enUS}>
+      <ConfigProvider theme={themeConfig} tag={{ variant: 'outlined' }} locale={{ en: enUS, vi: viVN, ja: jaJP }[useLang()]}>
         {children}
       </ConfigProvider>
     </ThemeModeContext>

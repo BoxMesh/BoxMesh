@@ -173,7 +173,7 @@ Gotchas:
 - The browser tab title follows the breadcrumb: `BoxMesh - Page` (`BoxMesh - Devices - SRV-DB-01` on a detail page,
   `BoxMesh - Sign in` on the sign-in page), in the current language.
 - Header 56, `bg-surface`, bottom border: breadcrumb on the left (`BoxMesh / Page`, current page in `text`); on the right a
-  240 px search (hidden under 576 px), the language select (128 px: a 20 × 14 flag from `src/assets/flags` + English / 日本語; switching redraws every screen in place, no reload),
+  240 px search (hidden under 576 px), the language select (144 px: a 20 × 14 flag from `src/assets/flags` + English / Tiếng Việt / 日本語, only the flag under 576 px; switching redraws every screen in place, no reload),
   the theme toggle and the account button (28 px orange avatar + name; the menu holds
   the email and "Sign out").
 - The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "BoxMesh" root is dropped.
@@ -475,8 +475,9 @@ PWA: installable (manifest in `vite.config.ts`). Any number of tabs or windows m
 
 1. Architecture artboard says "BoxAgent (Go)"; the repo's BoxAgent is C# / .NET.
 2. The canvas's Metrics tab became the Resource information card on Device detail (see Charts).
-3. English and Japanese only (PRODUCT.md, Language). Japanese text falls back from Geist to Hiragino Sans, Yu Gothic UI
-   or Meiryo, so it is set in the OS's Japanese face; dates read `2027/07/04` in Japanese.
+3. English, Vietnamese and Japanese (PRODUCT.md, Language). Geist covers Vietnamese; Japanese text falls back from Geist
+   to Hiragino Sans, Yu Gothic UI or Meiryo, so it is set in the OS's Japanese face. Dates read `04 Jul 2027` in
+   English, `04/07/2027` in Vietnamese and `2027/07/04` in Japanese.
 4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with an accent icon.
 5. The canvas's Operations group (Command & Jobs, Audit), Security & Certificates and System Settings were removed
    in November 2026, along with their services, types and demo routes.

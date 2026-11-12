@@ -74,9 +74,8 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 - The product owner builds BoxAgent and EdgePanel. BoxMesh work must not change them.
 
 **Language**
-- The UI ships in English and Japanese, switchable from the header and the sign-in page. A saved choice wins;
-  otherwise a Japanese browser starts in Japanese and every other browser in English.
-- Vietnamese is not built.
+- The UI ships in English, Vietnamese and Japanese, switchable from the header and the sign-in page. A saved choice
+  wins; otherwise a Vietnamese or Japanese browser starts in its language and every other browser in English.
 - Technical terms (agent, heartbeat, mTLS, CSR, token) may stay in English in both languages.
 
 **Undecided**
@@ -100,4 +99,4 @@ The control plane is self-hosted on the company's VPS, not in a vendor's cloud. 
 2. **Every remote action goes through the agent tunnel and respects roles and per-device permissions.** Trust decisions (approving an agent, revoking an enrollment token) show enough identity to decide on, and ask for confirmation.
 3. **Show the true state.** Unbuilt features, offline machines and stale data are labelled as such, and success is never faked.
 4. **Built for fleets of hundreds.** Finding, filtering and acting on many machines at once is the normal case, not the exception.
-5. **Every string is translatable.** English and Vietnamese ship together, with no hard-coded copy. (Not met yet: see Language above.)
+5. **Every string is translatable.** English and Vietnamese ship together, with no hard-coded copy.

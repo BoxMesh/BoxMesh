@@ -18,12 +18,14 @@ export function formatDate(iso: string) {
   const d = new Date(iso)
   // Japanese reads dates year first: 2027/07/04.
   if (lang === 'ja') return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())}`
+  // Vietnamese reads day first: 04/07/2027.
+  if (lang === 'vi') return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`
   return `${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`
 }
 
 export function formatDateTime(iso: string) {
   const d = new Date(iso)
-  return `${formatDate(iso)}${lang === 'ja' ? ' ' : ', '}${pad(d.getHours())}:${pad(d.getMinutes())}`
+  return `${formatDate(iso)}${lang === 'en' ? ', ' : ' '}${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
 
 export function ago(iso: string, now = Date.now()) {
