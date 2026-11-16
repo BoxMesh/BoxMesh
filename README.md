@@ -20,7 +20,7 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 |---|---|---|
 | Sign in and out (`/login`) | yes | `POST /log-in`, `POST /log-out` — live |
 | Dashboard | yes | missing |
-| Devices (list, detail with processes and performance, enrollment) | yes | `GET /devices`, `GET /devices/{host}`, `GET /devices/{host}/metrics` — live; the rest missing |
+| Devices (list, detail with processes and performance, enrollment) | yes | `GET /devices`, `GET /devices/{host}`, `GET /devices/{host}/metrics`, `GET /devices/{host}/processes` — live; the rest missing |
 | Groups | yes | missing |
 | Remote Terminal, Files, Service | yes | missing |
 | Alerts, Rules, Channels | yes | missing |
@@ -114,7 +114,7 @@ These are the endpoints the app calls today:
 | GET | `/api/devices/{host}` |
 | PUT | `/api/devices/{host}/groups` (`{ groupIds }`, replaces the device's groups) |
 | GET | `/api/devices/{host}/metrics?range=1h\|24h\|7d` (`[{ at, cpu, ram, disk, netIn, netOut }]`, percent and Mbps; averages per minute, 15 minutes or hour, oldest first; steps with no report are left out) |
-| GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; placeholder name) |
+| GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; the ten busiest at the agent's latest report, about every 10 s) |
 | GET · POST | `/api/groups` (`{ name }` to create) |
 | PATCH · DELETE | `/api/groups/{id}` (rename with `{ name }`; delete keeps the devices) |
 | GET · POST | `/api/users` (`{ name, email, password, role }` to create; the Admin sets the password and the panel sends no email; access is granted afterwards with PATCH) |
