@@ -124,7 +124,8 @@ const vi: Record<string, string> = {
   'Device not found': 'Không tìm thấy thiết bị',
   'No enrolled device has the ID {id}.': 'Không có thiết bị đã đăng ký nào có ID {id}.',
 
-  // src/pages/device-detail/AliasEditor.tsx
+  // src/components/AliasEditor.tsx, src/pages/devices/DevicesPage.tsx
+  Alias: 'Tên gợi nhớ',
   'Alias saved': 'Đã lưu tên gợi nhớ',
   'Alias removed': 'Đã xoá tên gợi nhớ',
   'e.g. Front desk': 'VD: Quầy lễ tân',

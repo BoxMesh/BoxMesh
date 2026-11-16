@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { App, Button, Input, Tooltip } from 'antd'
 import { useState } from 'react'
-import { Icon } from '../../components/Icon'
-import { t } from '../../i18n'
-import { setAlias } from '../../services/deviceService'
-import { deviceQuery, devicesQuery } from '../../services/queries'
-import type { Device } from '../../types/device'
+import { Icon } from './Icon'
+import { t } from '../i18n'
+import { setAlias } from '../services/deviceService'
+import { deviceQuery, devicesQuery } from '../services/queries'
+import type { Device } from '../types/device'
 
 const MAX_ALIAS = 100
 

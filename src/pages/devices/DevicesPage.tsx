@@ -2,6 +2,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { Button, Card, Input, Radio, Table, Tooltip, type TableProps } from 'antd'
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import AliasEditor from '../../components/AliasEditor'
 import DeviceGroups from '../../components/DeviceGroups'
 import AgentVersion from '../../components/AgentVersion'
 import StatusButton from '../../components/StatusButton'
@@ -75,15 +76,18 @@ export default function DevicesPage() {
           onChange={(e) => setFilter('q', e.target.value)}
         />
       ),
-      // The alias sits beside the hostname: two devices can share a hostname, never an ID or (by choice) an alias.
       render: (_, d) => (
-        <span>
-          <Link to={`/devices/${encodeURIComponent(d.id)}`} className="strong">
-            {d.host}
-          </Link>{' '}
-          <span className="muted">{d.alias}</span>
-        </span>
+        <Link to={`/devices/${encodeURIComponent(d.id)}`} className="strong">
+          {d.host}
+        </Link>
       ),
+    },
+    {
+      // Hostnames can repeat, so this is the column people tell devices apart by; edit it in place.
+      title: <Th icon="tag" label={t('Alias')} />,
+      key: 'alias',
+      sorter: (a, b) => a.alias.localeCompare(b.alias),
+      render: (_, d) => <AliasEditor device={d} />,
     },
     {
       title: <Th icon="tag" label={t('Groups')} />,

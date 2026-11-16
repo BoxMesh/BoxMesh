@@ -124,7 +124,8 @@ const ja: Record<string, string> = {
   'Device not found': 'デバイスが見つかりません',
   'No enrolled device has the ID {id}.': 'ID が {id} の登録済みデバイスはありません。',
 
-  // src/pages/device-detail/AliasEditor.tsx
+  // src/components/AliasEditor.tsx, src/pages/devices/DevicesPage.tsx
+  Alias: '別名',
   'Alias saved': '別名を保存しました',
   'Alias removed': '別名を削除しました',
   'e.g. Front desk': '例: 受付',
