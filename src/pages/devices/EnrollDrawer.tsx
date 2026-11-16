@@ -11,8 +11,8 @@ import type { OsFamily } from '../../types/device'
 
 const install = (os: OsFamily, token: string) =>
   os === 'Windows'
-    ? 'boxagent.exe install `\n  --server https://[VPS_DOMAIN] `\n  --token ' + token
-    : 'sudo ./boxagent install \\\n  --server https://[VPS_DOMAIN] \\\n  --token ' + token
+    ? 'boxagent.exe install `\n  --server https://[SERVER_DOMAIN] `\n  --token ' + token
+    : 'sudo ./boxagent install \\\n  --server https://[SERVER_DOMAIN] \\\n  --token ' + token
 
 const LIFETIMES = () => [
   { value: '1h', label: t('1 hour') },
@@ -45,7 +45,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
       queryClient.invalidateQueries({ queryKey: ['devices'] })
       message.success(
         outcome === 'approve'
-          ? t('{host} approved; its certificate is being signed', { host })
+          ? t('{host} approved; its tunnel is opening', { host })
           : t('{host} rejected', { host }),
       )
     },
@@ -92,7 +92,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
                 <Select options={groups.map((g) => ({ value: g, label: g }))} />
               </Form.Item>
               <Form.Item name="requiresApproval" valuePropName="checked">
-                <Checkbox>{t('Require admin approval before issuing certificates')}</Checkbox>
+                <Checkbox>{t('Require admin approval before the agent connects')}</Checkbox>
               </Form.Item>
               <Button type="primary" htmlType="submit" loading={create.isPending}>
                 {t('Create token')}
@@ -116,7 +116,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
           </h3>
           <p className="muted" style={{ margin: 0 }}>
             {t(
-              'The agent creates its private key and sends a certificate request. Once approved, EdgePanel signs the certificate and opens the mTLS tunnel.',
+              'The agent connects to EdgePanel over TLS with the token. Once approved, its tunnel opens.',
             )}
           </p>
           {pending.isPending ? <Spin /> : null}
@@ -137,7 +137,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
                 </Button>
                 <Popconfirm
                   title={t('Reject {host}?', { host: p.host })}
-                  description={t("It gets no certificate and can't connect. It can ask again with a new token.")}
+                  description={t("It can't connect. It can ask again with a new token.")}
                   okText={t('Reject')}
                   okButtonProps={{ danger: true }}
                   onConfirm={() => decide.mutate({ host: p.host, outcome: 'reject' })}

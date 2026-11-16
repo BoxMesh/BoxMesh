@@ -19,7 +19,6 @@ const OS_OPTIONS = () => [ALL(), { value: 'Windows', label: 'Windows' }, { value
 const STATUS_OPTIONS = () => [ALL(), { value: 'online', label: t('Online') }, { value: 'offline', label: t('Offline') }]
 const REMOTE_ACTIONS = [
   { path: '/remote-terminal', label: (host: string) => t('Open a terminal on {host}', { host }) },
-  { path: '/remote-desktop', label: (host: string) => t('Open remote desktop on {host}', { host }) },
   { path: '/remote-files', label: (host: string) => t('Browse files on {host}', { host }) },
 ]
 

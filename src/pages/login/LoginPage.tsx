@@ -40,9 +40,10 @@ export default function LoginPage() {
 
   // startDemo swaps the HTTP adapter, and that adapter answers /log-in itself, so the demo signs in
   // through the same mutation as a real visitor: no panel is reached and the password is ignored.
+  // It signs in as the fleet's Admin, so the Admin section is there to explore.
   const exploreDemo = () => {
     startDemo()
-    login.mutate({ email: 'ops@company.com', password: 'demo' })
+    login.mutate({ email: 'admin@company.com', password: 'demo' })
   }
 
   if (getSession()) return <Navigate to={target} replace />

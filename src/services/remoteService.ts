@@ -1,4 +1,4 @@
-import type { DesktopSession, FileListing, FileTransfer, NewFileTransfer, RemoteService, Shell, ShellResult } from '../types/remote'
+import type { FileListing, FileTransfer, NewFileTransfer, RemoteService, Shell, ShellResult } from '../types/remote'
 import { http } from './http'
 
 // Every remote action goes to the panel, which relays it down the device's own tunnel. The portal
@@ -18,11 +18,6 @@ export async function getFiles(host: string, path: string) {
 
 export async function getServices(host: string) {
   const { data } = await http.get<RemoteService[]>(`${of(host)}/services`)
-  return data
-}
-
-export async function startDesktop(host: string) {
-  const { data } = await http.post<DesktopSession>(`${of(host)}/desktop`, {})
   return data
 }
 

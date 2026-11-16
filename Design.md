@@ -265,7 +265,7 @@ A table that ends a card is clipped to the card's bottom corners.
 - Filters live in the column headers (antd filter dropdowns), not in a bar above.
 - Devices: an offline row drops to `text-secondary`. The Status column is a small outlined button with the word
   (Online: green text and border on `success-bg` with a solid dot; Offline: grey text, `border-control` border, no fill, a hollow ring. They differ in shape, not only hue. Offline is grey because a switched-off machine is not an error); clicking pings the agent, and it spins while waiting. The last column is three icon
-  links (terminal, desktop, files), `aria-disabled` with a tooltip when the device is offline.
+  links (terminal, files), `aria-disabled` with a tooltip when the device is offline.
 - Users: an account that can't sign in drops to `text-secondary` (no opacity).
 - Pagination: page size 10, range text `1–10 / 12`, hidden on a single page.
 
@@ -325,13 +325,13 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
 - The name links to the person's page, `/users/:id`; Actions holds one 28 px Edit button that opens the same page.
   The breadcrumb reads Users & Access / <name>.
 - The user page, like device detail: back button, name, role tag and status tag in the title row, Delete user (danger,
-  with a confirm) on the right. Then an Account card (email, role, last sign-in, devices reached, and the "Can sign
-  in" switch), a "What they can reach" card with the access picker, and Discard changes / Save changes under them.
+  with a confirm) on the right. Then an Account card laid out like Device information (label over value): email, last sign-in (relative, the exact
+  time in a tooltip) and Can sign in (a switch, or for the Admin the reason it can't be turned off), a "What they can reach" card with the access picker, and Discard changes / Save changes under them.
   Nothing saves until Save changes. Last, a "Devices they reach (N)" table from what is saved: device (links to its
   page), status, groups, and whether it is reached through a group or as a single device.
-- The Admin's page and your own can't be turned off or deleted: the switch is disabled and the header explains why
+- The Admin's page and your own can't be turned off or deleted: the reason takes the switch's place and the header explains why
   instead of offering Delete. The Admin's page has no Save row: they reach every device.
-- Inviting is an 880 px dialog: email, the access picker, then Cancel and Send invitation in the footer.
+- Creating a user is a dialog: name, email, password, then Cancel and Create user in the footer. Access is granted afterwards on the user's page.
 - The access picker is a Segmented switch, Groups (n) | Single devices (n), over an antd `Transfer`: Available and
   Chosen lists 420 px tall, each with search and a select-all checkbox, moved with two 32 px arrow buttons (like
   Django's two-list picker). No drag and drop: on a phone it fights the scroll. Below 576 px the lists stack, 320 px
@@ -350,7 +350,7 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
   that text instead of the generic permission message.
 
 ### Drawer
-Forms open in a drawer from the right (Enroll agent, New job, Create token, Invite person). An issued secret stays on
+Forms open in a drawer from the right (Enroll agent, New job, Create token, Create user). An issued secret stays on
 screen in the drawer with a "Copy" button until the drawer closes.
 
 ### Channel icons (`src/components/ChannelIcon.tsx`, `src/assets/channels/*.svg`)
@@ -380,7 +380,7 @@ Relative times ("4 min ago") for last seen and activity.
 
 ### Not-yet-available actions
 Actions EdgePanel has no endpoint for (edit tags, end a process, upload, download,
-rename or delete a file, desktop screenshot and Ctrl+Alt+Del) stay visible and toast "<Doing something> isn't available yet." They never fake success.
+rename or delete a file) stay visible and toast "<Doing something> isn't available yet." They never fake success.
 
 ### Sign-in page (`/login`)
 `/login` is public; every other route sends a signed-out visitor there and returns them to the page they asked for.
@@ -416,12 +416,12 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 
 ## 8. Navigation and screens
 
-**Roles**: Admin (exactly one) · Operator (everyone invited).
+**Roles**: Admin (exactly one) · Operator (everyone else). The Admin group of the menu (Users & Access, Command rules, Enrollment tokens) is shown to the Admin only; an Operator who types one of its addresses lands on the dashboard.
 
 **Sider groups**
 - Overview: Dashboard
 - Device: Devices, Groups
-- Remote: Remote Terminal, Remote Desktop, Remote Files, Remote Service
+- Remote: Remote Terminal, Remote Files, Remote Service
 - Alert: Alerts, Rules, Channels
 - Admin: Users & Access, Command rules, Enrollment tokens
 
@@ -431,9 +431,8 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Dashboard | `/dashboard` | Health strip (fleet health bar, needs attention now, latency, agents by OS); Alert queue grouped Critical / Warning / Offline; Health by group; Top usage and Disk filling up |
 | Devices | `/devices` | Table with header filters (incl. Groups), group tags with an edit picker, ping status, row remote actions; Manage groups (links to Groups); Enroll agent drawer |
 | Groups | `/groups` | Table: group, devices, members, Add devices (two-list dialog), rename / delete; New group |
-| Device detail | `/devices/:id` | Back, name, alias, the same Online / Offline status button as the Devices table (click to ping, offline included); Terminal (primary), Desktop, Files, Service. A "Device information" card (hostname, OS, IP, MAC, agent version shown as in the Devices table by `AgentVersion`, uptime, enrolled at, Groups with the edit picker). Below it one card with two tabs, like Task Manager (`?tab=performance` keeps the second): **Processes (N)** (default; search, Name, PID, Status, User, CPU sorted high first, Memory, End task not supported yet; polls every 5 s only while open; a note while offline) and **Performance** (1h / 24h / 7d switch; CPU, RAM and Disk over time, 0–100 %, dashed alert line, hardware beside each name; Network with Received `--series-1` filled and Sent `--series-2`, Mbps on its own scale; y labels in a 56 px gutter, time marks on round local times, crosshair tooltip) |
+| Device detail | `/devices/:id` | Back, name, alias, the same Online / Offline status button as the Devices table (click to ping, offline included); Terminal (primary), Files, Service. A "Device information" card (hostname, OS, IP, MAC, agent version shown as in the Devices table by `AgentVersion`, uptime, enrolled at, Groups with the edit picker). Below it one card with two tabs, like Task Manager (`?tab=performance` keeps the second): **Processes (N)** (default; search, Name, PID, Status, User, CPU sorted high first, Memory, End task not supported yet; polls every 5 s only while open; a note while offline) and **Performance** (1h / 24h / 7d switch; CPU, RAM and Disk over time, 0–100 %, dashed alert line, hardware beside each name; Network with Received `--series-1` filled and Sent `--series-2`, Mbps on its own scale; y labels in a 56 px gutter, time marks on round local times, crosshair tooltip) |
 | Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
-| Remote Desktop | `/remote-desktop?host=` | Device picker, frame (no stream yet) |
 | Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload (not available yet). Two devices: two panes, copy and sync between them, Transfers |
 | Remote Service | `/remote-services?host=` | Device picker, web apps through the proxy |
 | Alerts | `/alerts` | Table (alert, rules, applies to, send to with channel icons) with Edit and Delete; dialog sections: Rules (ticked cards), Devices (`ScopeFields`: all, groups or devices), Send to (channel cards), Message (template with insertable {device} {alias} {rule} {condition} {value} {groups} {time} and a live preview from a real device in scope). Add alert waits until a rule and a channel exist |
@@ -441,19 +440,19 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Channels | `/alert-channels` | Table (channel, type with its brand icon, used by N alerts, Test with a Send test button, Actions with Edit and Delete); dialog: type (cards with the brand icon and name only, Telegram / Discord / Email, fixed once saved), name, then per type: bot token + chat ID; webhook URL; recipients, Gmail sender + app password, SMTP server and port (smtp.gmail.com:587). Secrets are write-only: on edit, an empty field keeps the saved one |
 | Enrollment tokens | `/enrollment-tokens` | Create token (opens the Enroll new agent drawer); table: last four characters, Active / Expired, default group, expires, approval, used by (device links), Revoke with a confirm |
 | Command rules | `/commands` | Test a command (shell + command, live Blocked / Allowed answer); read-only rules table (command, match, shells, applies to, reason) with Edit and Delete; Add rule / edit dialog |
-| Users & Access | `/users` | Role cards (Admin, Operator); a read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Invite dialog (email, what they can reach; joins as Operator) |
+| Users & Access | `/users` | A read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Create user dialog (name, email, password; joins as Operator with no devices, access is granted on their page) |
 
 ---
 
 ## 9. Backend contract
 
 EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
-(all under `VITE_API_URL`, default `/api`): `/log-in`, `/log-out`, `/forgot-password` (placeholder name), `/devices`
-and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/desktop`, `/services`, `/enrollments`,
+(all under `VITE_API_URL`, default `/api`): `/log-in` (its reply carries `role`, which decides who sees the Admin group), `/log-out`, `/forgot-password` (placeholder name), `/devices`
+and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/services`, `/enrollments`,
 `/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/disk-forecast`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
 `/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
 
-Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`, `/ws/desktop/{id}`); internal web apps go
+Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`); internal web apps go
 through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
 
 ---
@@ -481,3 +480,4 @@ PWA: installable (manifest in `vite.config.ts`). Any number of tabs or windows m
 4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with an accent icon.
 5. The canvas's Operations group (Command & Jobs, Audit), Security & Certificates and System Settings were removed
    in November 2026, along with their services, types and demo routes.
+6. Remote Desktop was removed in November 2026 until EdgePanel and BoxAgent can stream a screen.

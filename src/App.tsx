@@ -1,6 +1,6 @@
 import { Result } from 'antd'
 import { lazy } from 'react'
-import { Navigate, Route, Routes, useLocation } from 'react-router'
+import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router'
 import AppLayout from './layouts/AppLayout'
 import AlertRulesPage from './pages/alerts/AlertRulesPage'
 import AlertsPage from './pages/alerts/AlertsPage'
@@ -11,7 +11,6 @@ import DeviceDetailPage from './pages/device-detail/DeviceDetailPage'
 import DevicesPage from './pages/devices/DevicesPage'
 import GroupsPage from './pages/groups/GroupsPage'
 import LoginPage from './pages/login/LoginPage'
-import DesktopPage from './pages/remote-desktop/DesktopPage'
 import FilesPage from './pages/remote-files/FilesPage'
 import ServicesPage from './pages/remote-services/ServicesPage'
 import TokensPage from './pages/tokens/TokensPage'
@@ -29,6 +28,11 @@ function RequireAuth() {
   return getSession() ? <AppLayout /> : <Navigate to="/login" state={{ from: location }} replace />
 }
 
+// The Admin group is the Admin's alone: the menu hides it, and a typed address lands on the dashboard.
+function RequireAdmin() {
+  return getSession()?.role === 'Admin' ? <Outlet /> : <Navigate to="/dashboard" replace />
+}
+
 export default function App() {
   // A language switch mounts every screen again, so each label is worked out afresh. The router, query cache and
   // demo data sit above this and carry on: no reload, no refetch.
@@ -42,16 +46,17 @@ export default function App() {
         <Route path="devices/:id" element={<DeviceDetailPage />} />
         <Route path="groups" element={<GroupsPage />} />
         <Route path="remote-terminal" element={<TerminalPage />} />
-        <Route path="remote-desktop" element={<DesktopPage />} />
         <Route path="remote-files" element={<FilesPage />} />
         <Route path="remote-services" element={<ServicesPage />} />
-        <Route path="users" element={<UsersPage />} />
-        <Route path="users/:id" element={<UserPage />} />
         <Route path="alerts" element={<AlertsPage />} />
         <Route path="alert-rules" element={<AlertRulesPage />} />
         <Route path="alert-channels" element={<ChannelsPage />} />
-        <Route path="commands" element={<CommandsPage />} />
-        <Route path="enrollment-tokens" element={<TokensPage />} />
+        <Route element={<RequireAdmin />}>
+          <Route path="users" element={<UsersPage />} />
+          <Route path="users/:id" element={<UserPage />} />
+          <Route path="commands" element={<CommandsPage />} />
+          <Route path="enrollment-tokens" element={<TokensPage />} />
+        </Route>
         <Route
           path="*"
           element={<Result status="404" title={t('Page not found')} subTitle={t('Check the address, or pick a page from the menu.')} />}

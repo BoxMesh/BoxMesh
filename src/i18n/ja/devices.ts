@@ -66,7 +66,6 @@ const ja: Record<string, string> = {
   // src/pages/devices/DevicesPage.tsx
   All: 'すべて',
   'Open a terminal on {host}': '{host} でターミナルを開く',
-  'Open remote desktop on {host}': '{host} でリモートデスクトップを開く',
   'Browse files on {host}': '{host} のファイルを参照',
   Hostname: 'ホスト名',
   'Hostname, IP, MAC…': 'ホスト名、IP、MAC…',
@@ -91,7 +90,7 @@ const ja: Record<string, string> = {
   '24 hours': '24 時間',
   '7 days': '7 日',
   'Token created': 'トークンを作成しました',
-  '{host} approved; its certificate is being signed': '{host} を承認しました。証明書に署名しています',
+  '{host} approved; its tunnel is opening': '{host} を承認しました。トンネルを開いています',
   '{host} rejected': '{host} を拒否しました',
   'Command copied': 'コマンドをコピーしました',
   'Copy failed. Select the command and copy it manually.': 'コピーできませんでした。コマンドを選択して手動でコピーしてください。',
@@ -102,25 +101,24 @@ const ja: Record<string, string> = {
   'Create another': 'もう 1 つ作成',
   'Token lifetime': 'トークンの有効期間',
   'Default group': '既定のグループ',
-  'Require admin approval before issuing certificates': '証明書の発行前に管理者の承認を必須にする',
+  'Require admin approval before the agent connects': 'エージェントが接続する前に管理者の承認を必須にする',
   'Create token': 'トークンを作成',
   'Install BoxAgent on the device': 'デバイスに BoxAgent をインストール',
   'Operating system': 'OS',
   'Copy command': 'コマンドをコピー',
   'Approve the agent': 'エージェントを承認',
-  'The agent creates its private key and sends a certificate request. Once approved, EdgePanel signs the certificate and opens the mTLS tunnel.':
-    'エージェントが秘密鍵を作成し、証明書要求を送信します。承認されると、EdgePanel が証明書に署名し、mTLS トンネルを開きます。',
+  'The agent connects to EdgePanel over TLS with the token. Once approved, its tunnel opens.':
+    'エージェントはトークンを使って TLS 経由で EdgePanel に接続します。承認されると、トンネルが開きます。',
   "Waiting agents didn't load.": '承認待ちのエージェントを読み込めませんでした。',
   'No agents are waiting for approval.': '承認待ちのエージェントはありません。',
   Approve: '承認',
   'Reject {host}?': '{host} を拒否しますか?',
-  "It gets no certificate and can't connect. It can ask again with a new token.":
-    '証明書は発行されず、接続できません。新しいトークンで再度申請できます。',
+  "It can't connect. It can ask again with a new token.":
+    '接続できません。新しいトークンで再度申請できます。',
   Reject: '拒否',
 
   // src/pages/device-detail/DeviceDetailPage.tsx
   Terminal: 'ターミナル',
-  Desktop: 'デスクトップ',
   Files: 'ファイル',
   Service: 'サービス',
   'Device not found': 'デバイスが見つかりません',

@@ -27,7 +27,6 @@ const vi: Record<string, string> = {
   Groups: 'Nhóm',
   Remote: 'Điều khiển',
   'Remote Terminal': 'Terminal',
-  'Remote Desktop': 'Màn hình',
   'Remote Files': 'Tệp & Thư mục',
   'Remote Service': 'Dịch vụ',
   Alert: 'Cảnh báo',
@@ -209,12 +208,9 @@ const vi: Record<string, string> = {
   Role: 'Vai trò',
   'Last sign-in': 'Đăng nhập gần nhất',
   Never: 'Chưa bao giờ',
-  'Devices reached': 'Thiết bị truy cập được',
   All: 'Tất cả',
   'Can sign in': 'Được đăng nhập',
   "You can't turn off {locked}.": 'Không thể tắt {locked}.',
-  'Turned off, they keep their account but can no longer sign in.':
-    'Khi tắt, tài khoản vẫn được giữ nhưng không thể đăng nhập nữa.',
   '{email} can sign in': '{email} được đăng nhập',
   'What they can reach': 'Phạm vi truy cập',
   'The Admin reaches every device.': 'Quản trị viên truy cập được mọi thiết bị.',
@@ -224,20 +220,16 @@ const vi: Record<string, string> = {
   'No device yet. Add groups or single devices above.': 'Chưa có thiết bị nào. Hãy thêm nhóm hoặc thiết bị riêng lẻ ở trên.',
 
   // src/pages/users/UsersPage.tsx
-  'Everything, plus managing users': 'Toàn quyền, kể cả quản lý người dùng',
-  'Runs commands and opens remote sessions': 'Chạy lệnh và mở phiên điều khiển từ xa',
-  'Invitation sent to {email}': 'Đã gửi lời mời tới {email}',
+  'Account created for {email}': 'Đã tạo tài khoản cho {email}',
   Name: 'Tên',
   'Open {name}': 'Mở {name}',
   'Who can sign in, what they may do, and which devices each Operator can reach.':
     'Ai được đăng nhập, được làm gì và mỗi Vận hành viên truy cập được những thiết bị nào.',
-  'Invite person': 'Mời người dùng',
-  'Invite a person': 'Mời người dùng',
+  'Create user': 'Tạo người dùng',
+  'Create a user': 'Tạo người dùng',
   Cancel: 'Hủy',
-  'Send invitation': 'Gửi lời mời',
-  'Work email': 'Email công việc',
-  'They join as an Operator: they can run commands and open remote sessions.':
-    'Người này tham gia với vai trò Vận hành viên: có thể chạy lệnh và mở phiên điều khiển từ xa.',
+  'Enter their name.': 'Nhập tên của họ.',
+  'Enter a password.': 'Nhập mật khẩu.',
   'Enter their email.': 'Nhập email của người này.',
 }
 

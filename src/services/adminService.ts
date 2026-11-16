@@ -1,4 +1,4 @@
-import type { Account, CommandRule, DeviceAccess, EnrollmentToken, Role } from '../types/admin'
+import type { Account, CommandRule, EnrollmentToken, Role } from '../types/admin'
 import { http } from './http'
 
 export async function getTokens() {
@@ -27,7 +27,8 @@ export async function getUsers() {
   return data
 }
 
-export async function inviteUser(input: { email: string; role: Role; access: DeviceAccess }) {
+/** Creates the account outright: the Admin sets the password, the panel sends no email. */
+export async function createUser(input: { name: string; email: string; password: string; role: Role }) {
   const { data } = await http.post<Account>('/users', input)
   return data
 }

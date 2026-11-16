@@ -13,7 +13,6 @@ import ProcessesPanel from './ProcessesPanel'
 // Each remote screen takes the device in `?host=`, so these open straight onto this machine.
 const REMOTE = () => [
   { path: '/remote-terminal', short: t('Terminal') },
-  { path: '/remote-desktop', short: t('Desktop') },
   { path: '/remote-files', short: t('Files') },
   { path: '/remote-services', short: t('Service') },
 ].map(({ path, short }) => ({ ...navItem(path), short }))

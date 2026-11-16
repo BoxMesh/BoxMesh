@@ -42,7 +42,7 @@ export async function getPendingEnrollments() {
   return data
 }
 
-/** Approve or reject an agent waiting for its certificate. */
+/** Approve or reject an agent waiting to be let in. */
 export async function decideEnrollment(host: string, outcome: 'approve' | 'reject') {
   await http.post(`/enrollments/${encodeURIComponent(host)}/${outcome}`, {})
 }

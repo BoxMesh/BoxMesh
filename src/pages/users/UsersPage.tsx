@@ -4,39 +4,34 @@ import { Link } from 'react-router'
 import { useState } from 'react'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
-import { inviteUser } from '../../services/adminService'
-import { devicesQuery, groupsQuery, usersQuery } from '../../services/queries'
-import type { Account, DeviceAccess, Role } from '../../types/admin'
+import { createUser } from '../../services/adminService'
+import { groupsQuery, usersQuery } from '../../services/queries'
+import type { Account } from '../../types/admin'
 import { t } from '../../i18n'
 import { ago } from '../../utils/time'
-import { AccessFields, AccessTags, RoleName } from './Access'
-
-const ROLES = (): { value: Role; label: string; help: string }[] => [
-  { value: 'Admin', label: t('Admin'), help: t('Everything, plus managing users') },
-  { value: 'Operator', label: t('Operator'), help: t('Runs commands and opens remote sessions') },
-]
+import { AccessTags, RoleName } from './Access'
 
 // The table only shows; every change happens on the person's own page (/users/:id). There is exactly one Admin, so roles are not
-// edited: everyone invited joins as an Operator, and the Admin can't be turned off or deleted, or the console
+// edited: every account created is an Operator, and the Admin can't be turned off or deleted, or the console
 // would be left with nobody to manage it.
 export default function UsersPage() {
-  const [{ data: accounts }, { data: groups }, { data: devices }] = useSuspenseQueries({
-    queries: [usersQuery, groupsQuery, devicesQuery],
+  const [{ data: accounts }, { data: groups }] = useSuspenseQueries({
+    queries: [usersQuery, groupsQuery],
   })
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
-  const [form] = Form.useForm<{ email: string; access: DeviceAccess }>()
+  const [form] = Form.useForm<{ name: string; email: string; password: string }>()
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['users'] })
 
-  const invite = useMutation({
-    mutationFn: inviteUser,
+  const create = useMutation({
+    mutationFn: createUser,
     onSuccess: (account) => {
       refresh()
       setOpen(false)
       form.resetFields()
-      message.success(t('Invitation sent to {email}', { email: account.email }))
+      message.success(t('Account created for {email}', { email: account.email }))
     },
     onError: (error) => message.error(error.message),
   })
@@ -92,20 +87,10 @@ export default function UsersPage() {
         subtitle={t('Who can sign in, what they may do, and which devices each Operator can reach.')}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setOpen(true)}>
-            {t('Invite person')}
+            {t('Create user')}
           </Button>
         }
       />
-
-      <div className="grid-stats">
-        {ROLES().map((r) => (
-          <Card key={r.value}>
-            <div className="muted">{r.label}</div>
-            <div className="kv-value">{accounts.filter((a) => a.role === r.value).length}</div>
-            <div className="sub">{r.help}</div>
-          </Card>
-        ))}
-      </div>
 
       <Card className="table-card" styles={{ body: { padding: 0 } }}>
         <Table<Account>
@@ -119,16 +104,15 @@ export default function UsersPage() {
       </Card>
 
       <Modal
-        title={t('Invite a person')}
+        title={t('Create a user')}
         open={open}
         onCancel={() => setOpen(false)}
-        width={880}
         footer={
           <div className="drawer-footer">
             <span className="screen-spacer" />
             <Button onClick={() => setOpen(false)}>{t('Cancel')}</Button>
-            <Button type="primary" loading={invite.isPending} onClick={() => form.submit()}>
-              {t('Send invitation')}
+            <Button type="primary" loading={create.isPending} onClick={() => form.submit()}>
+              {t('Create user')}
             </Button>
           </div>
         }
@@ -137,13 +121,18 @@ export default function UsersPage() {
           form={form}
           layout="vertical"
           requiredMark={false}
-          initialValues={{ access: { groupIds: [], hosts: [] } }}
-          onFinish={(values) => invite.mutate({ email: values.email, role: 'Operator', access: values.access })}
+          onFinish={(values) => create.mutate({ name: values.name.trim(), email: values.email, password: values.password, role: 'Operator' })}
         >
           <Form.Item
+            name="name"
+            label={t('Name')}
+            rules={[{ required: true, whitespace: true, message: t('Enter their name.') }]}
+          >
+            <Input autoComplete="off" />
+          </Form.Item>
+          <Form.Item
             name="email"
-            label={t('Work email')}
-            extra={t('They join as an Operator: they can run commands and open remote sessions.')}
+            label={t('Email')}
             normalize={(v: string) => v.trim()}
             rules={[
               { required: true, message: t('Enter their email.') },
@@ -152,9 +141,12 @@ export default function UsersPage() {
           >
             <Input type="email" autoComplete="off" placeholder="name@company.com" />
           </Form.Item>
-          <Form.Item name="access" label={t('What they can reach')}>
-            {/* Form.Item passes value and onChange; until something is picked they reach no device. */}
-            <AccessFields groups={groups} devices={devices} />
+          <Form.Item
+            name="password"
+            label={t('Password')}
+            rules={[{ required: true, message: t('Enter a password.') }]}
+          >
+            <Input.Password autoComplete="new-password" />
           </Form.Item>
         </Form>
       </Modal>

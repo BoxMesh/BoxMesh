@@ -11,7 +11,9 @@ let session = load();
 function load(): User | null {
   try {
     const saved = sessionStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : null;
+    const user = saved ? JSON.parse(saved) : null;
+    // A session saved before roles existed has none: sign in again rather than hide the Admin section.
+    return user?.role ? user : null;
   } catch {
     return null;
   }
@@ -21,7 +23,7 @@ export const getSession = () => session;
 
 export async function logIn(email: string, password: string) {
   const { data: account } = await http
-    .post<{ id: string; email: string; name?: string }>("/log-in", {
+    .post<{ id: string; email: string; name?: string; role?: string }>("/log-in", {
       email,
       password,
     })
@@ -34,6 +36,8 @@ export async function logIn(email: string, password: string) {
     email: account.email,
     // The person's name when the panel sends one; until then, the part of the email before the @.
     name: account.name?.trim() || account.email.split("@")[0],
+    // Only "Admin" unlocks the Admin section; anything else, or no role at all, is an Operator.
+    role: account.role === "Admin" ? "Admin" : "Operator",
   };
   session = data;
   try {

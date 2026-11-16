@@ -137,7 +137,8 @@ const routes: Route[] = [
     /^\/log-in$/,
     (_m, c) => {
       const email = body<{ email: string }>(c).email
-      return { id: 'demo-user', email, name: state.accounts.find((a) => a.email === email)?.name }
+      const account = state.accounts.find((a) => a.email === email)
+      return { id: 'demo-user', email, name: account?.name, role: account?.role }
     },
   ],
   ['post', /^\/log-out$/, () => null],
@@ -225,7 +226,6 @@ const routes: Route[] = [
     },
   ],
   ['get', /^\/devices\/([^/]+)\/services$/, (m) => seed.servicesOn(decodeURIComponent(m[1]))],
-  ['post', /^\/devices\/([^/]+)\/desktop$/, (m) => seed.desktopSession(decodeURIComponent(m[1]))],
 
   // ---- Admin ----
   ['get', /^\/enrollments$/, () => state.pending],
@@ -270,15 +270,15 @@ const routes: Route[] = [
     'post',
     /^\/users$/,
     (_m, c) => {
-      const input = body<{ email: string; role: string; access?: { groupIds: string[]; hosts: string[] } }>(c)
+      const input = body<{ name: string; email: string; role: string }>(c)
       const account = {
         id: `u-${state.accounts.length + 1}`,
         email: input.email,
-        name: input.email.split('@')[0],
+        name: input.name,
         role: input.role as (typeof state.accounts)[number]['role'],
         lastSignIn: '',
         disabled: false,
-        access: input.access ?? { groupIds: [], hosts: [] },
+        access: { groupIds: [], hosts: [] },
       }
       state.accounts = [...state.accounts, account]
       return account

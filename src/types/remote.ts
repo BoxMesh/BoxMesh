@@ -51,12 +51,3 @@ export interface RemoteService {
   status: 'running' | 'stopped'
   kind: string
 }
-
-export interface DesktopSession {
-  id: string
-  resolution: string
-  startedAt: string
-  /** Frames per second the agent is sending. */
-  fps: number
-  quality: 'auto' | 'high' | 'balanced' | 'low'
-}

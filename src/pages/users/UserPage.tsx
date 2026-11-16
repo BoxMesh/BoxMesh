@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
-import { App, Button, Card, Descriptions, Form, Popconfirm, Result, Switch, Table, Tag, type TableProps } from 'antd'
+import { App, Button, Card, Descriptions, Form, Popconfirm, Result, Switch, Table, Tag, Tooltip, type TableProps } from 'antd'
 import { useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router'
 import { Icon, Th } from '../../components/Icon'
@@ -152,28 +152,38 @@ export default function UserPage() {
       >
         <div className="stack">
           <Card title={t('Account')}>
+            {/* Laid out like Device information. Role and reach are already in the title row and the table below. */}
             <Descriptions
-              column={{ xs: 1, md: 2 }}
+              layout="vertical"
+              colon={false}
+              column={{ xs: 1, sm: 3 }}
               items={[
                 { key: 'email', label: t('Email'), children: account.email },
-                { key: 'role', label: t('Role'), children: <RoleName role={account.role} /> },
                 {
                   key: 'last',
                   label: t('Last sign-in'),
-                  children: account.lastSignIn ? `${formatDateTime(account.lastSignIn)} (${ago(account.lastSignIn)})` : t('Never'),
+                  children: account.lastSignIn ? (
+                    <Tooltip title={formatDateTime(account.lastSignIn)}>
+                      <span>{ago(account.lastSignIn)}</span>
+                    </Tooltip>
+                  ) : (
+                    t('Never')
+                  ),
                 },
-                { key: 'reach', label: t('Devices reached'), children: isAdmin ? t('All') : reach.length },
+                {
+                  key: 'active',
+                  label: t('Can sign in'),
+                  // A locked account says why instead of showing a switch that does nothing.
+                  children: locked ? (
+                    <span className="muted">{t("You can't turn off {locked}.", { locked })}</span>
+                  ) : (
+                    <Form.Item name="active" valuePropName="checked" noStyle>
+                      <Switch aria-label={t('{email} can sign in', { email: account.email })} />
+                    </Form.Item>
+                  ),
+                },
               ]}
             />
-            <Form.Item
-              name="active"
-              label={t('Can sign in')}
-              valuePropName="checked"
-              style={{ marginTop: 16, marginBottom: 0 }}
-              extra={locked ? t("You can't turn off {locked}.", { locked }) : t('Turned off, they keep their account but can no longer sign in.')}
-            >
-              <Switch disabled={Boolean(locked)} aria-label={t('{email} can sign in', { email: account.email })} />
-            </Form.Item>
           </Card>
 
           <Card title={t('What they can reach')}>

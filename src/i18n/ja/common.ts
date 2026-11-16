@@ -28,7 +28,6 @@ const ja: Record<string, string> = {
   Groups: 'グループ',
   Remote: 'リモート',
   'Remote Terminal': 'リモートターミナル',
-  'Remote Desktop': 'リモートデスクトップ',
   'Remote Files': 'リモートファイル',
   'Remote Service': 'リモートサービス',
   Alert: 'アラート',
@@ -210,12 +209,9 @@ const ja: Record<string, string> = {
   Role: 'ロール',
   'Last sign-in': '最終サインイン',
   Never: 'なし',
-  'Devices reached': 'アクセス可能なデバイス',
   All: 'すべて',
   'Can sign in': 'サインインを許可',
   "You can't turn off {locked}.": '{locked}は無効にできません。',
-  'Turned off, they keep their account but can no longer sign in.':
-    'オフにすると、アカウントは残りますがサインインできなくなります。',
   '{email} can sign in': '{email} のサインインを許可',
   'What they can reach': 'アクセスできる範囲',
   'The Admin reaches every device.': '管理者はすべてのデバイスにアクセスできます。',
@@ -225,20 +221,16 @@ const ja: Record<string, string> = {
   'No device yet. Add groups or single devices above.': 'デバイスはまだありません。上でグループまたは個別のデバイスを追加してください。',
 
   // src/pages/users/UsersPage.tsx
-  'Everything, plus managing users': 'すべての操作とユーザー管理',
-  'Runs commands and opens remote sessions': 'コマンドの実行とリモートセッションの開始',
-  'Invitation sent to {email}': '{email} に招待を送信しました',
+  'Account created for {email}': '{email} のアカウントを作成しました',
   Name: '名前',
   'Open {name}': '{name} を開く',
   'Who can sign in, what they may do, and which devices each Operator can reach.':
     'サインインできる人、できる操作、各オペレーターがアクセスできるデバイスを管理します。',
-  'Invite person': 'ユーザーを招待',
-  'Invite a person': 'ユーザーを招待',
+  'Create user': 'ユーザーを作成',
+  'Create a user': 'ユーザーを作成',
   Cancel: 'キャンセル',
-  'Send invitation': '招待を送信',
-  'Work email': '仕事用メールアドレス',
-  'They join as an Operator: they can run commands and open remote sessions.':
-    'オペレーターとして参加し、コマンドの実行とリモートセッションの開始ができます。',
+  'Enter their name.': '名前を入力してください。',
+  'Enter a password.': 'パスワードを入力してください。',
   'Enter their email.': 'メールアドレスを入力してください。',
 }
 

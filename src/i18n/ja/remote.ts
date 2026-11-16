@@ -11,32 +11,6 @@ const ja: Record<string, string> = {
     'whoami、hostname、uptime、df、ipconfig、ls、get-service などを試してください。',
   Shell: 'シェル',
 
-  // src/pages/remote-desktop/DesktopPage.tsx
-  auto: '自動',
-  high: '高',
-  balanced: 'バランス',
-  low: '低',
-  'Remote Desktop': 'リモートデスクトップ',
-  "See and control a device's screen over its agent tunnel.": 'エージェントのトンネル経由でデバイスの画面を表示・操作します。',
-  'view the screen of': '画面を表示する',
-  '{host} is reachable. Connecting opens a screen session and records it in the audit log.':
-    '{host} に接続できます。接続すると画面セッションが開始され、監査ログに記録されます。',
-  'Connect to {host}': '{host} に接続',
-  Live: 'ライブ',
-  'started {when}': '{when}に開始',
-  Quality: '画質',
-  'Clipboard sync': 'クリップボード同期',
-  'Sending Ctrl+Alt+Del': 'Ctrl+Alt+Del の送信',
-  Screenshots: 'スクリーンショット',
-  Screenshot: 'スクリーンショット',
-  'Session ended': 'セッションを終了しました',
-  Disconnect: '切断',
-  'Screen of {host}, {resolution}': '{host} の画面、{resolution}',
-  'Demo mode has no video stream. A real session draws frames here.':
-    'デモモードには映像ストリームがありません。実際のセッションではここに画面が表示されます。',
-  '{quality} quality · clipboard on': '画質: {quality} · クリップボード: オン',
-  '{quality} quality · clipboard off': '画質: {quality} · クリップボード: オフ',
-
   // src/pages/remote-services/ServicesPage.tsx
   Service: 'サービス',
   Port: 'ポート',

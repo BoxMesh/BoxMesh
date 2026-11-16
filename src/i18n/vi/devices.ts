@@ -66,7 +66,6 @@ const vi: Record<string, string> = {
   // src/pages/devices/DevicesPage.tsx
   All: 'Tất cả',
   'Open a terminal on {host}': 'Mở Terminal trên {host}',
-  'Open remote desktop on {host}': 'Mở màn hình của {host}',
   'Browse files on {host}': 'Duyệt tệp trên {host}',
   Hostname: 'Tên máy',
   'Hostname, IP, MAC…': 'Tên máy, IP, MAC…',
@@ -91,7 +90,7 @@ const vi: Record<string, string> = {
   '24 hours': '24 giờ',
   '7 days': '7 ngày',
   'Token created': 'Đã tạo token',
-  '{host} approved; its certificate is being signed': 'Đã duyệt {host}; đang ký chứng chỉ',
+  '{host} approved; its tunnel is opening': 'Đã duyệt {host}; đang mở tunnel',
   '{host} rejected': 'Đã từ chối {host}',
   'Command copied': 'Đã sao chép lệnh',
   'Copy failed. Select the command and copy it manually.': 'Sao chép không thành công. Hãy chọn lệnh và sao chép thủ công.',
@@ -102,25 +101,24 @@ const vi: Record<string, string> = {
   'Create another': 'Tạo token khác',
   'Token lifetime': 'Thời hạn token',
   'Default group': 'Nhóm mặc định',
-  'Require admin approval before issuing certificates': 'Yêu cầu quản trị viên duyệt trước khi cấp chứng chỉ',
+  'Require admin approval before the agent connects': 'Yêu cầu quản trị viên duyệt trước khi agent kết nối',
   'Create token': 'Tạo token',
   'Install BoxAgent on the device': 'Cài BoxAgent lên thiết bị',
   'Operating system': 'Hệ điều hành',
   'Copy command': 'Sao chép lệnh',
   'Approve the agent': 'Duyệt agent',
-  'The agent creates its private key and sends a certificate request. Once approved, EdgePanel signs the certificate and opens the mTLS tunnel.':
-    'Agent tự tạo khóa riêng và gửi yêu cầu cấp chứng chỉ. Sau khi được duyệt, EdgePanel ký chứng chỉ và mở kết nối (tunnel) mTLS.',
+  'The agent connects to EdgePanel over TLS with the token. Once approved, its tunnel opens.':
+    'Agent kết nối tới EdgePanel qua TLS bằng token. Sau khi được duyệt, tunnel của nó sẽ mở.',
   "Waiting agents didn't load.": 'Không tải được danh sách agent đang chờ.',
   'No agents are waiting for approval.': 'Không có agent nào đang chờ duyệt.',
   Approve: 'Duyệt',
   'Reject {host}?': 'Từ chối {host}?',
-  "It gets no certificate and can't connect. It can ask again with a new token.":
-    'Agent sẽ không được cấp chứng chỉ và không thể kết nối. Agent có thể yêu cầu lại bằng token mới.',
+  "It can't connect. It can ask again with a new token.":
+    'Không kết nối được. Agent có thể xin lại bằng token mới.',
   Reject: 'Từ chối',
 
   // src/pages/device-detail/DeviceDetailPage.tsx
   Terminal: 'Terminal',
-  Desktop: 'Màn hình',
   Files: 'Tệp & Thư mục',
   Service: 'Dịch vụ',
   'Device not found': 'Không tìm thấy thiết bị',

@@ -8,5 +8,7 @@ export interface NavItem {
 
 export interface NavGroup {
   title: string
+  /** Shown to the Admin only; App.tsx keeps its routes out of reach too. */
+  admin?: boolean
   items: NavItem[]
 }

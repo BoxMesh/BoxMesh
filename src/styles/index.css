@@ -332,12 +332,6 @@ body .user .ant-avatar {
   flex-wrap: wrap;
 }
 
-.grid-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
-}
-
 .muted {
   color: var(--text-secondary);
 }
@@ -1697,66 +1691,9 @@ body .terminal-host .xterm-viewport {
   background-color: transparent;
 }
 
-/* ---------- Remote desktop ---------- */
-.screen-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.screen-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
-  font-size: 14px;
-}
-
+/* Flex spacer: pushes what follows it to the end of a toolbar. */
 .screen-spacer {
   flex: 1;
-}
-
-.screen {
-  display: flex;
-  flex-direction: column;
-  height: min(56vh, 520px);
-  background: var(--bg-page);
-}
-
-.screen-inner {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 24px;
-  text-align: center;
-  color: var(--text-secondary);
-}
-
-.screen-host {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.screen-note {
-  font-size: 14px;
-}
-
-.screen-taskbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 8px 16px;
-  border-top: 1px solid var(--border);
-  background: var(--bg-surface);
-  font-size: 12px;
-  color: var(--text-secondary);
 }
 
 /* ---------- Remote Files: two devices ---------- */

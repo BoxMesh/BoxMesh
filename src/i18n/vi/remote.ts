@@ -11,32 +11,6 @@ const vi: Record<string, string> = {
     'Thử whoami, hostname, uptime, df, ipconfig, ls hoặc get-service.',
   Shell: 'Shell',
 
-  // src/pages/remote-desktop/DesktopPage.tsx
-  auto: 'tự động',
-  high: 'cao',
-  balanced: 'cân bằng',
-  low: 'thấp',
-  'Remote Desktop': 'Màn hình',
-  "See and control a device's screen over its agent tunnel.": 'Xem và điều khiển màn hình thiết bị qua tunnel của agent.',
-  'view the screen of': 'xem màn hình',
-  '{host} is reachable. Connecting opens a screen session and records it in the audit log.':
-    'Có thể kết nối tới {host}. Khi kết nối, một phiên màn hình sẽ được mở và ghi vào nhật ký kiểm tra.',
-  'Connect to {host}': 'Kết nối tới {host}',
-  Live: 'Trực tiếp',
-  'started {when}': 'bắt đầu {when}',
-  Quality: 'Chất lượng',
-  'Clipboard sync': 'Đồng bộ clipboard',
-  'Sending Ctrl+Alt+Del': 'Gửi Ctrl+Alt+Del',
-  Screenshots: 'Chụp màn hình',
-  Screenshot: 'Chụp màn hình',
-  'Session ended': 'Đã kết thúc phiên',
-  Disconnect: 'Ngắt kết nối',
-  'Screen of {host}, {resolution}': 'Màn hình của {host}, {resolution}',
-  'Demo mode has no video stream. A real session draws frames here.':
-    'Chế độ demo không có luồng video. Phiên thật sẽ hiển thị hình ảnh tại đây.',
-  '{quality} quality · clipboard on': 'Chất lượng {quality} · clipboard bật',
-  '{quality} quality · clipboard off': 'Chất lượng {quality} · clipboard tắt',
-
   // src/pages/remote-services/ServicesPage.tsx
   Service: 'Dịch vụ',
   Port: 'Cổng',

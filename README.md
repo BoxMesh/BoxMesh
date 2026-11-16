@@ -4,10 +4,10 @@
 
 **BoxMesh** is the web console of EdgeTunnel, used by a company's IT team to monitor and remotely operate its Windows and Linux machines.
 
-Each machine runs **BoxAgent**, which dials out to the company's self-hosted **EdgePanel** over gRPC + mTLS, so machines need no public IP, inbound ports or VPN. BoxMesh talks only to EdgePanel.
+Each machine runs **BoxAgent**, which dials out to the company's self-hosted **EdgePanel** over gRPC + TLS, so machines need no public IP, inbound ports or VPN. BoxMesh talks only to EdgePanel.
 
 ```text
-Browser ── BoxMesh ──HTTPS / WebSocket──► EdgePanel (VPS) ◄──gRPC + mTLS── BoxAgent (each machine)
+Browser ── BoxMesh ──HTTPS / WebSocket──► EdgePanel (company server) ◄──gRPC + TLS── BoxAgent (each machine)
 ```
 
 ## Status
@@ -22,13 +22,11 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 | Dashboard | yes | missing |
 | Devices (list, detail with processes and performance, enrollment) | yes | missing |
 | Groups | yes | missing |
-| Remote Terminal, Desktop, Files, Service | yes | missing |
+| Remote Terminal, Files, Service | yes | missing |
 | Alerts, Rules, Channels | yes | missing |
 | Users & Access | yes | missing |
 | Command rules | yes | missing |
 | Enrollment tokens | yes | missing |
-
-Remote Desktop has no video stream yet: the UI runs, and the frame says so.
 
 ## Demo mode
 
@@ -110,7 +108,7 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email, name? }`, JWTs set as HttpOnly cookies; without `name` the header shows the part of the email before the @) |
+| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email, name?, role }`, JWTs set as HttpOnly cookies; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
 | POST | `/api/log-out` → EdgePanel `/log-out` (clears both cookies) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
@@ -119,6 +117,8 @@ These are the endpoints the app calls today:
 | GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; placeholder name) |
 | GET · POST | `/api/groups` (`{ name }` to create) |
 | PATCH · DELETE | `/api/groups/{id}` (rename with `{ name }`; delete keeps the devices) |
+| GET · POST | `/api/users` (`{ name, email, password, role }` to create; the Admin sets the password and the panel sends no email; access is granted afterwards with PATCH) |
+| PATCH · DELETE | `/api/users/{id}` (`{ disabled, access }`) |
 | GET | `/api/enrollments?status=pending` |
 | GET · POST | `/api/enrollment-tokens` (`{ group, lifetime, requiresApproval }` to create; the reply holds the only full copy) |
 | DELETE | `/api/enrollment-tokens/{id}` (revoke; placeholder name) |

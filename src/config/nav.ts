@@ -1,8 +1,9 @@
 import type { NavGroup } from '../types/nav'
 import { t } from '../i18n'
+import { getSession } from '../services/authService'
 
 // Menu groups from the design's Sider. Functions, so the labels follow the current language.
-export const navGroups = (): NavGroup[] => [
+const groups = (): NavGroup[] => [
   {
     title: t('Overview'),
     items: [{ icon: 'dashboard', label: t('Dashboard'), path: '/dashboard' }],
@@ -18,7 +19,6 @@ export const navGroups = (): NavGroup[] => [
     title: t('Remote'),
     items: [
       { icon: 'terminal', label: t('Remote Terminal'), path: '/remote-terminal' },
-      { icon: 'desktop', label: t('Remote Desktop'), path: '/remote-desktop' },
       { icon: 'files', label: t('Remote Files'), path: '/remote-files' },
       { icon: 'web', label: t('Remote Service'), path: '/remote-services' },
     ],
@@ -33,6 +33,7 @@ export const navGroups = (): NavGroup[] => [
   },
   {
     title: t('Admin'),
+    admin: true,
     items: [
       { icon: 'users', label: t('Users & Access'), path: '/users' },
       { icon: 'lock', label: t('Command rules'), path: '/commands' },
@@ -40,6 +41,9 @@ export const navGroups = (): NavGroup[] => [
     ],
   },
 ]
+
+// An Operator never sees the Admin group; App.tsx keeps its routes out of reach too.
+export const navGroups = () => groups().filter((g) => !g.admin || getSession()?.role === 'Admin')
 
 export const navItems = () => navGroups().flatMap((g) => g.items)
 

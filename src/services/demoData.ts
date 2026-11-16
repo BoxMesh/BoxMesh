@@ -2,11 +2,11 @@ import type { Alert, AlertChannel, AlertRule } from '../types/alert'
 import type { Account, CommandRule, EnrollmentToken } from '../types/admin'
 import type { RemoteSessions, TimeRange } from '../types/dashboard'
 import type { Device, DeviceGroup, DeviceProcess, DiskForecast, MetricPoint, OsFamily, PendingEnrollment, ProcessStatus } from '../types/device'
-import type { DesktopSession, FileEntry, FileListing, RemoteService, Shell } from '../types/remote'
+import type { FileEntry, FileListing, RemoteService, Shell } from '../types/remote'
 import { DAY, MINUTE, SECOND, fromNow } from '../utils/time'
 
 // A believable fleet for the demo: a mix of office desktops, two servers and a workshop, with a few
-// machines deliberately in trouble so the alerting and certificate screens have something to show.
+// machines deliberately in trouble so the alerting screens have something to show.
 type Seed = [host: string, alias: string, group: string, tag: string, cpu: number, ram: number, disk: number, agent: string]
 
 // Only what stays put is seeded. The OS, whether the agent is up, what it answers in and when it was
@@ -334,14 +334,6 @@ const SERVICES: Record<string, RemoteService[]> = {
 }
 
 export const servicesOn = (host: string): RemoteService[] => SERVICES[host] ?? []
-
-export const desktopSession = (host: string): DesktopSession => ({
-  id: `vd-${host.toLowerCase()}`,
-  resolution: devices.find((d) => d.host === host)?.osFamily === 'Windows' ? '1920 × 1080' : '1280 × 1024',
-  startedAt: fromNow(-12 * SECOND),
-  fps: 24,
-  quality: 'auto',
-})
 
 // Canned replies, so the demo terminal answers the commands an operator would actually try first.
 const REPLIES: { match: RegExp; output: (host: string) => string }[] = [
