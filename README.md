@@ -20,7 +20,7 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 |---|---|---|
 | Sign in and out (`/login`) | yes | `POST /log-in`, `POST /log-out` — live |
 | Dashboard | yes | missing |
-| Devices (list, detail with processes and performance, enrollment) | yes | missing |
+| Devices (list, detail with processes and performance, enrollment) | yes | `GET /devices`, `GET /devices/{host}`, `GET /devices/{host}/metrics` — live; the rest missing |
 | Groups | yes | missing |
 | Remote Terminal, Files, Service | yes | missing |
 | Alerts, Rules, Channels | yes | missing |
@@ -108,12 +108,12 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email, name?, role }`, JWTs set as HttpOnly cookies; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
-| POST | `/api/log-out` → EdgePanel `/log-out` (clears both cookies) |
+| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
+| POST | `/api/log-out` → EdgePanel `/log-out` (clears the cookie) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
 | PUT | `/api/devices/{host}/groups` (`{ groupIds }`, replaces the device's groups) |
-| GET | `/api/devices/{host}/metrics?range=1h\|24h\|7d` (`[{ at, cpu, ram, disk, netIn, netOut }]`, percent and Mbps; placeholder name) |
+| GET | `/api/devices/{host}/metrics?range=1h\|24h\|7d` (`[{ at, cpu, ram, disk, netIn, netOut }]`, percent and Mbps; averages per minute, 15 minutes or hour, oldest first; steps with no report are left out) |
 | GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; placeholder name) |
 | GET · POST | `/api/groups` (`{ name }` to create) |
 | PATCH · DELETE | `/api/groups/{id}` (rename with `{ name }`; delete keeps the devices) |

@@ -56,7 +56,7 @@ The control plane runs on the company's own server, inside its network; there is
 - Dark and light themes: the OS setting by default, switchable in the header.
 
 **What works end to end**
-- EdgePanel serves only sign-in and sign-out (`POST /log-in`, `POST /log-out`) so far. Every other screen calls its real endpoint and shows that screen's error state until EdgePanel has it.
+- EdgePanel serves sign-in, sign-out, the device list and usage history (`POST /log-in`, `POST /log-out`, `GET /devices`, `GET /devices/{host}`, `GET /devices/{host}/metrics`) so far. Every other screen calls its real endpoint; while EdgePanel answers 404 the screen shows empty tables and cards (`emptyIfMissing` in `services/queries.ts`), and any other failure shows its error state.
 - The password-reset request posts to `/forgot-password`, a route EdgePanel does not have yet; the name is a placeholder.
 - Remote Files can open a second device and copy or one-way sync files between the two. It calls `/file-transfers`, another placeholder name EdgePanel does not have yet; only the demo runs it.
 - Alerts: a rule is a named condition (CPU, RAM or disk over a limit, or offline, for N minutes). An alert applies rules to all devices, groups or single devices and sends a message, from a template with fields such as {device} and {value}, to channels: Telegram (bot token + chat ID), Discord (webhook) or email (Gmail app password or any SMTP server). EdgePanel is expected to evaluate and send; BoxMesh only configures it through `/alerts`, `/alert-rules` and `/alert-channels`, placeholder names. Secrets are write-only. Only the demo answers today, and its Send test sends nothing.
@@ -77,8 +77,12 @@ The control plane runs on the company's own server, inside its network; there is
   wins; otherwise a Vietnamese or Japanese browser starts in its language and every other browser in English.
 - Technical terms (agent, heartbeat, TLS, token) may stay in English in both languages.
 
+**Metrics history**
+- EdgePanel stores every agent report (about one every 10 s) in a Postgres table, `DeviceMetric`, and keeps 7 days.
+  The Performance charts read averages: 60 one-minute points for 1 h, 96 fifteen-minute points for 24 h, 168 hourly
+  points for 7 d.
+
 **Undecided**
-- Where metrics history is stored.
 - Licensing and distribution.
 
 ## Brand Commitments
