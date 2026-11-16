@@ -13,10 +13,10 @@ import { alertChannelsQuery, alertRulesQuery, alertsQuery, devicesQuery, groupsQ
 import type { Alert, AlertChannel, AlertRule } from '../../types/alert'
 import type { Device, DeviceGroup } from '../../types/device'
 import { conditionOf, DEFAULT_MESSAGE, destinationOf, KIND_LABEL, PLACEHOLDERS, renderMessage, unknownPlaceholders } from '../../utils/alerts'
-import { scopeOf, type Scope } from '../../utils/devices'
+import { deviceLabel, scopeOf, type Scope } from '../../utils/devices'
 import { formatDateTime } from '../../utils/time'
 
-const EMPTY: NewAlert = { name: '', ruleIds: [], groupIds: [], hosts: [], channelIds: [], message: DEFAULT_MESSAGE }
+const EMPTY: NewAlert = { name: '', ruleIds: [], groupIds: [], deviceIds: [], channelIds: [], message: DEFAULT_MESSAGE }
 
 export default function AlertsPage() {
   const [{ data: alerts }, { data: rules }, { data: channels }, { data: groups }, { data: devices }] = useSuspenseQueries({
@@ -28,6 +28,7 @@ export default function AlertsPage() {
   const ruleById = new Map(rules.map((r) => [r.id, r]))
   const channelById = new Map(channels.map((c) => [c.id, c]))
   const groupNames = new Map(groups.map((g) => [g.id, g.name]))
+  const deviceNames = new Map(devices.map((d) => [d.id, deviceLabel(d)]))
 
   const remove = useMutation({
     mutationFn: (alert: Alert) => deleteAlert(alert.id),
@@ -70,10 +71,10 @@ export default function AlertsPage() {
               </Tag>
             ))}
           </span>
-        ) : a.hosts.length ? (
+        ) : a.deviceIds.length ? (
           <span className="queue-tags">
-            {a.hosts.map((h) => (
-              <Tag key={h}>{h}</Tag>
+            {a.deviceIds.map((id) => (
+              <Tag key={id}>{deviceNames.get(id) ?? id}</Tag>
             ))}
           </span>
         ) : (
@@ -199,7 +200,7 @@ function AlertDialog({
   const scope = Form.useWatch('scope', form) ?? 'all'
   const ruleIds = Form.useWatch('ruleIds', form) ?? []
   const groupIds = Form.useWatch('groupIds', form) ?? []
-  const hosts = Form.useWatch('hosts', form) ?? []
+  const deviceIds = Form.useWatch('deviceIds', form) ?? []
   const template = Form.useWatch('message', form) ?? ''
 
   const save = useMutation({
@@ -217,13 +218,13 @@ function AlertDialog({
       ...values,
       name: values.name.trim(),
       groupIds: scope === 'groups' ? values.groupIds : [],
-      hosts: scope === 'hosts' ? values.hosts : [],
+      deviceIds: scope === 'devices' ? values.deviceIds : [],
     })
 
   // The preview fills the template from a real device in scope and the first ticked rule.
   const rule = rules.find((r) => ruleIds.includes(r.id)) ?? rules[0]
   const sample =
-    devices.find((d) => (scope === 'groups' ? d.groups.some((g) => groupIds.includes(g)) : scope === 'hosts' ? hosts.includes(d.host) : true)) ??
+    devices.find((d) => (scope === 'groups' ? d.groups.some((g) => groupIds.includes(g)) : scope === 'devices' ? deviceIds.includes(d.id) : true)) ??
     devices[0]
   const names = new Map(groups.map((g) => [g.id, g.name]))
   const preview =

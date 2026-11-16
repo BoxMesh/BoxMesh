@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createChannel, deleteAlertRule, deleteChannel, getAlerts, getChannels } from './alertService'
 import { createToken, deleteUser, getTokens, getUsers, revokeToken } from './adminService'
 import { install } from './demo'
-import { createGroup, deleteGroup, getDeviceMetrics, getDevices, getDiskForecast, getGroups, getProcesses, setDeviceGroups } from './deviceService'
+import { createGroup, deleteGroup, getDeviceMetrics, getDevices, getDiskForecast, getGroups, getProcesses, setAlias, setDeviceGroups } from './deviceService'
 import { runCommand } from './remoteService'
 
 // The demo answers through the real axios instance and its interceptor, so these also prove the
@@ -25,14 +25,14 @@ describe('demo mode', () => {
   })
 
   it('answers a known command and refuses an unknown one', async () => {
-    const known = await runCommand('SRV-DB-01', 'Bash', 'hostname')
+    const known = await runCommand('d-srv-db-01', 'Bash', 'hostname')
     expect(known).toMatchObject({ output: 'SRV-DB-01', exitCode: 0 })
-    const unknown = await runCommand('SRV-DB-01', 'Bash', 'make coffee')
+    const unknown = await runCommand('d-srv-db-01', 'Bash', 'make coffee')
     expect(unknown.exitCode).toBe(1)
   })
 
   it('refuses a blocked command with 403 and the rule', async () => {
-    await expect(runCommand('SRV-DB-01', 'Bash', 'rm -rf /')).rejects.toMatchObject({
+    await expect(runCommand('d-srv-db-01', 'Bash', 'rm -rf /')).rejects.toMatchObject({
       response: { status: 403, data: { error: expect.stringContaining('Deletes the whole file system') } },
     })
   })
@@ -57,26 +57,39 @@ describe('demo mode', () => {
 
   it('puts a device in several groups and drops a deleted group from it', async () => {
     const group = await createGroup('Night shift')
-    await setDeviceGroups('HR-PC-01', ['g-hr', group.id])
+    await setDeviceGroups('d-hr-pc-01', ['g-hr', group.id])
     expect((await getDevices()).find((d) => d.host === 'HR-PC-01')?.groups).toEqual(['g-hr', group.id])
     await deleteGroup(group.id)
     expect((await getDevices()).find((d) => d.host === 'HR-PC-01')?.groups).toEqual(['g-hr'])
     expect((await getGroups()).map((g) => g.id)).not.toContain(group.id)
   })
 
+  it('gives every device its own ID', async () => {
+    const devices = await getDevices()
+    expect(new Set(devices.map((d) => d.id)).size).toBe(devices.length)
+  })
+
+  it('sets an alias, trimmed, and clears it again', async () => {
+    const before = (await getDevices()).find((d) => d.id === 'd-srv-db-01')!.alias
+    expect((await setAlias('d-srv-db-01', '  Main DB  ')).alias).toBe('Main DB')
+    expect((await getDevices()).find((d) => d.id === 'd-srv-db-01')?.alias).toBe('Main DB')
+    expect((await setAlias('d-srv-db-01', '')).alias).toBe('')
+    await setAlias('d-srv-db-01', before)
+  })
+
   it('serves a usage history that ends at the device now', async () => {
     const device = (await getDevices()).find((d) => d.host === 'SRV-DB-01')!
-    const points = await getDeviceMetrics('SRV-DB-01', '24h')
+    const points = await getDeviceMetrics('d-srv-db-01', '24h')
     expect(points).toHaveLength(96)
     expect(points.at(-1)).toMatchObject({ at: device.lastSeen, cpu: device.cpu, ram: device.ram, disk: device.disk })
     expect(points.every((p) => [p.cpu, p.ram, p.disk].every((v) => v >= 1 && v <= 100))).toBe(true)
     expect(points.every((p) => p.netIn > 0 && p.netOut > 0)).toBe(true)
-    expect(await getDeviceMetrics('SRV-DB-01', '24h')).toEqual(points)
+    expect(await getDeviceMetrics('d-srv-db-01', '24h')).toEqual(points)
   })
 
   it('lists processes of an online device with unique PIDs', async () => {
     const device = (await getDevices()).find((d) => d.online)!
-    const list = await getProcesses(device.host)
+    const list = await getProcesses(device.id)
     expect(list.length).toBeGreaterThan(5)
     expect(new Set(list.map((p) => p.pid)).size).toBe(list.length)
     expect(list.every((p) => p.cpu >= 0 && p.memoryMb > 0)).toBe(true)

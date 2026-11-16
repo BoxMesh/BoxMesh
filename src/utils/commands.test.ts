@@ -9,11 +9,11 @@ const rule = (over: Partial<CommandRule>): CommandRule => ({
   shells: [],
   reason: '',
   groupIds: [],
-  hosts: [],
+  deviceIds: [],
   ...over,
 })
 
-const PC = { host: 'ACC-PC-01', groups: ['g-acc'] }
+const PC = { id: 'd-acc-pc-01', groups: ['g-acc'] }
 
 describe('matches', () => {
   it('starts: whole words, any case and spacing', () => {
@@ -48,18 +48,18 @@ describe('matches', () => {
 
 describe('scope', () => {
   it('no groups and no devices means every device', () => {
-    expect(matches(rule({}), { host: 'X', groups: [] }, 'Bash', 'shutdown')).toBe(true)
+    expect(matches(rule({}), { id: 'd-x', groups: [] }, 'Bash', 'shutdown')).toBe(true)
   })
 
   it('a group rule covers only devices in that group', () => {
     const r = rule({ groupIds: ['g-acc'] })
     expect(matches(r, PC, 'CMD', 'shutdown')).toBe(true)
-    expect(matches(r, { host: 'SRV-DB-01', groups: ['g-srv'] }, 'Bash', 'shutdown')).toBe(false)
+    expect(matches(r, { id: 'd-srv-db-01', groups: ['g-srv'] }, 'Bash', 'shutdown')).toBe(false)
   })
 
   it('a device rule covers only that device', () => {
-    const r = rule({ hosts: ['SRV-DB-01'] })
-    expect(matches(r, { host: 'SRV-DB-01', groups: [] }, 'Bash', 'shutdown')).toBe(true)
+    const r = rule({ deviceIds: ['d-srv-db-01'] })
+    expect(matches(r, { id: 'd-srv-db-01', groups: [] }, 'Bash', 'shutdown')).toBe(true)
     expect(matches(r, PC, 'CMD', 'shutdown')).toBe(false)
   })
 })

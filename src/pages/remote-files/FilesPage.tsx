@@ -17,11 +17,11 @@ import FileBrowser from './FileBrowser'
 import Transfers, { type PendingCopy } from './Transfers'
 
 export default function FilesPage() {
-  const { devices, host, device, setHost } = useDeviceParam()
+  const { devices, deviceId, device, setDeviceId } = useDeviceParam()
   const [params, setParams] = useSearchParams()
-  // The second device lives in `?with=` beside `?host=`; an empty value means "opened, none picked yet".
+  // The second device's ID lives in `?with=` beside `?device=`; an empty value means "opened, none picked yet".
   const other = params.get('with')
-  const otherDevice = devices.find((d) => d.host === other) ?? null
+  const otherDevice = devices.find((d) => d.id === other) ?? null
   const [comparing, setComparing] = useState(false)
 
   const setOther = (next: string | null) =>
@@ -58,7 +58,7 @@ export default function FilesPage() {
             </Button>
           ) : (
             <>
-              <DevicePicker devices={devices} host={host} onChange={setHost} />
+              <DevicePicker devices={devices} deviceId={deviceId} onChange={setDeviceId} />
               <Button icon={<Icon name="columns" size={14} />} disabled={!device?.online} onClick={() => setOther('')}>
                 {t('Add a second device')}
               </Button>
@@ -75,14 +75,14 @@ export default function FilesPage() {
           <DeviceOffline device={device} />
         </Card>
       ) : dual ? (
-        // Keyed by both hosts: each device opens at its own root again when either side changes.
+        // Keyed by both devices: each device opens at its own root again when either side changes.
         <TwoDevices
-          key={`${device.host}|${other}`}
+          key={`${device.id}|${other}`}
           left={device}
           right={otherDevice}
           devices={devices}
           comparing={comparing}
-          onLeft={setHost}
+          onLeft={setDeviceId}
           onRight={(next) => setOther(next)}
           onClose={() => {
             setOther(null)
@@ -90,7 +90,7 @@ export default function FilesPage() {
           }}
         />
       ) : (
-        <OneDevice key={device.host} device={device} />
+        <OneDevice key={device.id} device={device} />
       )}
     </div>
   )
@@ -126,8 +126,8 @@ interface TwoProps {
   right: Device | null
   devices: Device[]
   comparing: boolean
-  onLeft: (host: string) => void
-  onRight: (host: string) => void
+  onLeft: (deviceId: string) => void
+  onRight: (deviceId: string) => void
   onClose: () => void
 }
 
@@ -144,9 +144,9 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
   const [drag, setDrag] = useState<{ toRight: boolean; names: string[] } | null>(null)
 
   const ready = right?.online ? right : null
-  const leftList = useQuery(filesQuery(left.host, leftPath)).data?.entries
+  const leftList = useQuery(filesQuery(left.id, leftPath)).data?.entries
   const rightList = useQuery({
-    ...filesQuery(right?.host ?? '', rightPath),
+    ...filesQuery(right?.id ?? '', rightPath),
     enabled: Boolean(ready),
   }).data?.entries
   const loaded = Boolean(leftList && rightList)
@@ -166,8 +166,8 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
   })
 
   const place = (toRight: boolean) => {
-    const a: FileLocation = { host: left.host, path: leftPath }
-    const b: FileLocation = { host: ready!.host, path: rightPath }
+    const a: FileLocation = { deviceId: left.id, path: leftPath }
+    const b: FileLocation = { deviceId: ready!.id, path: rightPath }
     return toRight
       ? { from: a, to: b, source: leftList ?? [], target: rightList ?? [] }
       : { from: b, to: a, source: rightList ?? [], target: leftList ?? [] }
@@ -214,7 +214,7 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
   const toRightCount = comparing ? namesToSync(leftCmp ?? new Map()).length : leftSel.length
   const toLeftCount = comparing ? namesToSync(rightCmp ?? new Map()).length : rightSel.length
   const busy = send.isPending || pending !== null
-  const others = (except: string) => devices.filter((d) => d.host !== except)
+  const others = (exceptId: string) => devices.filter((d) => d.id !== exceptId)
   const files = (n: number) => (n === 1 ? t('{n} file', { n }) : t('{n} files', { n }))
 
   // The arrows carry no words, so their tooltip and accessible name say exactly what a click does.
@@ -254,7 +254,7 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
             setLeftPath(p)
             setLeftSel([])
           }}
-          head={<DevicePicker devices={others(right?.host ?? '')} host={left.host} onChange={onLeft} />}
+          head={<DevicePicker devices={others(right?.id ?? '')} deviceId={left.id} onChange={onLeft} />}
           selected={leftSel}
           onSelect={(names) => {
             setLeftSel(names)
@@ -294,7 +294,7 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
               setRightPath(p)
               setRightSel([])
             }}
-            head={<SecondHead devices={others(left.host)} host={right.host} onChange={onRight} onClose={onClose} />}
+            head={<SecondHead devices={others(left.id)} deviceId={right.id} onChange={onRight} onClose={onClose} />}
             selected={rightSel}
             onSelect={(names) => {
               setRightSel(names)
@@ -308,7 +308,7 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
         ) : (
           <Card className="table-card" styles={{ body: { padding: 0 } }}>
             <div className="files-head">
-              <SecondHead devices={others(left.host)} host={right?.host ?? ''} onChange={onRight} onClose={onClose} />
+              <SecondHead devices={others(left.id)} deviceId={right?.id ?? ''} onChange={onRight} onClose={onClose} />
             </div>
             {right ? <DeviceOffline device={right} /> : <PickFirst icon="files" what={t('copy files to')} />}
           </Card>
@@ -328,18 +328,18 @@ function TwoDevices({ left, right, devices, comparing, onLeft, onRight, onClose 
 
 function SecondHead({
   devices,
-  host,
+  deviceId,
   onChange,
   onClose,
 }: {
   devices: Device[]
-  host: string
-  onChange: (host: string) => void
+  deviceId: string
+  onChange: (deviceId: string) => void
   onClose: () => void
 }) {
   return (
     <>
-      <DevicePicker devices={devices} host={host} onChange={onChange} />
+      <DevicePicker devices={devices} deviceId={deviceId} onChange={onChange} />
       <span className="screen-spacer" />
       <Tooltip title={t('Close the second device')}>
         <button type="button" className="icon-btn files-close" aria-label={t('Close the second device')} onClick={onClose}>

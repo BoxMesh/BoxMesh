@@ -57,7 +57,7 @@ export default function FileBrowser({
   const [over, setOver] = useState(false)
   const sep = sepOf(device)
   const root = rootOf(device)
-  const listing = useQuery(filesQuery(device.host, path))
+  const listing = useQuery(filesQuery(device.id, path))
   const entries = listing.data?.entries
 
   const columns: TableProps<FileEntry>['columns'] = [

@@ -19,7 +19,7 @@ export interface FileEntry {
 export type ConflictChoice = 'replace' | 'keep-both' | 'skip'
 
 export interface FileLocation {
-  host: string
+  deviceId: string
   path: string
 }
 

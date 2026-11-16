@@ -4,9 +4,9 @@ import { Icon } from '../../components/Icon'
 import { t } from '../../i18n'
 import type { Account, DeviceAccess, Role } from '../../types/admin'
 import type { Device, DeviceGroup } from '../../types/device'
-import { reachable } from '../../utils/devices'
+import { deviceLabel, reachable } from '../../utils/devices'
 
-const NONE: DeviceAccess = { groupIds: [], hosts: [] }
+const NONE: DeviceAccess = { groupIds: [], deviceIds: [] }
 const TAGS_SHOWN = 3
 
 /** A role as shown; the value itself stays English because it is compared and sent to EdgePanel. */
@@ -22,7 +22,7 @@ interface FieldsProps {
   devices: Device[]
 }
 
-type Part = 'groupIds' | 'hosts'
+type Part = 'groupIds' | 'deviceIds'
 const WORDS = (): Record<Part, { search: string; add: string; remove: string; one: string; many: string }> => ({
   groupIds: {
     search: t('Search groups'),
@@ -31,7 +31,7 @@ const WORDS = (): Record<Part, { search: string; add: string; remove: string; on
     one: t('group'),
     many: t('groups'),
   },
-  hosts: {
+  deviceIds: {
     search: t('Search devices'),
     add: t('Add the checked devices'),
     remove: t('Remove the checked devices'),
@@ -59,7 +59,7 @@ export function AccessFields({ value = NONE, onChange = () => {}, groups, device
           const size = devices.filter((d) => d.groups.includes(g.id)).length
           return { key: g.id, title: g.name, description: size === 1 ? t('{n} device', { n: size }) : t('{n} devices', { n: size }) }
         })
-      : devices.map((d) => ({ key: d.host, title: d.host, description: d.alias }))
+      : devices.map((d) => ({ key: d.id, title: d.host, description: d.alias }))
   const words = WORDS()[part]
 
   return (
@@ -70,7 +70,7 @@ export function AccessFields({ value = NONE, onChange = () => {}, groups, device
         onChange={setPart}
         options={[
           { value: 'groupIds', label: t('Groups ({n})', { n: value.groupIds.length }) },
-          { value: 'hosts', label: t('Single devices ({n})', { n: value.hosts.length }) },
+          { value: 'deviceIds', label: t('Single devices ({n})', { n: value.deviceIds.length }) },
         ]}
       />
       <Transfer<Item>
@@ -106,22 +106,37 @@ export function AccessFields({ value = NONE, onChange = () => {}, groups, device
 }
 
 /** One half of what an account can reach, read-only, for a users-table column. The Admin reaches everything. */
-export function AccessTags({ account, part, groups }: { account: Account; part: 'groups' | 'hosts'; groups: DeviceGroup[] }) {
+export function AccessTags({
+  account,
+  part,
+  groups,
+  devices,
+}: {
+  account: Account
+  part: 'groups' | 'devices'
+  groups: DeviceGroup[]
+  devices: Device[]
+}) {
   if (account.role === 'Admin') return <span className="muted">{part === 'groups' ? t('All groups') : t('All devices')}</span>
   const access = account.access ?? NONE
   const names = new Map(groups.map((g) => [g.id, g.name]))
-  const labels = part === 'groups' ? access.groupIds.filter((id) => names.has(id)).map((id) => names.get(id)!) : access.hosts
-  if (!labels.length) return <span className="muted">—</span>
+  const deviceNames = new Map(devices.map((d) => [d.id, deviceLabel(d)]))
+  // A group deleted since keeps its id until the account is saved again; it has no name to show.
+  const tags: [id: string, label: string][] =
+    part === 'groups'
+      ? access.groupIds.filter((id) => names.has(id)).map((id) => [id, names.get(id)!])
+      : access.deviceIds.map((id) => [id, deviceNames.get(id) ?? id])
+  if (!tags.length) return <span className="muted">—</span>
   return (
     <span className="device-groups">
-      {labels.slice(0, TAGS_SHOWN).map((label) => (
-        <Tag key={label} color={part === 'groups' ? 'processing' : 'default'}>
+      {tags.slice(0, TAGS_SHOWN).map(([id, label]) => (
+        <Tag key={id} color={part === 'groups' ? 'processing' : 'default'}>
           {label}
         </Tag>
       ))}
-      {labels.length > TAGS_SHOWN ? (
-        <Tooltip title={labels.slice(TAGS_SHOWN).join(', ')}>
-          <span className="muted">+{labels.length - TAGS_SHOWN}</span>
+      {tags.length > TAGS_SHOWN ? (
+        <Tooltip title={tags.slice(TAGS_SHOWN).map(([, label]) => label).join(', ')}>
+          <span className="muted">+{tags.length - TAGS_SHOWN}</span>
         </Tooltip>
       ) : null}
     </span>

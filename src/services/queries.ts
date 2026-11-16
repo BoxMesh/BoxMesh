@@ -25,17 +25,17 @@ export const devicesQuery = queryOptions({ queryKey: ['devices'], queryFn: empty
 
 export const groupsQuery = queryOptions({ queryKey: ['groups'], queryFn: emptyIfMissing(getGroups, []) })
 
-export const deviceQuery = (host: string) => queryOptions({ queryKey: ['devices', host], queryFn: () => getDevice(host) })
+export const deviceQuery = (id: string) => queryOptions({ queryKey: ['devices', id], queryFn: () => getDevice(id) })
 
-export const deviceMetricsQuery = (host: string, range: TimeRange) =>
+export const deviceMetricsQuery = (id: string, range: TimeRange) =>
   queryOptions({
-    queryKey: ['devices', host, 'metrics', range],
-    queryFn: emptyIfMissing(() => getDeviceMetrics(host, range), []),
+    queryKey: ['devices', id, 'metrics', range],
+    queryFn: emptyIfMissing(() => getDeviceMetrics(id, range), []),
     placeholderData: keepPreviousData,
   })
 
-export const processesQuery = (host: string) =>
-  queryOptions({ queryKey: ['devices', host, 'processes'], queryFn: emptyIfMissing(() => getProcesses(host), []) })
+export const processesQuery = (id: string) =>
+  queryOptions({ queryKey: ['devices', id, 'processes'], queryFn: emptyIfMissing(() => getProcesses(id), []) })
 
 export const diskForecastQuery = queryOptions({ queryKey: ['disk-forecast'], queryFn: emptyIfMissing(getDiskForecast, []) })
 
@@ -59,11 +59,11 @@ export const remoteSessionsQuery = queryOptions({
 
 // ---- Remote ----
 
-export const filesQuery = (host: string, path: string) =>
-  queryOptions({ queryKey: ['devices', host, 'files', path], queryFn: () => getFiles(host, path) })
+export const filesQuery = (id: string, path: string) =>
+  queryOptions({ queryKey: ['devices', id, 'files', path], queryFn: () => getFiles(id, path) })
 
-export const servicesQuery = (host: string) =>
-  queryOptions({ queryKey: ['devices', host, 'services'], queryFn: () => getServices(host) })
+export const servicesQuery = (id: string) =>
+  queryOptions({ queryKey: ['devices', id, 'services'], queryFn: () => getServices(id) })
 
 // ---- Admin ----
 

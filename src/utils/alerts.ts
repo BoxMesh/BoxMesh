@@ -1,5 +1,27 @@
 import { t } from '../i18n'
-import type { AlertChannel, AlertMetric, AlertRule, ChannelKind } from '../types/alert'
+import type { Alert, AlertChannel, AlertMetric, AlertRule, ChannelKind } from '../types/alert'
+import type { Device } from '../types/device'
+import { appliesTo } from './commands'
+
+export type UsageMetric = Exclude<AlertMetric, 'offline'>
+
+/**
+ * The alert lines for a device's charts: per metric, the lowest threshold among the rules of the alerts that cover
+ * the device. A metric no such rule watches gets no line, so with no alert configured nothing is drawn.
+ */
+export function limitsFor(device: Pick<Device, 'id' | 'groups'>, alerts: Alert[], rules: AlertRule[]): Partial<Record<UsageMetric, number>> {
+  const byId = new Map(rules.map((r) => [r.id, r]))
+  const limits: Partial<Record<UsageMetric, number>> = {}
+  for (const alert of alerts) {
+    if (!appliesTo(alert, device)) continue
+    for (const id of alert.ruleIds) {
+      const rule = byId.get(id)
+      if (!rule || rule.metric === 'offline') continue
+      limits[rule.metric] = Math.min(limits[rule.metric] ?? Infinity, rule.threshold)
+    }
+  }
+  return limits
+}
 
 export const METRIC_LABEL = (): Record<AlertMetric, string> => ({ cpu: 'CPU', ram: 'RAM', disk: t('Disk'), offline: t('Offline') })
 export const KIND_LABEL = (): Record<ChannelKind, string> => ({ telegram: 'Telegram', discord: 'Discord', email: t('Email') })

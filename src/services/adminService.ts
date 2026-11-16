@@ -46,8 +46,8 @@ export type NewCommandRule = Omit<CommandRule, 'id'>
 
 export async function getCommandRules() {
   const { data } = await http.get<Partial<CommandRule>[]>('/command-rules')
-  // A rule saved before scopes existed has no groupIds or hosts: it applies everywhere, it doesn't crash the page.
-  return data.map((r) => ({ match: 'starts', reason: '', ...r, shells: r.shells ?? [], groupIds: r.groupIds ?? [], hosts: r.hosts ?? [] }) as CommandRule)
+  // A rule saved before scopes existed has no groupIds or deviceIds: it applies everywhere, it doesn't crash the page.
+  return data.map((r) => ({ match: 'starts', reason: '', ...r, shells: r.shells ?? [], groupIds: r.groupIds ?? [], deviceIds: r.deviceIds ?? [] }) as CommandRule)
 }
 
 export async function createCommandRule(input: NewCommandRule) {

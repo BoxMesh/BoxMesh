@@ -15,12 +15,12 @@ export function regexError(pattern: string): string | null {
   }
 }
 
-type Target = Pick<Device, 'host' | 'groups'>
+type Target = Pick<Device, 'id' | 'groups'>
 
-/** Whether a rule covers this device: no groups and no devices picked means every device. */
-export const appliesTo = (rule: CommandRule, device: Target) =>
-  (!rule.groupIds.length && !rule.hosts.length) ||
-  rule.hosts.includes(device.host) ||
+/** Whether a scoped rule (command rule or alert) covers this device: no groups and no devices picked means every device. */
+export const appliesTo = (rule: Pick<CommandRule, 'groupIds' | 'deviceIds'>, device: Target) =>
+  (!rule.groupIds.length && !rule.deviceIds.length) ||
+  rule.deviceIds.includes(device.id) ||
   device.groups.some((g) => rule.groupIds.includes(g))
 
 export function matches(rule: CommandRule, device: Target, shell: Shell, command: string): boolean {

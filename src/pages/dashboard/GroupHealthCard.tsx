@@ -54,7 +54,7 @@ const columns = (): TableProps<GroupHealth>['columns'] => [
       const [issue] = g.worst.issues
       return (
         <span className="queue-nowrap">
-          <Link to={`/devices/${encodeURIComponent(g.worst.device.host)}`}>{g.worst.device.host}</Link>
+          <Link to={`/devices/${encodeURIComponent(g.worst.device.id)}`}>{g.worst.device.host}</Link>
           <span className="muted">
             {' · '}
             {issue.label}

@@ -3,10 +3,10 @@ import { Segmented, Skeleton } from 'antd'
 import { useState } from 'react'
 import { t } from '../../i18n'
 import { userMessage } from '../../services/http'
-import { deviceMetricsQuery } from '../../services/queries'
+import { alertRulesQuery, alertsQuery, deviceMetricsQuery } from '../../services/queries'
 import type { TimeRange } from '../../types/dashboard'
 import type { Device } from '../../types/device'
-import { THRESHOLDS } from '../../utils/devices'
+import { limitsFor } from '../../utils/alerts'
 import UsageChart from './UsageChart'
 
 const RANGES: { value: TimeRange; label: string }[] = [
@@ -32,7 +32,11 @@ const niceMax = (v: number) => {
 /** CPU, RAM, disk and network over time: the Performance tab of the device page. */
 export default function PerformancePanel({ device: d }: { device: Device }) {
   const [range, setRange] = useState<TimeRange>('24h')
-  const metrics = useQuery(deviceMetricsQuery(d.host, range))
+  const metrics = useQuery(deviceMetricsQuery(d.id, range))
+  // The dashed alert lines come from the alerts that cover this device; until they load, or with none, there are none.
+  const alerts = useQuery(alertsQuery)
+  const rules = useQuery(alertRulesQuery)
+  const limits = limitsFor(d, alerts.data ?? [], rules.data ?? [])
   const points = metrics.data ?? []
   const times = points.map((p) => p.at)
   const latest = points.at(-1)
@@ -54,7 +58,8 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
         <>
           {RESOURCES().map(({ key, label }) => {
             const now = latest?.[key] ?? d[key]
-            const high = now >= THRESHOLDS[key]
+            const limit = limits[key]
+            const high = limit !== undefined && now >= limit
             return (
               <div key={key} className="usage">
                 <div className="meter-label">
@@ -62,7 +67,7 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
                     {label} <span className="muted">· {d.hardware[key]}</span>
                   </span>
                   <span>
-                    {now}%{high ? ` · ${t('above {n}%', { n: THRESHOLDS[key] })}` : ''}
+                    {now}%{high ? ` · ${t('above {n}%', { n: limit })}` : ''}
                   </span>
                 </div>
                 <UsageChart
@@ -71,7 +76,7 @@ export default function PerformancePanel({ device: d }: { device: Device }) {
                   series={[{ label, values: points.map((p) => p[key]) }]}
                   max={100}
                   format={percent}
-                  threshold={THRESHOLDS[key]}
+                  threshold={limit}
                   range={range}
                 />
               </div>

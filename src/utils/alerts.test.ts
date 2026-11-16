@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { conditionOf, destinationOf, isChatId, isDiscordWebhook, isEmail, renderMessage, sentenceOf, unknownPlaceholders } from './alerts'
+import type { Alert, AlertRule } from '../types/alert'
+import { conditionOf, destinationOf, isChatId, isDiscordWebhook, isEmail, limitsFor, renderMessage, sentenceOf, unknownPlaceholders } from './alerts'
 
 describe('conditionOf', () => {
   it('reads a metric rule and an offline rule', () => {
@@ -47,5 +48,34 @@ describe('validators', () => {
   it('checks an email address', () => {
     expect(isEmail('it@company.com')).toBe(true)
     expect(isEmail('it@company')).toBe(false)
+  })
+})
+
+describe('limitsFor', () => {
+  const rules: AlertRule[] = [
+    { id: 'cpu-90', name: 'CPU', metric: 'cpu', threshold: 90, minutes: 5 },
+    { id: 'cpu-70', name: 'CPU early', metric: 'cpu', threshold: 70, minutes: 5 },
+    { id: 'disk-85', name: 'Disk', metric: 'disk', threshold: 85, minutes: 0 },
+    { id: 'down', name: 'Down', metric: 'offline', threshold: 0, minutes: 5 },
+  ]
+  const alert = (patch: Partial<Alert>): Alert => ({ id: 'a', name: 'A', ruleIds: [], groupIds: [], deviceIds: [], channelIds: [], message: '', ...patch })
+  const device = { id: 'd-1', groups: ['g-srv'] }
+
+  it('draws nothing without an alert', () => {
+    expect(limitsFor(device, [], rules)).toEqual({})
+  })
+
+  it('takes the lowest threshold per metric from the alerts that cover the device', () => {
+    const alerts = [
+      alert({ ruleIds: ['cpu-90', 'disk-85', 'down'] }),
+      alert({ ruleIds: ['cpu-70'], groupIds: ['g-srv'] }),
+      alert({ ruleIds: ['cpu-70'], deviceIds: ['d-other'] }),
+    ]
+    expect(limitsFor(device, alerts, rules)).toEqual({ cpu: 70, disk: 85 })
+  })
+
+  it('ignores alerts scoped to other devices or groups', () => {
+    const alerts = [alert({ ruleIds: ['cpu-70'], groupIds: ['g-office'] }), alert({ ruleIds: ['disk-85'], deviceIds: ['d-2'] })]
+    expect(limitsFor(device, alerts, rules)).toEqual({})
   })
 })

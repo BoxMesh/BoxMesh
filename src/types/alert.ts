@@ -18,7 +18,8 @@ export interface Alert {
   ruleIds: string[]
   /** Both empty = every device. */
   groupIds: string[]
-  hosts: string[]
+  /** Device IDs. */
+  deviceIds: string[]
   channelIds: string[]
   /** Placeholders such as {device} are filled in by EdgePanel when it sends. */
   message: string

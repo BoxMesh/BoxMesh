@@ -75,10 +75,14 @@ export default function DevicesPage() {
           onChange={(e) => setFilter('q', e.target.value)}
         />
       ),
+      // The alias sits beside the hostname: two devices can share a hostname, never an ID or (by choice) an alias.
       render: (_, d) => (
-        <Link to={`/devices/${d.host}`} className="strong">
-          {d.host}
-        </Link>
+        <span>
+          <Link to={`/devices/${encodeURIComponent(d.id)}`} className="strong">
+            {d.host}
+          </Link>{' '}
+          <span className="muted">{d.alias}</span>
+        </span>
       ),
     },
     {
@@ -127,7 +131,7 @@ export default function DevicesPage() {
         <Table<Device>
           columns={columns}
           dataSource={rows}
-          rowKey="host"
+          rowKey="id"
           rowClassName={(d) => (d.online ? '' : 'row-offline')}
           scroll={{ x: 'max-content' }}
           pagination={{ pageSize: 10, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
@@ -163,7 +167,7 @@ function RowActions({ device }: { device: Device }) {
         // Offline keeps aria-disabled rather than disabled, so keyboard users can still focus it and hear why.
         return device.online ? (
           <Tooltip key={path} title={feature.label}>
-            <Link to={`${path}?host=${encodeURIComponent(device.host)}`} className="icon-btn" aria-label={label}>
+            <Link to={`${path}?device=${encodeURIComponent(device.id)}`} className="icon-btn" aria-label={label}>
               <Icon name={feature.icon} />
             </Link>
           </Tooltip>

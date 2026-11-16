@@ -43,7 +43,7 @@ const queueColumns = (): TableProps<QueueRow>['columns'] => [
     onCell: spanGroup,
     render: (_, r) =>
       isGroup(r) ? null : (
-        <Link to={`/devices/${r.device.host}`} className="strong queue-nowrap">
+        <Link to={`/devices/${encodeURIComponent(r.device.id)}`} className="strong queue-nowrap">
           {r.device.host}
         </Link>
       ),
@@ -81,7 +81,7 @@ const queueColumns = (): TableProps<QueueRow>['columns'] => [
     onCell: spanGroup,
     render: (_, r) =>
       isGroup(r) ? null : (
-        <Link to={`/devices/${r.device.host}`} aria-label={t('Open {host}', { host: r.device.host })}>
+        <Link to={`/devices/${encodeURIComponent(r.device.id)}`} aria-label={t('Open {host}', { host: r.device.host })}>
           <Button size="small">{t('Open')}</Button>
         </Link>
       ),
@@ -183,7 +183,7 @@ export default function DashboardPage() {
         <Table<QueueRow>
           columns={queueColumns()}
           dataSource={queue}
-          rowKey={(r) => (isGroup(r) ? `group-${r.group}` : r.device.host)}
+          rowKey={(r) => (isGroup(r) ? `group-${r.group}` : r.device.id)}
           pagination={false}
           // A fixed minimum rather than max-content: a device with three issues wraps its tags instead of
           // pushing Last seen and Action out of the card. Below 680px the table scrolls sideways.

@@ -10,10 +10,12 @@ export async function getDevices() {
   return data
 }
 
-/** Resolves null when EdgePanel has no device with that hostname. */
-export async function getDevice(host: string) {
+// Devices are addressed by ID: hostnames can repeat.
+
+/** Resolves null when EdgePanel has no device with that ID. */
+export async function getDevice(id: string) {
   try {
-    const { data } = await http.get<Device>(`/devices/${encodeURIComponent(host)}`)
+    const { data } = await http.get<Device>(`/devices/${encodeURIComponent(id)}`)
     return data
   } catch (error) {
     if (isAxiosError(error) && error.response?.status === 404) return null
@@ -21,13 +23,19 @@ export async function getDevice(host: string) {
   }
 }
 
-export async function getDeviceMetrics(host: string, range: TimeRange) {
-  const { data } = await http.get<MetricPoint[]>(`/devices/${encodeURIComponent(host)}/metrics`, { params: { range } })
+/** Sets the alias shown beside the hostname; an empty one clears it. */
+export async function setAlias(id: string, alias: string) {
+  const { data } = await http.patch<Device>(`/devices/${encodeURIComponent(id)}`, { alias })
   return data
 }
 
-export async function getProcesses(host: string) {
-  const { data } = await http.get<DeviceProcess[]>(`/devices/${encodeURIComponent(host)}/processes`)
+export async function getDeviceMetrics(id: string, range: TimeRange) {
+  const { data } = await http.get<MetricPoint[]>(`/devices/${encodeURIComponent(id)}/metrics`, { params: { range } })
+  return data
+}
+
+export async function getProcesses(id: string) {
+  const { data } = await http.get<DeviceProcess[]>(`/devices/${encodeURIComponent(id)}/processes`)
   return data
 }
 
@@ -70,7 +78,7 @@ export async function deleteGroup(id: string) {
 }
 
 /** Replaces the device's groups with exactly these. */
-export async function setDeviceGroups(host: string, groupIds: string[]) {
-  const { data } = await http.put<Device>(`/devices/${encodeURIComponent(host)}/groups`, { groupIds })
+export async function setDeviceGroups(id: string, groupIds: string[]) {
+  const { data } = await http.put<Device>(`/devices/${encodeURIComponent(id)}/groups`, { groupIds })
   return data
 }

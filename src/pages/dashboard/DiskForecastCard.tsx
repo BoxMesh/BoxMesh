@@ -33,9 +33,9 @@ export default function DiskForecastCard() {
           {forecast.data.map((f) => {
             const soon = f.daysLeft <= SOON_DAYS
             return (
-              <li key={f.host} className="rank-row">
+              <li key={f.id} className="rank-row">
                 <span className="rank-name">
-                  <Link to={`/devices/${encodeURIComponent(f.host)}?tab=performance`} className="strong">
+                  <Link to={`/devices/${encodeURIComponent(f.id)}?tab=performance`} className="strong">
                     {f.host}
                   </Link>
                   <span className="sub">

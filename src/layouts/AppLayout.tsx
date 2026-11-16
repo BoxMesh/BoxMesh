@@ -11,7 +11,7 @@ import { navGroups, navItems } from '../config/nav'
 import { t } from '../i18n'
 import { getSession, logOut } from '../services/authService'
 import { isDemo } from '../services/demo'
-import { usersQuery } from '../services/queries'
+import { deviceQuery, usersQuery } from '../services/queries'
 
 const menuItems = (): MenuProps['items'] =>
   navGroups().map((g) => ({
@@ -30,9 +30,13 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const deviceMatch = useMatch('/devices/:id')
   const userMatch = useMatch('/users/:id')
-  // A user's crumb is their name; the page loads the same list, so this adds no request.
+  // A user's crumb is their name and a device's its hostname (the URL holds IDs); each page loads the same data,
+  // so this adds no request.
   const { data: accounts } = useQuery({ ...usersQuery, enabled: Boolean(userMatch) })
-  const detail = deviceMatch?.params.id ?? (userMatch && (accounts?.find((a) => a.id === userMatch.params.id)?.name ?? userMatch.params.id))
+  const { data: device } = useQuery({ ...deviceQuery(deviceMatch?.params.id ?? ''), enabled: Boolean(deviceMatch) })
+  const detail = deviceMatch
+    ? (device?.host ?? deviceMatch.params.id)
+    : userMatch && (accounts?.find((a) => a.id === userMatch.params.id)?.name ?? userMatch.params.id)
   const { reset } = useQueryErrorResetBoundary()
   const active = navItems().find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
   const queryClient = useQueryClient()

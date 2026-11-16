@@ -50,12 +50,12 @@ export default function TokensPage() {
     {
       title: <Th icon="devices" label={t('Used by')} />,
       dataIndex: 'usedBy',
-      render: (hosts: string[]) =>
-        hosts.length ? (
+      render: (usedBy: EnrollmentToken['usedBy']) =>
+        usedBy.length ? (
           <span className="queue-tags">
-            {hosts.map((h) => (
-              <Link key={h} to={`/devices/${h}`}>
-                <Tag>{h}</Tag>
+            {usedBy.map((d) => (
+              <Link key={d.id} to={`/devices/${encodeURIComponent(d.id)}`}>
+                <Tag>{d.host}</Tag>
               </Link>
             ))}
           </span>

@@ -6,11 +6,12 @@ import StatusButton from '../../components/StatusButton'
 import { navItem } from '../../config/nav'
 import { t } from '../../i18n'
 import { deviceQuery, groupsQuery, processesQuery } from '../../services/queries'
+import AliasEditor from './AliasEditor'
 import DeviceInfo from './DeviceInfo'
 import PerformancePanel from './PerformancePanel'
 import ProcessesPanel from './ProcessesPanel'
 
-// Each remote screen takes the device in `?host=`, so these open straight onto this machine.
+// Each remote screen takes the device's ID in `?device=`, so these open straight onto this machine.
 const REMOTE = () => [
   { path: '/remote-terminal', short: t('Terminal') },
   { path: '/remote-files', short: t('Files') },
@@ -32,7 +33,7 @@ export default function DeviceDetailPage() {
       <Result
         status="404"
         title={t('Device not found')}
-        subTitle={t('No enrolled device is named {id}.', { id })}
+        subTitle={t('No enrolled device has the ID {id}.', { id })}
         extra={<Link to="/devices">{t('Back to devices')}</Link>}
       />
     )
@@ -49,13 +50,13 @@ export default function DeviceDetailPage() {
             <Icon name="back" />
           </Link>
           <h1 style={{ margin: 0 }}>{device.host}</h1>
-          <span className="muted">{device.alias}</span>
+          <AliasEditor device={device} />
           <StatusButton device={device} />
         </div>
         <div className="page-actions">
           {/* The terminal is what people open a device for, so it leads. */}
           {REMOTE().map((feature, i) => (
-            <Link key={feature.path} to={`${feature.path}?host=${encodeURIComponent(device.host)}`}>
+            <Link key={feature.path} to={`${feature.path}?device=${encodeURIComponent(device.id)}`}>
               <Button
                 type={i === 0 ? 'primary' : 'default'}
                 icon={<Icon name={feature.icon} size={14} />}

@@ -122,7 +122,16 @@ const vi: Record<string, string> = {
   Files: 'Tệp & Thư mục',
   Service: 'Dịch vụ',
   'Device not found': 'Không tìm thấy thiết bị',
-  'No enrolled device is named {id}.': 'Không có thiết bị đã đăng ký nào tên {id}.',
+  'No enrolled device has the ID {id}.': 'Không có thiết bị đã đăng ký nào có ID {id}.',
+
+  // src/pages/device-detail/AliasEditor.tsx
+  'Alias saved': 'Đã lưu tên gợi nhớ',
+  'Alias removed': 'Đã xoá tên gợi nhớ',
+  'e.g. Front desk': 'VD: Quầy lễ tân',
+  'Alias for {host}': 'Tên gợi nhớ của {host}',
+  'Change alias': 'Đổi tên gợi nhớ',
+  'Change alias for {host}': 'Đổi tên gợi nhớ của {host}',
+  'Add alias': 'Thêm tên gợi nhớ',
   'Back to devices': 'Quay lại danh sách thiết bị',
   'Processes ({n})': 'Tiến trình ({n})',
   Processes: 'Tiến trình',

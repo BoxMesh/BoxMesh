@@ -7,13 +7,14 @@ const NOW = Date.parse('2026-11-03T12:00:00Z')
 const iso = (offsetMs: number) => fromNow(offsetMs, NOW)
 
 const base: Device = {
-  host: 'PC-001', alias: 'Front desk', os: 'Windows 11 Pro', osVersion: '24H2', osArchitecture: 'x64', osFamily: 'Windows',
+  id: 'd-pc-001', host: 'PC-001', alias: 'Front desk', os: 'Windows 11 Pro', osVersion: '24H2', osArchitecture: 'x64', osFamily: 'Windows',
   ip: '192.168.1.11', mac: 'AA:BB:CC:00:00:01', online: true, agentVersion: 'v1.4.2', agentOutdated: false,
   groups: ['g-office'], tag: 'floor 1', lastSeen: iso(-5_000), enrolledAt: iso(-DAY),
   cpu: 10, ram: 10, disk: 10, latencyMs: 20,
   hardware: { cpu: '', ram: '', disk: '', uptime: '' },
 }
-const dev = (patch: Partial<Device>): Device => ({ ...base, ...patch })
+// Each test device gets its own ID from its host unless the test gives one.
+const dev = (patch: Partial<Device>): Device => ({ ...base, id: `d-${patch.host ?? base.host}`, ...patch })
 
 describe('issuesOf', () => {
   it('flags metrics over thresholds', () => {
@@ -96,18 +97,28 @@ describe('summarize', () => {
 describe('membershipChanges', () => {
   it('touches only the devices that join or leave, and keeps their other groups', () => {
     const list = [dev({ host: 'A', groups: ['g-1', 'g-2'] }), dev({ host: 'B', groups: ['g-2'] }), dev({ host: 'C', groups: ['g-1'] })]
-    expect(membershipChanges(list, 'g-1', ['A', 'B'])).toEqual([
-      { host: 'B', groupIds: ['g-2', 'g-1'] },
-      { host: 'C', groupIds: [] },
+    expect(membershipChanges(list, 'g-1', ['d-A', 'd-B'])).toEqual([
+      { id: 'd-B', host: 'B', groupIds: ['g-2', 'g-1'] },
+      { id: 'd-C', host: 'C', groupIds: [] },
     ])
-    expect(membershipChanges(list, 'g-1', ['A', 'C'])).toEqual([])
+    expect(membershipChanges(list, 'g-1', ['d-A', 'd-C'])).toEqual([])
+  })
+
+  it('tells apart two devices that share a hostname', () => {
+    const twins = [dev({ id: 'd-1', host: 'PC', groups: [] }), dev({ id: 'd-2', host: 'PC', groups: [] })]
+    expect(membershipChanges(twins, 'g-1', ['d-2']).map((c) => c.id)).toEqual(['d-2'])
   })
 })
 
 describe('reachable', () => {
   it('counts a device once whether it comes from a group, a single pick or both', () => {
     const list = [dev({ host: 'A', groups: ['g-1'] }), dev({ host: 'B', groups: ['g-2'] }), dev({ host: 'C', groups: [] })]
-    expect(reachable({ groupIds: ['g-1'], hosts: ['A', 'C'] }, list).map((d) => d.host)).toEqual(['A', 'C'])
-    expect(reachable({ groupIds: [], hosts: [] }, list)).toEqual([])
+    expect(reachable({ groupIds: ['g-1'], deviceIds: ['d-A', 'd-C'] }, list).map((d) => d.host)).toEqual(['A', 'C'])
+    expect(reachable({ groupIds: [], deviceIds: [] }, list)).toEqual([])
+  })
+
+  it('reaches only the picked one of two devices that share a hostname', () => {
+    const twins = [dev({ id: 'd-1', host: 'PC', groups: [] }), dev({ id: 'd-2', host: 'PC', groups: [] })]
+    expect(reachable({ groupIds: [], deviceIds: ['d-1'] }, twins).map((d) => d.id)).toEqual(['d-1'])
   })
 })

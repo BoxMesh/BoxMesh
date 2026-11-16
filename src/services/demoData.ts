@@ -83,9 +83,13 @@ const asOnline = (online: boolean) => ({
 
 const UP = 0.78
 
+/** A demo device's ID: stable across reloads, so links and scopes saved in the demo keep pointing at it. */
+export const idOf = (host: string) => `d-${host.toLowerCase()}`
+
 export const devices: Device[] = SEEDS.map(([host, alias, group, tag, cpu, ram, disk, agentVersion], i) => {
   const [osFamily, os, osVersion, osArchitecture] = pick(group === 'Server' ? SERVER_OS : CLIENT_OS)
   return {
+    id: idOf(host),
     host,
     alias,
     os,
@@ -180,7 +184,7 @@ export function diskForecast(): DiskForecast[] {
       const my = ys.reduce((a, b) => a + b, 0) / ys.length
       const perDay = xs.reduce((sum, x, i) => sum + (x - mx) * (ys[i] - my), 0) / xs.reduce((sum, x) => sum + (x - mx) ** 2, 0)
       if (!(perDay > 0.05)) return []
-      return [{ host: d.host, disk: d.disk, perDay: Math.round(perDay * 10) / 10, daysLeft: (100 - d.disk) / perDay }]
+      return [{ id: d.id, host: d.host, disk: d.disk, perDay: Math.round(perDay * 10) / 10, daysLeft: (100 - d.disk) / perDay }]
     })
     .toSorted((a, b) => a.daysLeft - b.daysLeft)
     .slice(0, 5)
@@ -385,7 +389,7 @@ export const enrollmentTokens: EnrollmentToken[] = [
     group: 'Accounting',
     expiresAt: fromNow(18 * 60 * MINUTE),
     requiresApproval: true,
-    usedBy: ['ACC-PC-04'],
+    usedBy: [{ id: idOf('ACC-PC-04'), host: 'ACC-PC-04' }],
   },
   {
     id: 'tok-6',
@@ -393,28 +397,28 @@ export const enrollmentTokens: EnrollmentToken[] = [
     group: 'Server',
     expiresAt: fromNow(-2 * DAY),
     requiresApproval: true,
-    usedBy: ['SRV-MON-01'],
+    usedBy: [{ id: idOf('SRV-MON-01'), host: 'SRV-MON-01' }],
   },
 ]
 
 export const accounts: Account[] = [
-  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'Admin', lastSignIn: fromNow(-40 * MINUTE), disabled: false, access: { groupIds: [], hosts: [] } },
-  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'Operator', lastSignIn: fromNow(-4 * MINUTE), disabled: false, access: { groupIds: ['g-accounting', 'g-hr'], hosts: [] } },
-  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'Operator', lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false, access: { groupIds: ['g-server'], hosts: ['CAD-WS-01'] } },
-  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'Operator', lastSignIn: fromNow(-2 * DAY), disabled: false, access: { groupIds: [], hosts: ['WH-PC-01', 'WH-PC-02'] } },
-  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Operator', lastSignIn: fromNow(-21 * DAY), disabled: true, access: { groupIds: [], hosts: [] } },
+  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'Admin', lastSignIn: fromNow(-40 * MINUTE), disabled: false, access: { groupIds: [], deviceIds: [] } },
+  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'Operator', lastSignIn: fromNow(-4 * MINUTE), disabled: false, access: { groupIds: ['g-accounting', 'g-hr'], deviceIds: [] } },
+  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'Operator', lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false, access: { groupIds: ['g-server'], deviceIds: [idOf('CAD-WS-01')] } },
+  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'Operator', lastSignIn: fromNow(-2 * DAY), disabled: false, access: { groupIds: [], deviceIds: [idOf('WH-PC-01'), idOf('WH-PC-02')] } },
+  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Operator', lastSignIn: fromNow(-21 * DAY), disabled: true, access: { groupIds: [], deviceIds: [] } },
 ]
 
 // ---------- Blocked commands ----------
 
 export const commandRules: CommandRule[] = [
-  { id: 'cr-1', pattern: 'shutdown', match: 'starts', shells: [], reason: 'Restarts or powers off the machine. Ask IT to schedule it.', groupIds: [], hosts: [] },
-  { id: 'cr-2', pattern: 'format', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Erases a whole drive.', groupIds: [], hosts: [] },
-  { id: 'cr-3', pattern: 'diskpart', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Changes disk partitions.', groupIds: [], hosts: [] },
-  { id: 'cr-4', pattern: String.raw`rm\s+-(rf|fr)\s+/(\s|$)`, match: 'regex', shells: ['Bash'], reason: 'Deletes the whole file system.', groupIds: [], hosts: [] },
-  { id: 'cr-5', pattern: 'reg delete hklm', match: 'contains', shells: ['CMD'], reason: 'Removes system registry keys.', groupIds: [], hosts: [] },
-  { id: 'cr-6', pattern: 'systemctl stop', match: 'starts', shells: ['Bash'], reason: 'Stops a service on a critical system. Plan it with IT.', groupIds: ['g-critical'], hosts: [] },
-  { id: 'cr-7', pattern: 'dropdb', match: 'starts', shells: ['Bash'], reason: 'Deletes a production database.', groupIds: [], hosts: ['SRV-DB-01'] },
+  { id: 'cr-1', pattern: 'shutdown', match: 'starts', shells: [], reason: 'Restarts or powers off the machine. Ask IT to schedule it.', groupIds: [], deviceIds: [] },
+  { id: 'cr-2', pattern: 'format', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Erases a whole drive.', groupIds: [], deviceIds: [] },
+  { id: 'cr-3', pattern: 'diskpart', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Changes disk partitions.', groupIds: [], deviceIds: [] },
+  { id: 'cr-4', pattern: String.raw`rm\s+-(rf|fr)\s+/(\s|$)`, match: 'regex', shells: ['Bash'], reason: 'Deletes the whole file system.', groupIds: [], deviceIds: [] },
+  { id: 'cr-5', pattern: 'reg delete hklm', match: 'contains', shells: ['CMD'], reason: 'Removes system registry keys.', groupIds: [], deviceIds: [] },
+  { id: 'cr-6', pattern: 'systemctl stop', match: 'starts', shells: ['Bash'], reason: 'Stops a service on a critical system. Plan it with IT.', groupIds: ['g-critical'], deviceIds: [] },
+  { id: 'cr-7', pattern: 'dropdb', match: 'starts', shells: ['Bash'], reason: 'Deletes a production database.', groupIds: [], deviceIds: [idOf('SRV-DB-01')] },
 ]
 
 export const alertChannels: AlertChannel[] = [
@@ -436,7 +440,7 @@ export const alerts: Alert[] = [
     name: 'Servers',
     ruleIds: ['ar-1', 'ar-3', 'ar-4'],
     groupIds: ['g-server'],
-    hosts: [],
+    deviceIds: [],
     channelIds: ['ch-1', 'ch-3'],
     message: '⚠️ {rule} on {device} ({alias})\n{condition}. Now: {value}.\n{time}',
   },
@@ -445,7 +449,7 @@ export const alerts: Alert[] = [
     name: 'Critical systems down',
     ruleIds: ['ar-4'],
     groupIds: ['g-critical'],
-    hosts: [],
+    deviceIds: [],
     channelIds: ['ch-1', 'ch-2'],
     message: '🚨 {device} is offline. Groups: {groups}. Since {time}.',
   },
@@ -454,7 +458,7 @@ export const alerts: Alert[] = [
     name: 'Database memory',
     ruleIds: ['ar-2'],
     groupIds: [],
-    hosts: ['SRV-DB-01'],
+    deviceIds: [idOf('SRV-DB-01')],
     channelIds: ['ch-3'],
     message: '{device}: {condition} ({value})',
   },

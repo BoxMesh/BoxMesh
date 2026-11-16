@@ -20,7 +20,7 @@ export default function DeviceGroups({ device, groups }: { device: Device; group
   const shown = device.groups.filter((id) => names.has(id))
 
   const save = useMutation({
-    mutationFn: (ids: string[]) => setDeviceGroups(device.host, ids),
+    mutationFn: (ids: string[]) => setDeviceGroups(device.id, ids),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['devices'] }),
     onError: (error) => {
       setValue(device.groups)

@@ -35,8 +35,8 @@ export default function TopUsageCard({ devices }: { devices: Device[] }) {
           {top.map((d) => {
             const hot = d[metric] >= THRESHOLDS[metric]
             return (
-              <li key={d.host} className="rank-row">
-                <Link to={`/devices/${encodeURIComponent(d.host)}`} className="strong rank-name">
+              <li key={d.id} className="rank-row">
+                <Link to={`/devices/${encodeURIComponent(d.id)}`} className="strong rank-name">
                   {d.host}
                 </Link>
                 <Progress

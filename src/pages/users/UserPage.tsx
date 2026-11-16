@@ -80,7 +80,7 @@ export default function UserPage() {
       key: 'host',
       render: (_, d) => (
         <span>
-          <Link to={`/devices/${encodeURIComponent(d.host)}`} className="strong">
+          <Link to={`/devices/${encodeURIComponent(d.id)}`} className="strong">
             {d.host}
           </Link>{' '}
           <span className="muted">{d.alias}</span>
@@ -109,7 +109,7 @@ export default function UserPage() {
     {
       title: <Th icon="lock" label={t('Reached through')} />,
       key: 'via',
-      render: (_, d) => (isAdmin ? t('Admin role') : account.access.hosts.includes(d.host) ? t('Single device') : t('Group')),
+      render: (_, d) => (isAdmin ? t('Admin role') : account.access.deviceIds.includes(d.id) ? t('Single device') : t('Group')),
     },
   ]
 
@@ -216,7 +216,7 @@ export default function UserPage() {
         <Table<Device>
           columns={columns}
           dataSource={reach}
-          rowKey="host"
+          rowKey="id"
           pagination={false}
           size="small"
           scroll={{ x: 'max-content' }}

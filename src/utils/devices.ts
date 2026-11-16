@@ -94,22 +94,28 @@ export function summarize(list: Device[], now = Date.now()) {
   }
 }
 
+/** How a device reads in a list or picker: its hostname, then its alias when it has one. */
+export const deviceLabel = (d: Pick<Device, 'host' | 'alias'>) => (d.alias ? `${d.host} · ${d.alias}` : d.host)
+
 /** The devices an Operator's access reaches: those in any of its groups, plus its single devices. */
 export function reachable(access: DeviceAccess, list: Device[]): Device[] {
-  return list.filter((d) => access.hosts.includes(d.host) || d.groups.some((g) => access.groupIds.includes(g)))
+  return list.filter((d) => access.deviceIds.includes(d.id) || d.groups.some((g) => access.groupIds.includes(g)))
 }
 
-export type Scope = 'all' | 'groups' | 'hosts'
+export type Scope = 'all' | 'groups' | 'devices'
 
-export const scopeOf = (r: { groupIds: string[]; hosts: string[] }): Scope =>
-  r.groupIds.length ? 'groups' : r.hosts.length ? 'hosts' : 'all'
+export const scopeOf = (r: { groupIds: string[]; deviceIds: string[] }): Scope =>
+  r.groupIds.length ? 'groups' : r.deviceIds.length ? 'devices' : 'all'
 
-/** The devices whose groups change when a group's members become exactly `hosts`, each with its new group list. */
-export function membershipChanges(list: Device[], groupId: string, hosts: string[]) {
+/**
+ * The devices whose groups change when a group's members become exactly `deviceIds`, each with its new group list
+ * (and its host, to name it if saving fails).
+ */
+export function membershipChanges(list: Device[], groupId: string, deviceIds: string[]) {
   return list.flatMap((d) => {
     const has = d.groups.includes(groupId)
-    const wants = hosts.includes(d.host)
+    const wants = deviceIds.includes(d.id)
     if (has === wants) return []
-    return [{ host: d.host, groupIds: wants ? [...d.groups, groupId] : d.groups.filter((g) => g !== groupId) }]
+    return [{ id: d.id, host: d.host, groupIds: wants ? [...d.groups, groupId] : d.groups.filter((g) => g !== groupId) }]
   })
 }

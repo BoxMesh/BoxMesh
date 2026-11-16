@@ -4,20 +4,20 @@ import { http } from './http'
 // Every remote action goes to the panel, which relays it down the device's own tunnel. The portal
 // never talks to a device directly, so these are ordinary panel endpoints.
 
-const of = (host: string) => `/devices/${encodeURIComponent(host)}`
+const of = (id: string) => `/devices/${encodeURIComponent(id)}`
 
-export async function runCommand(host: string, shell: Shell, command: string) {
-  const { data } = await http.post<ShellResult>(`${of(host)}/shell`, { shell, command })
+export async function runCommand(id: string, shell: Shell, command: string) {
+  const { data } = await http.post<ShellResult>(`${of(id)}/shell`, { shell, command })
   return data
 }
 
-export async function getFiles(host: string, path: string) {
-  const { data } = await http.get<FileListing>(`${of(host)}/files`, { params: { path } })
+export async function getFiles(id: string, path: string) {
+  const { data } = await http.get<FileListing>(`${of(id)}/files`, { params: { path } })
   return data
 }
 
-export async function getServices(host: string) {
-  const { data } = await http.get<RemoteService[]>(`${of(host)}/services`)
+export async function getServices(id: string) {
+  const { data } = await http.get<RemoteService[]>(`${of(id)}/services`)
   return data
 }
 

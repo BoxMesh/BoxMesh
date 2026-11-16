@@ -4,13 +4,19 @@ import { useEffect, useState } from 'react'
 import { Icon } from '../../components/Icon'
 import { tone } from '../../config/theme'
 import { t } from '../../i18n'
-import { transferQuery } from '../../services/queries'
+import { devicesQuery, transferQuery } from '../../services/queries'
 import { cancelTransfer } from '../../services/remoteService'
 import type { ConflictChoice, FileEntry, FileLocation, FileTransfer } from '../../types/remote'
 import { compareListings, formatSize, type Comparison } from '../../utils/files'
 import { ago } from '../../utils/time'
 
 /** A copy waiting on the user: some names already exist in the target folder. */
+/** A device's hostname for a sentence: a file location carries only the device's ID. */
+function useHostOf() {
+  const { data: devices } = useQuery(devicesQuery)
+  return (id: string) => devices?.find((d) => d.id === id)?.host ?? id
+}
+
 export interface PendingCopy {
   from: FileLocation
   to: FileLocation
@@ -65,6 +71,7 @@ export default function Transfers({ pending, onResolve, onAbandon, transfers, on
 }
 
 function Conflicts({ pending, onResolve, onAbandon }: Pick<Props, 'onResolve' | 'onAbandon'> & { pending: PendingCopy }) {
+  const hostOf = useHostOf()
   const [choices, setChoices] = useState<Record<string, ConflictChoice>>({})
   const [applyAll, setApplyAll] = useState(false)
   const current = pending.conflicts.find((name) => !(name in choices))
@@ -86,13 +93,13 @@ function Conflicts({ pending, onResolve, onAbandon }: Pick<Props, 'onResolve' | 
     <div className="files-conflict" role="alert">
       <Icon name="warning" />
       <p>
-        <span className="strong">{current}</span> {t('already exists on {host}.', { host: pending.to.host })}
+        <span className="strong">{current}</span> {t('already exists on {host}.', { host: hostOf(pending.to.deviceId) })}
         {here && there
           ? ' ' +
             (standing === 'same'
               ? t('Both copies have the same size and time, so replacing it changes nothing.')
               : standingLine(standing ?? 'differs', {
-                  host: pending.from.host,
+                  host: hostOf(pending.from.deviceId),
                   when: ago(here.modified),
                   size: formatSize(here.size),
                   thereWhen: ago(there.modified),
@@ -143,6 +150,7 @@ const STATE_LABEL = () => ({
 })
 
 function TransferGroup({ id }: { id: string }) {
+  const hostOf = useHostOf()
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const { data: transfer } = useQuery(transferQuery(id))
@@ -158,7 +166,7 @@ function TransferGroup({ id }: { id: string }) {
   useEffect(() => {
     if (!running && target)
       queryClient.invalidateQueries({
-        queryKey: ['devices', target.host, 'files', target.path],
+        queryKey: ['devices', target.deviceId, 'files', target.path],
       })
   }, [running, target, queryClient])
 
@@ -167,13 +175,13 @@ function TransferGroup({ id }: { id: string }) {
   const files = copied === 1 ? t('{n} file', { n: copied }) : t('{n} files', { n: copied })
 
   return (
-    <section className="files-transfer" aria-label={t('Copy to {host}', { host: transfer.to.host })}>
+    <section className="files-transfer" aria-label={t('Copy to {host}', { host: hostOf(transfer.to.deviceId) })}>
       <div className="files-transfer-head">
         <span>
           <span className="strong">
             {running
-              ? t('Copying {files} to {host}', { files, host: transfer.to.host })
-              : t('Copied {files} to {host}', { files, host: transfer.to.host })}
+              ? t('Copying {files} to {host}', { files, host: hostOf(transfer.to.deviceId) })
+              : t('Copied {files} to {host}', { files, host: hostOf(transfer.to.deviceId) })}
           </span>{' '}
           <code>{transfer.to.path}</code>
         </span>

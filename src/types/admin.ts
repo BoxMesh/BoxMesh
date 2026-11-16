@@ -7,7 +7,8 @@ export interface EnrollmentToken {
   group: string
   expiresAt: string
   requiresApproval: boolean
-  usedBy: string[]
+  /** Devices enrolled with this token. */
+  usedBy: { id: string; host: string }[]
 }
 
 export type Role = 'Admin' | 'Operator'
@@ -18,7 +19,8 @@ export type Role = 'Admin' | 'Operator'
  */
 export interface DeviceAccess {
   groupIds: string[]
-  hosts: string[]
+  /** Device IDs. */
+  deviceIds: string[]
 }
 
 export interface Account {
@@ -45,5 +47,6 @@ export interface CommandRule {
   reason: string
   /** Where it applies: these groups, or these single devices. Both empty means every device. */
   groupIds: string[]
-  hosts: string[]
+  /** Device IDs. */
+  deviceIds: string[]
 }

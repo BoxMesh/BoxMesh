@@ -8,7 +8,7 @@ import { t } from '../../i18n'
 import { createGroup, deleteGroup, renameGroup, setDeviceGroups } from '../../services/deviceService'
 import { devicesQuery, groupsQuery } from '../../services/queries'
 import type { Device, DeviceGroup } from '../../types/device'
-import { membershipChanges } from '../../utils/devices'
+import { deviceLabel, membershipChanges } from '../../utils/devices'
 
 const MAX_NAME = 40
 const TAGS_SHOWN = 3
@@ -93,18 +93,18 @@ export default function GroupsPage() {
       title: <Th icon="devices" label={t('Members')} />,
       key: 'members',
       render: (_, g) => {
-        const hosts = membersOf(g.id).map((d) => d.host)
-        if (!hosts.length) return <span className="muted">{t('No devices yet')}</span>
+        const members = membersOf(g.id)
+        if (!members.length) return <span className="muted">{t('No devices yet')}</span>
         return (
           <span className="device-groups">
-            {hosts.slice(0, TAGS_SHOWN).map((h) => (
-              <Link key={h} to={`/devices/${h}`}>
-                <Tag>{h}</Tag>
+            {members.slice(0, TAGS_SHOWN).map((d) => (
+              <Link key={d.id} to={`/devices/${encodeURIComponent(d.id)}`}>
+                <Tag>{deviceLabel(d)}</Tag>
               </Link>
             ))}
-            {hosts.length > TAGS_SHOWN ? (
-              <Tooltip title={hosts.slice(TAGS_SHOWN).join(', ')}>
-                <Tag>+{hosts.length - TAGS_SHOWN}</Tag>
+            {members.length > TAGS_SHOWN ? (
+              <Tooltip title={members.slice(TAGS_SHOWN).map(deviceLabel).join(', ')}>
+                <Tag>+{members.length - TAGS_SHOWN}</Tag>
               </Tooltip>
             ) : null}
           </span>
@@ -218,14 +218,14 @@ function MembersDialog({ group, devices, onClose, onSaved }: { group: DeviceGrou
 
 function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGroup; devices: Device[]; onClose: () => void; onSaved: () => void }) {
   const { message } = App.useApp()
-  const [chosen, setChosen] = useState(() => devices.filter((d) => d.groups.includes(group.id)).map((d) => d.host))
+  const [chosen, setChosen] = useState(() => devices.filter((d) => d.groups.includes(group.id)).map((d) => d.id))
   const changes = membershipChanges(devices, group.id, chosen)
   const adding = changes.filter((c) => c.groupIds.includes(group.id)).length
 
   // Membership lives on each device, so saving updates every device that joins or leaves; one failure doesn't stop the rest.
   const save = useMutation({
     mutationFn: async () => {
-      const results = await Promise.allSettled(changes.map((c) => setDeviceGroups(c.host, c.groupIds)))
+      const results = await Promise.allSettled(changes.map((c) => setDeviceGroups(c.id, c.groupIds)))
       const failed = changes.filter((_, i) => results[i].status === 'rejected').map((c) => c.host)
       if (failed.length) throw new Error(t('{hosts} could not be updated. Try again.', { hosts: failed.join(', ') }))
     },
@@ -240,7 +240,10 @@ function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGrou
     },
   })
 
-  const items: Item[] = devices.map((d) => ({ key: d.host, title: d.host, description: `${d.alias} · ${d.online ? t('Online') : t('Offline')}` }))
+  const items: Item[] = devices.map((d) => {
+    const status = d.online ? t('Online') : t('Offline')
+    return { key: d.id, title: d.host, description: d.alias ? `${d.alias} · ${status}` : status }
+  })
 
   return (
     <div className="dialog-form">

@@ -25,12 +25,12 @@ export default function StatusButton({ device }: { device: Device }) {
   const ping = useMutation({
     mutationFn: async () => {
       const fresh = await queryClient.fetchQuery({ ...devicesQuery, staleTime: 0 })
-      return fresh.find((d) => d.host === device.host) ?? null
+      return fresh.find((d) => d.id === device.id) ?? null
     },
     onSuccess: (fresh) => {
       setOnline(Boolean(fresh?.online))
       // The device page reads its own copy; refresh it so its tabs follow the answer.
-      queryClient.invalidateQueries({ queryKey: ['devices', device.host] })
+      queryClient.invalidateQueries({ queryKey: ['devices', device.id] })
       if (fresh?.online) message.success(t('{host} answered in {ms} ms', { host: device.host, ms: fresh.latencyMs }))
       else message.warning(t('{host} did not answer', { host: device.host }))
     },

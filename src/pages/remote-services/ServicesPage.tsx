@@ -10,12 +10,12 @@ import { servicesQuery } from '../../services/queries'
 import type { RemoteService } from '../../types/remote'
 
 /** The panel reverse-proxies each app, so the browser never needs a route to the device itself. */
-const proxyPath = (host: string, service: RemoteService) => `/web/${encodeURIComponent(host)}/${service.path}/`
+const proxyPath = (deviceId: string, service: RemoteService) => `/web/${encodeURIComponent(deviceId)}/${service.path}/`
 
 export default function ServicesPage() {
-  const { devices, host, device, setHost } = useDeviceParam()
+  const { devices, deviceId, device, setDeviceId } = useDeviceParam()
   const { message } = App.useApp()
-  const services = useQuery({ ...servicesQuery(host), enabled: Boolean(device?.online) })
+  const services = useQuery({ ...servicesQuery(deviceId), enabled: Boolean(device?.online) })
 
   const columns: TableProps<RemoteService>['columns'] = [
     {
@@ -38,7 +38,7 @@ export default function ServicesPage() {
     {
       title: <Th icon="arrow" label={t('Address')} />,
       key: 'url',
-      render: (_, s) => <code>{proxyPath(host, s)}</code>,
+      render: (_, s) => <code>{proxyPath(deviceId, s)}</code>,
     },
     {
       title: <Th icon="more" label={t('Actions')} />,
@@ -48,7 +48,7 @@ export default function ServicesPage() {
           <Button
             size="small"
             onClick={() =>
-              navigator.clipboard.writeText(`${location.origin}${proxyPath(host, s)}`).then(
+              navigator.clipboard.writeText(`${location.origin}${proxyPath(deviceId, s)}`).then(
                 () => message.success(t('Address copied')),
                 () => message.error(t('Copy failed. Select the address and copy it manually.')),
               )
@@ -59,7 +59,7 @@ export default function ServicesPage() {
           <Button
             size="small"
             type="primary"
-            href={proxyPath(host, s)}
+            href={proxyPath(deviceId, s)}
             target="_blank"
             rel="noopener noreferrer"
             disabled={s.status !== 'running'}
@@ -76,7 +76,7 @@ export default function ServicesPage() {
       <PageHeader
         title={t('Remote Service')}
         subtitle={t("Open web apps running on a device — Grafana, an internal dashboard — through the panel's proxy.")}
-        actions={<DevicePicker devices={devices} host={host} onChange={setHost} />}
+        actions={<DevicePicker devices={devices} deviceId={deviceId} onChange={setDeviceId} />}
       />
 
       {!device ? (

@@ -55,6 +55,9 @@ const state = {
 // A demo copy runs at about 1 MB/s, at least 1.5 s per file, so the progress bars have something to show.
 const copyMs = (size: number) => Math.max(1500, size / 1000)
 
+// Routes address devices by ID; the seed's generators work by hostname. An unknown ID passes through unchanged.
+const hostOf = (id: string) => seed.devices.find((d) => d.id === id)?.host ?? id
+
 function listWithCopies(host: string, path: string) {
   const listing = seed.listFiles(host, path)
   const extra = state.copied[`${host}|${path}`] ?? []
@@ -73,9 +76,9 @@ function freeName(name: string, taken: Set<string>) {
 }
 
 function startDemoTransfer(input: NewFileTransfer): FileTransfer {
-  const source = listWithCopies(input.from.host, input.from.path).entries
-  const taken = new Set(listWithCopies(input.to.host, input.to.path).entries.map((e) => e.name))
-  const key = `${input.to.host}|${input.to.path}`
+  const source = listWithCopies(hostOf(input.from.deviceId), input.from.path).entries
+  const taken = new Set(listWithCopies(hostOf(input.to.deviceId), input.to.path).entries.map((e) => e.name))
+  const key = `${hostOf(input.to.deviceId)}|${input.to.path}`
   const items = input.items.map(({ name, onConflict }) => {
     const entry = source.find((e) => e.name === name && e.kind === 'file')
     if (!entry) return { name, size: 0, copied: 0, state: 'failed' as const }
@@ -181,15 +184,25 @@ const routes: Route[] = [
     'put',
     /^\/devices\/([^/]+)\/groups$/,
     (m, c) => {
-      const i = seed.devices.findIndex((d) => d.host === decodeURIComponent(m[1]))
+      const i = seed.devices.findIndex((d) => d.id === decodeURIComponent(m[1]))
       if (i < 0) return null
       seed.devices[i] = { ...seed.devices[i], groups: body<{ groupIds: string[] }>(c).groupIds }
       return seed.devices[i]
     },
   ],
-  ['get', /^\/devices\/([^/]+)$/, (m) => seed.devices.find((d) => d.host === decodeURIComponent(m[1])) ?? null],
-  ['get', /^\/devices\/([^/]+)\/metrics$/, (m, c) => seed.deviceMetrics(decodeURIComponent(m[1]), (param(c, 'range') || '24h') as TimeRange)],
-  ['get', /^\/devices\/([^/]+)\/processes$/, (m) => seed.processes(decodeURIComponent(m[1]))],
+  ['get', /^\/devices\/([^/]+)$/, (m) => seed.devices.find((d) => d.id === decodeURIComponent(m[1])) ?? null],
+  [
+    'patch',
+    /^\/devices\/([^/]+)$/,
+    (m, c) => {
+      const i = seed.devices.findIndex((d) => d.id === decodeURIComponent(m[1]))
+      if (i < 0) return new Refused(404, 'Not Found')
+      seed.devices[i] = { ...seed.devices[i], alias: body<{ alias: string }>(c).alias.trim() }
+      return seed.devices[i]
+    },
+  ],
+  ['get', /^\/devices\/([^/]+)\/metrics$/, (m, c) => seed.deviceMetrics(hostOf(decodeURIComponent(m[1])), (param(c, 'range') || '24h') as TimeRange)],
+  ['get', /^\/devices\/([^/]+)\/processes$/, (m) => seed.processes(hostOf(decodeURIComponent(m[1])))],
   ['get', /^\/sessions\/summary$/, () => seed.remoteSessions],
   ['get', /^\/disk-forecast$/, () => seed.diskForecast()],
 
@@ -199,18 +212,18 @@ const routes: Route[] = [
     /^\/devices\/([^/]+)\/shell$/,
     (m, c) => {
       const { shell, command } = body<{ shell: Shell; command: string }>(c)
-      const host = decodeURIComponent(m[1])
-      const device = seed.devices.find((d) => d.host === host) ?? { host, groups: [] }
+      const id = decodeURIComponent(m[1])
+      const device = seed.devices.find((d) => d.id === id) ?? { id, groups: [] }
       const rule = blockedBy(state.commandRules, device, shell, command)
       if (rule) return new Refused(403, `Blocked: this command matches "${rule.pattern}". ${rule.reason}`.trim())
-      return seed.runShell(host, shell, command)
+      return seed.runShell(hostOf(id), shell, command)
     },
   ],
   [
     'get',
     /^\/devices\/([^/]+)\/files$/,
     (m, c) => {
-      const host = decodeURIComponent(m[1])
+      const host = hostOf(decodeURIComponent(m[1]))
       return listWithCopies(host, param(c, 'path') || seed.rootFor(host))
     },
   ],
@@ -225,7 +238,7 @@ const routes: Route[] = [
       return readDemoTransfer(decodeURIComponent(m[1]))
     },
   ],
-  ['get', /^\/devices\/([^/]+)\/services$/, (m) => seed.servicesOn(decodeURIComponent(m[1]))],
+  ['get', /^\/devices\/([^/]+)\/services$/, (m) => seed.servicesOn(hostOf(decodeURIComponent(m[1])))],
 
   // ---- Admin ----
   ['get', /^\/enrollments$/, () => state.pending],
@@ -278,7 +291,7 @@ const routes: Route[] = [
         role: input.role as (typeof state.accounts)[number]['role'],
         lastSignIn: '',
         disabled: false,
-        access: { groupIds: [], hosts: [] },
+        access: { groupIds: [], deviceIds: [] },
       }
       state.accounts = [...state.accounts, account]
       return account

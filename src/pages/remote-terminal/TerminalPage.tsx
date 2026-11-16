@@ -41,7 +41,7 @@ function paletteFrom(root: HTMLElement) {
 }
 
 export default function TerminalPage() {
-  const { devices, host, device, setHost } = useDeviceParam()
+  const { devices, deviceId, device, setDeviceId } = useDeviceParam()
 
   return (
     <div className="stack">
@@ -50,7 +50,7 @@ export default function TerminalPage() {
         subtitle={t("Run a command through the device's own tunnel. Every command is written to the audit log.")}
         actions={
           <>
-            <DevicePicker devices={devices} host={host} onChange={setHost} />
+            <DevicePicker devices={devices} deviceId={deviceId} onChange={setDeviceId} />
             {device ? <Status online={device.online} /> : null}
           </>
         }
@@ -64,8 +64,8 @@ export default function TerminalPage() {
           <DeviceOffline device={device} />
         </Card>
       ) : (
-        // Keyed by host: another device is another session, and its scrollback starts empty.
-        <Session key={device.host} device={device} />
+        // Keyed by device: another device is another session, and its scrollback starts empty.
+        <Session key={device.id} device={device} />
       )}
     </div>
   )
@@ -134,7 +134,7 @@ function Session({ device }: { device: Device }) {
       history.current.push(command)
       busy.current = true
       try {
-        const result = await runCommand(device.host, shellRef.current, command)
+        const result = await runCommand(device.id, shellRef.current, command)
         if (result.output) terminal.writeln(result.exitCode === 0 ? result.output : `\x1b[31m${result.output}\x1b[0m`)
       } catch (error) {
         // A blocked command comes back as 403 with the rule's reason; show that, not a generic permission error.
@@ -205,7 +205,7 @@ function Session({ device }: { device: Device }) {
       terminal.dispose()
       term.current = null
     }
-  }, [device.host])
+  }, [device.id, device.host])
 
   // Follow the app's theme; xterm paints to a canvas, so CSS alone cannot reach it.
   useEffect(() => {

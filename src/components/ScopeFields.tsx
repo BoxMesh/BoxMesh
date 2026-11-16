@@ -1,10 +1,10 @@
 import { Form, Segmented, Select } from 'antd'
 import type { ReactNode } from 'react'
 import type { Device, DeviceGroup } from '../types/device'
-import type { Scope } from '../utils/devices'
+import { deviceLabel, type Scope } from '../utils/devices'
 import { t } from '../i18n'
 
-/** Form fields `scope`, `groupIds` and `hosts`. On save, keep only the list the chosen scope names. */
+/** Form fields `scope`, `groupIds` and `deviceIds`. On save, keep only the list the chosen scope names. */
 export default function ScopeFields({
   scope,
   groups,
@@ -24,7 +24,7 @@ export default function ScopeFields({
           options={[
             { value: 'all', label: t('All devices') },
             { value: 'groups', label: t('Groups') },
-            { value: 'hosts', label: t('Devices') },
+            { value: 'devices', label: t('Devices') },
           ]}
         />
       </Form.Item>
@@ -40,15 +40,15 @@ export default function ScopeFields({
           />
         </Form.Item>
       ) : null}
-      {scope === 'hosts' ? (
-        <Form.Item name="hosts" rules={[{ required: true, type: 'array', min: 1, message: t('Pick at least one device.') }]}>
+      {scope === 'devices' ? (
+        <Form.Item name="deviceIds" rules={[{ required: true, type: 'array', min: 1, message: t('Pick at least one device.') }]}>
           <Select
             mode="multiple"
             allowClear
             placeholder={t('Pick devices')}
             aria-label={t('Devices')}
             optionFilterProp="label"
-            options={devices.map((d) => ({ value: d.host, label: `${d.host} · ${d.alias}` }))}
+            options={devices.map((d) => ({ value: d.id, label: deviceLabel(d) }))}
           />
         </Form.Item>
       ) : null}

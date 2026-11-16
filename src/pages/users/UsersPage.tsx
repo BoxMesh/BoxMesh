@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
 import { createUser } from '../../services/adminService'
-import { groupsQuery, usersQuery } from '../../services/queries'
+import { devicesQuery, groupsQuery, usersQuery } from '../../services/queries'
 import type { Account } from '../../types/admin'
 import { t } from '../../i18n'
 import { ago } from '../../utils/time'
@@ -15,8 +15,8 @@ import { AccessTags, RoleName } from './Access'
 // edited: every account created is an Operator, and the Admin can't be turned off or deleted, or the console
 // would be left with nobody to manage it.
 export default function UsersPage() {
-  const [{ data: accounts }, { data: groups }] = useSuspenseQueries({
-    queries: [usersQuery, groupsQuery],
+  const [{ data: accounts }, { data: groups }, { data: devices }] = useSuspenseQueries({
+    queries: [usersQuery, groupsQuery, devicesQuery],
   })
   const { message } = App.useApp()
   const queryClient = useQueryClient()
@@ -52,10 +52,10 @@ export default function UsersPage() {
       key: 'role',
       render: (_, a) => <Tag color={a.role === 'Admin' ? 'processing' : 'default'}><RoleName role={a.role} /></Tag>,
     },
-    ...(['groups', 'hosts'] as const).map((part) => ({
+    ...(['groups', 'devices'] as const).map((part) => ({
       title: part === 'groups' ? <Th icon="tag" label={t('Groups')} /> : <Th icon="devices" label={t('Devices')} />,
       key: part,
-      render: (_: unknown, a: Account) => <AccessTags account={a} part={part} groups={groups} />,
+      render: (_: unknown, a: Account) => <AccessTags account={a} part={part} groups={groups} devices={devices} />,
     })),
     {
       title: <Th icon="pulse" label={t('Status')} />,

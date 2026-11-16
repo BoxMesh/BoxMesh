@@ -122,7 +122,16 @@ const ja: Record<string, string> = {
   Files: 'ファイル',
   Service: 'サービス',
   'Device not found': 'デバイスが見つかりません',
-  'No enrolled device is named {id}.': '{id} という名前の登録済みデバイスはありません。',
+  'No enrolled device has the ID {id}.': 'ID が {id} の登録済みデバイスはありません。',
+
+  // src/pages/device-detail/AliasEditor.tsx
+  'Alias saved': '別名を保存しました',
+  'Alias removed': '別名を削除しました',
+  'e.g. Front desk': '例: 受付',
+  'Alias for {host}': '{host} の別名',
+  'Change alias': '別名を変更',
+  'Change alias for {host}': '{host} の別名を変更',
+  'Add alias': '別名を追加',
   'Back to devices': 'デバイス一覧に戻る',
   'Processes ({n})': 'プロセス ({n})',
   Processes: 'プロセス',

@@ -12,7 +12,7 @@ import type { CommandMatch, CommandRule } from '../../types/admin'
 import type { Device, DeviceGroup } from '../../types/device'
 import type { Shell } from '../../types/remote'
 import { blockedBy, regexError } from '../../utils/commands'
-import { scopeOf, type Scope } from '../../utils/devices'
+import { deviceLabel, scopeOf, type Scope } from '../../utils/devices'
 
 const SHELLS: Shell[] = ['PowerShell', 'CMD', 'Bash']
 const MATCHES = (): { value: CommandMatch; label: string; short: string; help: string }[] => [
@@ -31,7 +31,7 @@ const MATCHES = (): { value: CommandMatch; label: string; short: string; help: s
   { value: 'regex', label: t('Regex'), short: t('A regular expression'), help: t('A regular expression, not case-sensitive.') },
 ]
 const matchLabel = (m: CommandMatch) => MATCHES().find((x) => x.value === m)!.label
-const EMPTY: NewCommandRule = { pattern: '', match: 'starts', shells: [], reason: '', groupIds: [], hosts: [] }
+const EMPTY: NewCommandRule = { pattern: '', match: 'starts', shells: [], reason: '', groupIds: [], deviceIds: [] }
 
 // Records only show; adding and changing a rule happen in the rule dialog, like users.
 export default function CommandsPage() {
@@ -43,9 +43,10 @@ export default function CommandsPage() {
   const [editing, setEditing] = useState<CommandRule | 'new' | null>(null)
   const [testShell, setTestShell] = useState<Shell>('PowerShell')
   const [testCommand, setTestCommand] = useState('')
-  const [testHost, setTestHost] = useState(devices[0]?.host ?? '')
-  const testDevice = devices.find((d) => d.host === testHost)
+  const [testDeviceId, setTestDeviceId] = useState(devices[0]?.id ?? '')
+  const testDevice = devices.find((d) => d.id === testDeviceId)
   const names = new Map(groups.map((g) => [g.id, g.name]))
+  const deviceNames = new Map(devices.map((d) => [d.id, deviceLabel(d)]))
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['command-rules'] })
 
   const remove = useMutation({
@@ -87,11 +88,14 @@ export default function CommandsPage() {
         const scope = scopeOf(r)
         if (scope === 'all') return <span className="muted">{t('All devices')}</span>
         // A group deleted since keeps its id on the rule until it is saved again; it has no name to show.
-        const labels = scope === 'groups' ? r.groupIds.filter((id) => names.has(id)).map((id) => names.get(id)!) : r.hosts
+        const tags: [id: string, label: string][] =
+          scope === 'groups'
+            ? r.groupIds.filter((id) => names.has(id)).map((id) => [id, names.get(id)!])
+            : r.deviceIds.map((id) => [id, deviceNames.get(id) ?? id])
         return (
           <span className="device-groups">
-            {labels.map((label) => (
-              <Tag key={label} color={scope === 'groups' ? 'processing' : 'default'}>
+            {tags.map(([id, label]) => (
+              <Tag key={id} color={scope === 'groups' ? 'processing' : 'default'}>
                 {label}
               </Tag>
             ))}
@@ -142,7 +146,7 @@ export default function CommandsPage() {
 
       <Card title={t('Test a command')}>
         <div className="rule-test">
-          <DevicePicker devices={devices} host={testHost} onChange={setTestHost} />
+          <DevicePicker devices={devices} deviceId={testDeviceId} onChange={setTestDeviceId} />
           <Segmented<Shell> aria-label={t('Shell to test in')} options={SHELLS} value={testShell} onChange={setTestShell} />
           <Input
             className="mono"
@@ -168,7 +172,7 @@ export default function CommandsPage() {
           ) : (
             <>
               <Tag color="success">{t('Allowed')}</Tag>
-              <span className="muted">{t('No rule matches it in {shell} on {host}.', { shell: testShell, host: testHost })}</span>
+              <span className="muted">{t('No rule matches it in {shell} on {host}.', { shell: testShell, host: testDevice?.host ?? '' })}</span>
             </>
           )}
         </div>
@@ -211,7 +215,7 @@ function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
   const shells = Form.useWatch('shells', form) ?? []
   const scope = Form.useWatch('scope', form) ?? 'all'
   const groupIds = Form.useWatch('groupIds', form) ?? []
-  const hosts = Form.useWatch('hosts', form) ?? []
+  const deviceIds = Form.useWatch('deviceIds', form) ?? []
   const isNew = rule === 'new'
   const current = rule && rule !== 'new' ? rule : null
 
@@ -234,14 +238,14 @@ function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
       pattern: values.pattern.trim(),
       reason: values.reason?.trim() ?? '',
       groupIds: scope === 'groups' ? values.groupIds : [],
-      hosts: scope === 'hosts' ? values.hosts : [],
+      deviceIds: scope === 'devices' ? values.deviceIds : [],
     })
 
-  const n = scope === 'groups' ? groupIds.length : hosts.length
+  const n = scope === 'groups' ? groupIds.length : deviceIds.length
   const where =
     scope === 'groups'
       ? n ? (n === 1 ? t('on {n} group', { n }) : t('on {n} groups', { n })) : t('on the groups you pick')
-      : scope === 'hosts'
+      : scope === 'devices'
         ? n ? (n === 1 ? t('on {n} device', { n }) : t('on {n} devices', { n })) : t('on the devices you pick')
         : t('on every device')
   const sentence = t('Blocks any command that {verb} "{pattern}", in {shells}, {where}.', {
@@ -276,7 +280,7 @@ function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
           <Form.Item
             name="pattern"
             label={match === 'regex' ? t('Pattern') : t('Command')}
-            dependencies={['match', 'scope', 'groupIds', 'hosts']}
+            dependencies={['match', 'scope', 'groupIds', 'deviceIds']}
             rules={[
               { required: true, whitespace: true, message: t('Enter a command.') },
               ({ getFieldValue }) => ({
@@ -287,9 +291,9 @@ function RuleDialog({ rule, rules, groups, devices, onClose }: DialogProps) {
                   if (error) return Promise.reject(new Error(t('Not a valid regex: {error}', { error })))
                   const scoped = getFieldValue('scope') as Scope
                   const groupKey = scoped === 'groups' ? key(getFieldValue('groupIds') ?? []) : ''
-                  const hostKey = scoped === 'hosts' ? key(getFieldValue('hosts') ?? []) : ''
+                  const deviceKey = scoped === 'devices' ? key(getFieldValue('deviceIds') ?? []) : ''
                   const twin = rules.find(
-                    (r) => r.id !== current?.id && r.match === kind && same(r.pattern, value) && key(r.groupIds) === groupKey && key(r.hosts) === hostKey,
+                    (r) => r.id !== current?.id && r.match === kind && same(r.pattern, value) && key(r.groupIds) === groupKey && key(r.deviceIds) === deviceKey,
                   )
                   return twin ? Promise.reject(new Error(t('There is already a rule for this.'))) : Promise.resolve()
                 },

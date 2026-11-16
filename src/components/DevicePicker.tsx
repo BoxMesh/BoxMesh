@@ -2,20 +2,21 @@ import { Result, Select } from 'antd'
 import type { Device } from '../types/device'
 import { tone } from '../config/theme'
 import { t } from '../i18n'
+import { deviceLabel } from '../utils/devices'
 import { Icon, type IconName } from './Icon'
 
 export default function DevicePicker({
   devices,
-  host,
+  deviceId,
   onChange,
 }: {
   devices: Device[]
-  host: string
-  onChange: (host: string) => void
+  deviceId: string
+  onChange: (deviceId: string) => void
 }) {
   return (
     <Select
-      value={host || undefined}
+      value={deviceId || undefined}
       onChange={onChange}
       placeholder={t('Pick a device')}
       showSearch
@@ -23,12 +24,12 @@ export default function DevicePicker({
       style={{ minWidth: 260 }}
       aria-label={t('Device')}
       options={devices.map((d) => ({
-        value: d.host,
-        label: `${d.host} · ${d.alias}`,
+        value: d.id,
+        label: deviceLabel(d),
         title: d.online ? t('Online') : t('Offline'),
       }))}
       optionRender={({ data }) => {
-        const device = devices.find((d) => d.host === data.value)!
+        const device = devices.find((d) => d.id === data.value)!
         return (
           <span className="picker-option">
             <span className="status-dot" style={{ background: device.online ? tone.positive : tone.disabled }} />

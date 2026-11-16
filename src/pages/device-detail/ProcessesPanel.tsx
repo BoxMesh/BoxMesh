@@ -20,7 +20,7 @@ const memory = (mb: number) => (mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `$
 export default function ProcessesPanel({ device }: { device: Device }) {
   const notSupported = useNotSupported()
   const [q, setQ] = useState('')
-  const list = useQuery({ ...processesQuery(device.host), enabled: device.online, refetchInterval: 5000 })
+  const list = useQuery({ ...processesQuery(device.id), enabled: device.online, refetchInterval: 5000 })
   const query = q.trim().toLowerCase()
   const rows = (list.data ?? []).filter(
     (p) => !query || p.name.toLowerCase().includes(query) || p.user.toLowerCase().includes(query) || String(p.pid).includes(query),

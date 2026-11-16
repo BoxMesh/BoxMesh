@@ -8,7 +8,10 @@ export interface DeviceHardware {
 }
 
 export interface Device {
+  /** The agent's ID. It identifies the device everywhere (routes, API paths, scopes): hostnames can repeat. */
+  id: string
   host: string
+  /** Set by an Admin in the console to tell devices apart; empty when unset. */
   alias: string
   /** Product name only, e.g. Ubuntu or Windows 11 Pro. */
   os: string
@@ -84,6 +87,8 @@ export interface DeviceProcess {
 
 /** A disk that is filling up, as EdgePanel projects it from the last 7 days of usage. */
 export interface DiskForecast {
+  /** The device's ID; host is for display. */
+  id: string
   host: string
   /** Percent used now */
   disk: number
