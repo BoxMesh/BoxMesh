@@ -39,11 +39,22 @@ export async function logIn(email: string, password: string) {
     // Only "Admin" unlocks the Admin section; anything else, or no role at all, is an Operator.
     role: account.role === "Admin" ? "Admin" : "Operator",
   };
-  session = data;
-  try {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch {}
+  store(data);
   return data;
+}
+
+function store(user: User) {
+  session = user;
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+  } catch {}
+}
+
+/** The signed-in person edits their own name and password. A new password needs the current one. */
+export async function updateAccount(input: { name?: string; currentPassword?: string; password?: string }) {
+  const { data } = await http.patch<{ name?: string }>("/account", input);
+  const name = data?.name?.trim();
+  if (session && name) store({ ...session, name });
 }
 export async function logOut() {
   await http.post("/log-out").catch(() => {});

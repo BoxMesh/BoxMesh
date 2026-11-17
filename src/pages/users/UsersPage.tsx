@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import { App, Button, Card, Form, Input, Modal, Table, Tag, Tooltip, type TableProps } from 'antd'
 import { Link } from 'react-router'
 import { useState } from 'react'
@@ -8,6 +9,7 @@ import { createUser } from '../../services/adminService'
 import { devicesQuery, groupsQuery, usersQuery } from '../../services/queries'
 import type { Account } from '../../types/admin'
 import { t } from '../../i18n'
+import { MAX_EMAIL, MAX_NAME, MIN_PASSWORD } from '../../utils/account'
 import { ago } from '../../utils/time'
 import { AccessTags, RoleName } from './Access'
 
@@ -33,7 +35,14 @@ export default function UsersPage() {
       form.resetFields()
       message.success(t('Account created for {email}', { email: account.email }))
     },
-    onError: (error) => message.error(error.message),
+    onError: (error) => {
+      // 409 means the email is taken: say so under the field instead of a toast.
+      if (isAxiosError(error) && error.response?.status === 409) {
+        form.setFields([{ name: 'email', errors: [t('An account with this email already exists.')] }])
+      } else {
+        message.error(error.message)
+      }
+    },
   })
 
   const columns: TableProps<Account>['columns'] = [
@@ -103,51 +112,63 @@ export default function UsersPage() {
         />
       </Card>
 
-      <Modal
-        title={t('Create a user')}
-        open={open}
-        onCancel={() => setOpen(false)}
-        footer={
-          <div className="drawer-footer">
-            <span className="screen-spacer" />
-            <Button onClick={() => setOpen(false)}>{t('Cancel')}</Button>
-            <Button type="primary" loading={create.isPending} onClick={() => form.submit()}>
-              {t('Create user')}
-            </Button>
-          </div>
-        }
-      >
+      <Modal title={t('Create a user')} open={open} onCancel={() => setOpen(false)} width={560} destroyOnHidden footer={null}>
         <Form
           form={form}
+          className="dialog-form"
           layout="vertical"
           requiredMark={false}
           onFinish={(values) => create.mutate({ name: values.name.trim(), email: values.email, password: values.password, role: 'Operator' })}
         >
-          <Form.Item
-            name="name"
-            label={t('Name')}
-            rules={[{ required: true, whitespace: true, message: t('Enter their name.') }]}
-          >
-            <Input autoComplete="off" />
-          </Form.Item>
-          <Form.Item
-            name="email"
-            label={t('Email')}
-            normalize={(v: string) => v.trim()}
-            rules={[
-              { required: true, message: t('Enter their email.') },
-              { type: 'email', message: t('Enter a valid email.') },
-            ]}
-          >
-            <Input type="email" autoComplete="off" placeholder="name@company.com" />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            label={t('Password')}
-            rules={[{ required: true, message: t('Enter a password.') }]}
-          >
-            <Input.Password autoComplete="new-password" />
-          </Form.Item>
+          <section className="form-section">
+            <h3>{t('Account')}</h3>
+            <p className="section-hint">{t('They join as an Operator with no devices. Grant access on their page afterwards.')}</p>
+            <Form.Item
+              name="name"
+              label={t('Name')}
+              rules={[
+                { required: true, whitespace: true, message: t('Enter their name.') },
+                { max: MAX_NAME, message: t('Keep the name to {max} characters or fewer.', { max: MAX_NAME }) },
+              ]}
+            >
+              <Input autoComplete="off" />
+            </Form.Item>
+            <Form.Item
+              name="email"
+              label={t('Email')}
+              normalize={(v: string) => v.trim()}
+              rules={[
+                { required: true, message: t('Enter their email.') },
+                { type: 'email', max: MAX_EMAIL, message: t('Enter a valid email.') },
+              ]}
+            >
+              <Input type="email" autoComplete="off" placeholder="name@company.com" />
+            </Form.Item>
+          </section>
+
+          <section className="form-section">
+            <h3>{t('Password')}</h3>
+            <p className="section-hint">{t('You set it and share it with them; no email is sent. At least {min} characters.', { min: MIN_PASSWORD })}</p>
+            <Form.Item
+              name="password"
+              label={t('Password')}
+              rules={[
+                { required: true, message: t('Enter a password.') },
+                { min: MIN_PASSWORD, message: t('The password needs at least {min} characters.', { min: MIN_PASSWORD }) },
+              ]}
+            >
+              <Input.Password autoComplete="new-password" />
+            </Form.Item>
+          </section>
+
+          <div className="dialog-footer">
+            <span className="dialog-buttons">
+              <Button onClick={() => setOpen(false)}>{t('Cancel')}</Button>
+              <Button type="primary" htmlType="submit" loading={create.isPending}>
+                {t('Create user')}
+              </Button>
+            </span>
+          </div>
         </Form>
       </Modal>
 

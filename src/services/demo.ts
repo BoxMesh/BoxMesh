@@ -146,6 +146,7 @@ const routes: Route[] = [
     },
   ],
   ['post', /^\/log-out$/, () => null],
+  ['patch', /^\/account$/, (_m, c) => ({ name: body<{ name?: string }>(c).name })],
 
   // ---- Fleet ----
   ['get', /^\/devices$/, () => seed.fleet()],

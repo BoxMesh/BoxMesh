@@ -114,11 +114,12 @@ These are the endpoints the app calls today:
 | GET | `/api/devices/{host}` |
 | PUT | `/api/devices/{host}/groups` (`{ groupIds }`, replaces the device's groups) |
 | GET | `/api/devices/{host}/metrics?range=1h\|24h\|7d` (`[{ at, cpu, ram, disk, netIn, netOut }]`, percent and Mbps; averages per minute, 15 minutes or hour, oldest first; steps with no report are left out) |
-| GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; the ten busiest at the agent's latest report, about every 10 s) |
+| GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; every process at the agent's latest report, about every 10 s) |
 | GET · POST | `/api/groups` (`{ name }` to create) |
 | PATCH · DELETE | `/api/groups/{id}` (rename with `{ name }`; delete keeps the devices) |
 | GET · POST | `/api/users` (`{ name, email, password, role }` to create; the Admin sets the password and the panel sends no email; access is granted afterwards with PATCH) |
 | PATCH · DELETE | `/api/users/{id}` (`{ disabled, access }`) |
+| PATCH | `/api/account` (`{ name, currentPassword, password }`; the signed-in person edits their own name and password, a new password needs the current one) |
 | GET | `/api/enrollments?status=pending` |
 | GET · POST | `/api/enrollment-tokens` (`{ group, lifetime, requiresApproval }` to create; the reply holds the only full copy) |
 | DELETE | `/api/enrollment-tokens/{id}` (revoke; placeholder name) |

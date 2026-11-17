@@ -331,7 +331,8 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
   page), status, groups, and whether it is reached through a group or as a single device.
 - The Admin's page and your own can't be turned off or deleted: the reason takes the switch's place and the header explains why
   instead of offering Delete. The Admin's page has no Save row: they reach every device.
-- Creating a user is a dialog: name, email, password, then Cancel and Create user in the footer. Access is granted afterwards on the user's page.
+- Creating a user is a 560 px sectioned dialog (see Dialogs with sections): an Account section (name, email, a hint that they join as an Operator with no devices) and a Password section, then Cancel and Create user. Access is granted afterwards on the user's page.
+- My account (account menu) is the same kind of dialog: a Profile section (email and role read-only, editable name) and a Password section (current, new, confirm; all empty keeps the password).
 - The access picker is a Segmented switch, Groups (n) | Single devices (n), over an antd `Transfer`: Available and
   Chosen lists 420 px tall, each with search and a select-all checkbox, moved with two 32 px arrow buttons (like
   Django's two-list picker). No drag and drop: on a phone it fights the scroll. Below 576 px the lists stack, 320 px

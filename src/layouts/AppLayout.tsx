@@ -1,7 +1,8 @@
 import { useQuery, useQueryClient, useQueryErrorResetBoundary } from '@tanstack/react-query'
 import { Avatar, Breadcrumb, Dropdown, Input, Layout, Menu, Spin, type MenuProps } from 'antd'
-import { Suspense } from 'react'
+import { Suspense, useReducer, useState } from 'react'
 import { Link, Outlet, useLocation, useMatch, useNavigate } from 'react-router'
+import AccountModal from '../components/AccountModal'
 import ErrorBoundary from '../components/ErrorBoundary'
 import { Icon } from '../components/Icon'
 import Logo from '../components/Logo'
@@ -41,10 +42,14 @@ export default function AppLayout() {
   const active = navItems().find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))
   const queryClient = useQueryClient()
   const user = getSession()
+  const [accountOpen, setAccountOpen] = useState(false)
+  // The session lives outside React; after a rename the header has to read it again.
+  const [, reread] = useReducer((n: number) => n + 1, 0)
 
   const accountMenu: MenuProps = {
-    items: [{ type: 'group', key: 'account', label: user?.email, children: [{ key: 'sign-out', label: t('Sign out') }] }],
-    onClick: async () => {
+    items: [{ type: 'group', key: 'account', label: user?.email, children: [{ key: 'my-account', label: t('My account') }, { key: 'sign-out', label: t('Sign out') }] }],
+    onClick: async ({ key }) => {
+      if (key === 'my-account') return setAccountOpen(true)
       const wasDemo = isDemo()
       await logOut()
       // Drop cached fleet data so the next person to sign in never sees it.
@@ -92,6 +97,14 @@ export default function AppLayout() {
             </Dropdown>
           </div>
         </Layout.Header>
+        <AccountModal
+          open={accountOpen}
+          onClose={() => setAccountOpen(false)}
+          onSaved={() => {
+            reread()
+            queryClient.invalidateQueries({ queryKey: ['users'] })
+          }}
+        />
         <Layout.Content className="app-content">
           {/* Keyed by path so an error on one page clears when you navigate away. */}
           <ErrorBoundary key={pathname} onReset={reset}>
