@@ -44,7 +44,7 @@ describe("authService", () => {
       email: "ops@example.com",
       password: "secret",
     });
-    expect(user).toEqual({ email: "ops@example.com", name: "ops", role: "Operator" });
+    expect(user).toEqual({ email: "ops@example.com", name: "ops", role: "User" });
     expect(getSession()).toEqual(user);
     await logOut();
     expect(sent?.url).toBe("/log-out");
@@ -58,16 +58,16 @@ describe("authService", () => {
     expect(await logIn("ops@example.com", "secret")).toEqual({
       email: "ops@example.com",
       name: "Quang Huy",
-      role: "Operator",
+      role: "User",
     });
     await logOut();
   });
 
-  it("keeps the Admin role the panel sends", async () => {
+  it("keeps the System role the panel sends", async () => {
     http.defaults.adapter = reply(200, {
-      data: { id: "7b1f", email: "admin@example.com", role: "Admin" },
+      data: { id: "7b1f", email: "admin@example.com", role: "System" },
     });
-    expect((await logIn("admin@example.com", "secret")).role).toBe("Admin");
+    expect((await logIn("admin@example.com", "secret")).role).toBe("System");
     await logOut();
   });
 

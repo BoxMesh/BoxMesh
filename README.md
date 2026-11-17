@@ -25,8 +25,7 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 | Remote Terminal, Files, Service | yes | missing |
 | Alerts, Rules, Channels | yes | missing |
 | Users & Access | yes | missing |
-| Command rules | yes | missing |
-| Enrollment tokens | yes | missing |
+| Enrollment tokens | yes | `GET · POST · DELETE /enrollment-tokens` — live, System only; the enrollment itself (an agent presenting a token) is not built |
 
 ## Demo mode
 
@@ -108,7 +107,7 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
+| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `System` or `User`, and anything else counts as User, who never sees the System account section) |
 | POST | `/api/log-out` → EdgePanel `/log-out` (clears the cookie) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
@@ -117,12 +116,12 @@ These are the endpoints the app calls today:
 | GET | `/api/devices/{host}/processes` (`[{ pid, name, user, status, cpu, memoryMb }]`, polled every 5 s; every process at the agent's latest report, about every 10 s) |
 | GET · POST | `/api/groups` (`{ name }` to create) |
 | PATCH · DELETE | `/api/groups/{id}` (rename with `{ name }`; delete keeps the devices) |
-| GET · POST | `/api/users` (`{ name, email, password, role }` to create; the Admin sets the password and the panel sends no email; access is granted afterwards with PATCH) |
+| GET · POST | `/api/users` (`{ name, email, password, role }` to create; the System account sets the password and the panel sends no email; access is granted afterwards with PATCH) |
 | PATCH · DELETE | `/api/users/{id}` (`{ disabled, access }`) |
 | PATCH | `/api/account` (`{ name, currentPassword, password }`; the signed-in person edits their own name and password, a new password needs the current one) |
 | GET | `/api/enrollments?status=pending` |
-| GET · POST | `/api/enrollment-tokens` (`{ group, lifetime, requiresApproval }` to create; the reply holds the only full copy) |
-| DELETE | `/api/enrollment-tokens/{id}` (revoke; placeholder name) |
+| GET · POST | `/api/enrollment-tokens` (`{ lifetime, maxDevices }` to create, `maxDevices` 1 to 1,000,000, left out for no limit, `1h`, `24h` or `7d`; replies `[{ id, token, expiresAt, maxDevices }]`; a token only authenticates enrollment and belongs to no group; every reply carries the full token so it can be copied again; System only) |
+| DELETE | `/api/enrollment-tokens/{id}` (revoke) |
 | GET | `/api/sessions/summary` |
 | GET | `/api/disk-forecast` (`[{ host, disk, perDay, daysLeft }]`, the five disks full soonest at their last 7 days' rate; placeholder name) |
 | GET · POST | `/api/alerts` (`{ name, ruleIds, groupIds, hosts, channelIds, message }`, both scope lists empty = every device; placeholder name) |
@@ -132,8 +131,6 @@ These are the endpoints the app calls today:
 | GET · POST | `/api/alert-channels` (`{ kind: telegram|discord|email|webhook, name|kind: telegram|discord|email|webhook, name, enabled, chatId, botToken, webhookUrl, method: POST|PUT, headers: [{ name, value }], body,|email, name, enabled, chatId, botToken, webhookUrl, smtpHost, smtpPort, username, password, to }`; secrets are write-only, reads return `webhookTail` and `headerNames` instead, header values are never sent back and `headers` replaces them all; placeholder name) |
 | PATCH · DELETE | `/api/alert-channels/{id}` (an omitted secret keeps the saved one; delete drops the channel from every alert) |
 | POST | `/api/alert-channels/{id}/test` (sends a test message) |
-| GET · POST | `/api/command-rules` (`{ pattern, match: starts\|contains\|regex, shells, reason, groupIds, hosts }`, both lists empty = every device; placeholder name) |
-| PATCH · DELETE | `/api/command-rules/{id}` |
 | POST | `/api/devices/{host}/shell` refuses a command a rule matches with 403 `{ error }` (the reason the terminal shows) |
 
 ## Docker

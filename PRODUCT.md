@@ -11,8 +11,8 @@ web
 The internal IT team of a single company. They run EdgePanel on a server inside the company and use BoxMesh to look after the company's office PCs and servers (Windows, Linux and macOS), which sit behind NAT and firewalls across departments and sites.
 
 Roles:
-- **Admin**: everything, plus managing users. There is exactly one Admin.
-- **Operator**: runs commands and opens remote sessions, but only on the devices the Admin gives them: whole groups (including devices added to those groups later) and/or single devices. An Operator with nothing assigned reaches no device. Every account the Admin creates is an Operator. Operators never see the Admin section of the menu (Users & Access, Command rules, Enrollment tokens).
+- **System**: the service provider's own account (a developer or staff). Everything, plus managing users. There is exactly one System account.
+- **User**: a customer who signed up for the service. Runs commands and opens remote sessions, but only on the devices the System account gives them: whole groups (including devices added to those groups later) and/or single devices. A User with nothing assigned reaches no device. Every account the System account creates is a User. Users never see the System account section of the menu (Users & Access, Enrollment tokens).
 
 Their job: know which machines are healthy, find the ones that need attention, reach any machine without a VPN or inbound ports, and hear about trouble on Telegram, Discord or email.
 
@@ -51,16 +51,15 @@ The control plane runs on the company's own server, inside its network; there is
 ## Capabilities and Constraints
 
 **Built in BoxMesh**
-- Screens: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Files, Remote Service, Groups, Alerts, Rules, Channels, Users & Access, Command rules, Enrollment tokens. Command & Jobs, Audit, Security & Certificates and System Settings were removed from the console, and Remote Desktop until a screen can be streamed.
+- Screens: Dashboard, Devices (list, detail, enrollment), Remote Terminal, Remote Files, Remote Service, Groups, Alerts, Rules, Channels, Users & Access, Enrollment tokens. Command & Jobs, Audit, Security & Certificates and System Settings were removed from the console, and Remote Desktop until a screen can be streamed.
 - Sign-in with email and password, and a "Forgot password?" form that requests a reset email.
 - Dark and light themes: the OS setting by default, switchable in the header.
 
 **What works end to end**
-- EdgePanel serves sign-in, sign-out, the device list, usage history and processes (`POST /log-in`, `POST /log-out`, `GET /devices`, `GET /devices/{host}`, `GET /devices/{host}/metrics`, `GET /devices/{host}/processes`) so far. Every other screen calls its real endpoint; while EdgePanel answers 404 the screen shows empty tables and cards (`emptyIfMissing` in `services/queries.ts`), and any other failure shows its error state.
+- EdgePanel serves sign-in, sign-out, the device list, usage history, processes and enrollment tokens (`POST /log-in`, `POST /log-out`, `GET /devices`, `GET /devices/{host}`, `GET /devices/{host}/metrics`, `GET /devices/{id}/processes`, `/enrollment-tokens`, System only) so far. Every other screen calls its real endpoint; while EdgePanel answers 404 the screen shows empty tables and cards (`emptyIfMissing` in `services/queries.ts`), and any other failure shows its error state.
 - The password-reset request posts to `/forgot-password`, a route EdgePanel does not have yet; the name is a placeholder.
 - Remote Files can open a second device and copy or one-way sync files between the two. It calls `/file-transfers`, another placeholder name EdgePanel does not have yet; only the demo runs it.
 - Alerts: a rule is a named condition (CPU, RAM or disk over a limit, or offline, for N minutes). An alert applies rules to all devices, groups or single devices and sends a message, from a template with fields such as {device} and {value}, to channels: Telegram (bot token + chat ID), Discord (webhook), email (Gmail app password or any SMTP server) or any webhook URL (with its own method, headers and JSON body). EdgePanel is expected to evaluate and send; BoxMesh only configures it through `/alerts`, `/alert-rules` and `/alert-channels`, placeholder names. Secrets are write-only. Only the demo answers today, and its Send test sends nothing.
-- Command rules lists commands nobody may run in Remote Terminal (the Admin included), on every device or only on chosen groups or devices. It calls `/command-rules`, a placeholder name; EdgePanel is expected to refuse a matching `/shell` request with 403 and the rule's reason. Only the demo enforces it today.
 - A few actions are stubbed (ending a process, uploading, downloading, renaming or deleting a file): they say "<action> isn't available yet." and never fake success.
 
 **Demo mode**

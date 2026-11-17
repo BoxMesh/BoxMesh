@@ -1,4 +1,4 @@
-import type { Account, CommandRule, EnrollmentToken, Role } from '../types/admin'
+import type { Account, EnrollmentToken, Role } from '../types/admin'
 import { http } from './http'
 
 export async function getTokens() {
@@ -7,9 +7,8 @@ export async function getTokens() {
 }
 
 export interface NewToken {
-  group: string
   lifetime: string
-  requiresApproval: boolean
+  maxDevices: number | null
 }
 
 /** The reply carries the only full copy of the token; afterwards the panel keeps just its tail. */
@@ -27,7 +26,7 @@ export async function getUsers() {
   return data
 }
 
-/** Creates the account outright: the Admin sets the password, the panel sends no email. */
+/** Creates the account outright: the System account sets the password, the panel sends no email. */
 export async function createUser(input: { name: string; email: string; password: string; role: Role }) {
   const { data } = await http.post<Account>('/users', input)
   return data
@@ -42,24 +41,3 @@ export async function deleteUser(id: string) {
   await http.delete(`/users/${encodeURIComponent(id)}`)
 }
 
-export type NewCommandRule = Omit<CommandRule, 'id'>
-
-export async function getCommandRules() {
-  const { data } = await http.get<Partial<CommandRule>[]>('/command-rules')
-  // A rule saved before scopes existed has no groupIds or deviceIds: it applies everywhere, it doesn't crash the page.
-  return data.map((r) => ({ match: 'starts', reason: '', ...r, shells: r.shells ?? [], groupIds: r.groupIds ?? [], deviceIds: r.deviceIds ?? [] }) as CommandRule)
-}
-
-export async function createCommandRule(input: NewCommandRule) {
-  const { data } = await http.post<CommandRule>('/command-rules', input)
-  return data
-}
-
-export async function updateCommandRule(id: string, patch: Partial<NewCommandRule>) {
-  const { data } = await http.patch<CommandRule>(`/command-rules/${encodeURIComponent(id)}`, patch)
-  return data
-}
-
-export async function deleteCommandRule(id: string) {
-  await http.delete(`/command-rules/${encodeURIComponent(id)}`)
-}

@@ -33,6 +33,7 @@ const paths = {
   tag: 'M19 13l-6 6-9-9V4h7zM7.5 7.5h.01',
   check: 'M4 12.5l5 5L20 6.5',
   hash: 'M9 3L7 21M17 3l-2 18M4 9h17M3 15h17',
+  copy: 'M9 9h11v11H9zM5 15H4V4h11v1',
 }
 
 export type IconName = keyof typeof paths

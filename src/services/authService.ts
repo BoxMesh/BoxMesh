@@ -12,7 +12,7 @@ function load(): User | null {
   try {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     const user = saved ? JSON.parse(saved) : null;
-    // A session saved before roles existed has none: sign in again rather than hide the Admin section.
+    // A session saved before roles existed has none: sign in again rather than hide the System section.
     return user?.role ? user : null;
   } catch {
     return null;
@@ -36,8 +36,8 @@ export async function logIn(email: string, password: string) {
     email: account.email,
     // The person's name when the panel sends one; until then, the part of the email before the @.
     name: account.name?.trim() || account.email.split("@")[0],
-    // Only "Admin" unlocks the Admin section; anything else, or no role at all, is an Operator.
-    role: account.role === "Admin" ? "Admin" : "Operator",
+    // Only "System" unlocks the System section; anything else, or no role at all, is a User.
+    role: account.role === "System" ? "System" : "User",
   };
   store(data);
   return data;

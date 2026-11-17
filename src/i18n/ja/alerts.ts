@@ -1,6 +1,6 @@
 // Japanese for the alerts area. Keys are the English copy exactly as passed to t().
 const ja: Record<string, string> = {
-  // Shared by the alert, channel and command-rule pages
+  // Shared by the alert and channel pages
   '"{name}" deleted': '「{name}」を削除しました',
   '"{name}" added': '「{name}」を追加しました',
   'Edit "{name}"': '「{name}」を編集',
@@ -173,65 +173,6 @@ const ja: Record<string, string> = {
   'Enter the SMTP server.': 'SMTP サーバーを入力してください。',
   Port: 'ポート',
   'Enter the port.': 'ポートを入力してください。',
-
-  // src/pages/commands/CommandsPage.tsx
-  'Starts with': '前方一致',
-  'Begins with these words': 'この語句で始まる',
-  'The command begins with these words. "format" blocks "format C:", not "Format-Table".':
-    'コマンドがこの語句で始まる場合に一致します。「format」は「format C:」をブロックしますが、「Format-Table」はブロックしません。',
-  Contains: '部分一致',
-  'Anywhere in the line': '行内のどこでも',
-  'These words appear anywhere, so it also catches "echo hi && shutdown".':
-    'この語句がどこかに含まれていれば一致するため、「echo hi && shutdown」も対象になります。',
-  Regex: '正規表現',
-  'A regular expression': '正規表現',
-  'A regular expression, not case-sensitive.': '正規表現です。大文字と小文字は区別しません。',
-  '"{pattern}" is no longer blocked': '「{pattern}」のブロックを解除しました',
-  '"{pattern}" is blocked': '「{pattern}」をブロックしました',
-  'by {pattern} ({match}).': '{pattern}（{match}）によりブロックされました。',
-  Command: 'コマンド',
-  Match: '一致方法',
-  Shells: 'シェル',
-  'All shells': 'すべてのシェル',
-  Reason: '理由',
-  'Stop blocking "{pattern}"?': '「{pattern}」のブロックを解除しますか？',
-  'The rule is deleted and anyone can run this command again.': 'ルールが削除され、誰でもこのコマンドを再び実行できるようになります。',
-  'Command rules': 'コマンドルール',
-  'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. EdgePanel refuses a matching command before it reaches the device, and the terminal shows the reason.':
-    'リモートターミナルで誰も（管理者も含めて）実行できないコマンドです。すべてのデバイス、または一部のグループやデバイスにだけ適用できます。EdgePanel は一致したコマンドがデバイスに届く前に拒否し、ターミナルに理由を表示します。',
-  'Test a command': 'コマンドをテスト',
-  'Shell to test in': 'テストするシェル',
-  'e.g. shutdown /r /t 0': '例: shutdown /r /t 0',
-  'Command to test': 'テストするコマンド',
-  'Type a command to see whether a rule blocks it.': 'コマンドを入力すると、ルールでブロックされるかどうかを確認できます。',
-  Blocked: 'ブロック',
-  Allowed: '許可',
-  'No rule matches it in {shell} on {host}.': '{host} の {shell} で一致するルールはありません。',
-  'Nothing is blocked. Add the first rule.': 'ブロックしているコマンドはありません。最初のルールを追加してください。',
-  'starts with': 'で始まる',
-  contains: 'を含む',
-  matches: 'に一致する',
-  'on {n} group': '{n} 個のグループ',
-  'on {n} groups': '{n} 個のグループ',
-  'on the groups you pick': '選択したグループ',
-  'on {n} device': '{n} 台のデバイス',
-  'on {n} devices': '{n} 台のデバイス',
-  'on the devices you pick': '選択したデバイス',
-  'on every device': 'すべてのデバイス',
-  'every shell': 'すべてのシェル',
-  'Blocks any command that {verb} "{pattern}", in {shells}, {where}.': '{where}の {shells} で、「{pattern}」{verb}コマンドをブロックします。',
-  'Add a command rule': 'コマンドルールを追加',
-  Pattern: 'パターン',
-  'Enter a command.': 'コマンドを入力してください。',
-  'Not a valid regex: {error}': '正規表現が正しくありません: {error}',
-  'There is already a rule for this.': 'これと同じルールがすでにあります。',
-  'e.g. {example}': '例: {example}',
-  'e.g. shutdown': '例: shutdown',
-  Where: '適用先',
-  'Which devices and shells refuse it. Leave every shell unticked to block it in all of them.':
-    'このコマンドを拒否するデバイスとシェルです。シェルを 1 つも選択しなければ、すべてのシェルでブロックします。',
-  'Shown in the terminal to whoever runs it, so they know what to do instead.': '実行しようとした人のターミナルに表示され、代わりにどうすればよいかを伝えます。',
-  'e.g. Restarts the machine. Ask IT to schedule it.': '例: マシンが再起動します。IT 部門に日程の調整を依頼してください。',
 }
 
 export default ja

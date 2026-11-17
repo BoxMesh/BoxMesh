@@ -1,7 +1,14 @@
 import { t } from '../i18n'
 import type { Alert, AlertChannel, AlertMetric, AlertRule, ChannelKind } from '../types/alert'
 import type { Device } from '../types/device'
-import { appliesTo } from './commands'
+
+type Target = Pick<Device, 'id' | 'groups'>
+
+/** Whether a scoped alert covers this device: no groups and no devices picked means every device. */
+export const appliesTo = (scope: { groupIds: string[]; deviceIds: string[] }, device: Target) =>
+  (!scope.groupIds.length && !scope.deviceIds.length) ||
+  scope.deviceIds.includes(device.id) ||
+  device.groups.some((g) => scope.groupIds.includes(g))
 
 export type UsageMetric = Exclude<AlertMetric, 'offline'>
 

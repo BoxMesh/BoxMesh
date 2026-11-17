@@ -1,5 +1,5 @@
 import type { Alert, AlertChannel, AlertRule } from '../types/alert'
-import type { Account, CommandRule, EnrollmentToken } from '../types/admin'
+import type { Account, EnrollmentToken } from '../types/admin'
 import type { RemoteSessions, TimeRange } from '../types/dashboard'
 import type { Device, DeviceGroup, DeviceProcess, DiskForecast, MetricPoint, OsFamily, PendingEnrollment, ProcessStatus } from '../types/device'
 import type { FileEntry, FileListing, RemoteService, Shell } from '../types/remote'
@@ -385,41 +385,26 @@ export function runShell(host: string, shell: Shell, command: string) {
 export const enrollmentTokens: EnrollmentToken[] = [
   {
     id: 'tok-7',
-    token: '••••••••••••••••••••4f2a',
-    group: 'Accounting',
+    token: 'a3f81c5e92d047b6e1f0c8a97d2b4f2a6c5e08d1b937a4f26e0c1d85b3a94f2a',
     expiresAt: fromNow(18 * 60 * MINUTE),
-    requiresApproval: true,
-    usedBy: [{ id: idOf('ACC-PC-04'), host: 'ACC-PC-04' }],
+    maxDevices: 5,
   },
   {
     id: 'tok-6',
-    token: '••••••••••••••••••••b113',
-    group: 'Server',
+    token: '7e0b9d3c15a8f4620d9e7b31c8a5f06e2d4b9a7c13f8e5d0a6b2c94718e3b113',
     expiresAt: fromNow(-2 * DAY),
-    requiresApproval: true,
-    usedBy: [{ id: idOf('SRV-MON-01'), host: 'SRV-MON-01' }],
+    maxDevices: 3,
   },
 ]
 
 export const accounts: Account[] = [
-  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'Admin', lastSignIn: fromNow(-40 * MINUTE), disabled: false, access: { groupIds: [], deviceIds: [] } },
-  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'Operator', lastSignIn: fromNow(-4 * MINUTE), disabled: false, access: { groupIds: ['g-accounting', 'g-hr'], deviceIds: [] } },
-  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'Operator', lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false, access: { groupIds: ['g-server'], deviceIds: [idOf('CAD-WS-01')] } },
-  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'Operator', lastSignIn: fromNow(-2 * DAY), disabled: false, access: { groupIds: [], deviceIds: [idOf('WH-PC-01'), idOf('WH-PC-02')] } },
-  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'Operator', lastSignIn: fromNow(-21 * DAY), disabled: true, access: { groupIds: [], deviceIds: [] } },
+  { id: 'u-1', email: 'admin@company.com', name: 'Mai Anh', role: 'System', lastSignIn: fromNow(-40 * MINUTE), disabled: false, access: { groupIds: [], deviceIds: [] } },
+  { id: 'u-2', email: 'ops@company.com', name: 'Quang Huy', role: 'User', lastSignIn: fromNow(-4 * MINUTE), disabled: false, access: { groupIds: ['g-accounting', 'g-hr'], deviceIds: [] } },
+  { id: 'u-3', email: 'srv@company.com', name: 'Thu Trang', role: 'User', lastSignIn: fromNow(-3 * 60 * MINUTE), disabled: false, access: { groupIds: ['g-server'], deviceIds: [idOf('CAD-WS-01')] } },
+  { id: 'u-4', email: 'viewer@company.com', name: 'Đức Minh', role: 'User', lastSignIn: fromNow(-2 * DAY), disabled: false, access: { groupIds: [], deviceIds: [idOf('WH-PC-01'), idOf('WH-PC-02')] } },
+  { id: 'u-5', email: 'intern@company.com', name: 'Bảo Ngọc', role: 'User', lastSignIn: fromNow(-21 * DAY), disabled: true, access: { groupIds: [], deviceIds: [] } },
 ]
 
-// ---------- Blocked commands ----------
-
-export const commandRules: CommandRule[] = [
-  { id: 'cr-1', pattern: 'shutdown', match: 'starts', shells: [], reason: 'Restarts or powers off the machine. Ask IT to schedule it.', groupIds: [], deviceIds: [] },
-  { id: 'cr-2', pattern: 'format', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Erases a whole drive.', groupIds: [], deviceIds: [] },
-  { id: 'cr-3', pattern: 'diskpart', match: 'starts', shells: ['CMD', 'PowerShell'], reason: 'Changes disk partitions.', groupIds: [], deviceIds: [] },
-  { id: 'cr-4', pattern: String.raw`rm\s+-(rf|fr)\s+/(\s|$)`, match: 'regex', shells: ['Bash'], reason: 'Deletes the whole file system.', groupIds: [], deviceIds: [] },
-  { id: 'cr-5', pattern: 'reg delete hklm', match: 'contains', shells: ['CMD'], reason: 'Removes system registry keys.', groupIds: [], deviceIds: [] },
-  { id: 'cr-6', pattern: 'systemctl stop', match: 'starts', shells: ['Bash'], reason: 'Stops a service on a critical system. Plan it with IT.', groupIds: ['g-critical'], deviceIds: [] },
-  { id: 'cr-7', pattern: 'dropdb', match: 'starts', shells: ['Bash'], reason: 'Deletes a production database.', groupIds: [], deviceIds: [idOf('SRV-DB-01')] },
-]
 
 export const alertChannels: AlertChannel[] = [
   { id: 'ch-1', kind: 'telegram', name: 'IT on-call', chatId: '-1002233445566' },

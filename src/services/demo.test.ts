@@ -31,20 +31,15 @@ describe('demo mode', () => {
     expect(unknown.exitCode).toBe(1)
   })
 
-  it('refuses a blocked command with 403 and the rule', async () => {
-    await expect(runCommand('d-srv-db-01', 'Bash', 'rm -rf /')).rejects.toMatchObject({
-      response: { status: 403, data: { error: expect.stringContaining('Deletes the whole file system') } },
-    })
-  })
-
   it('issues a token in full exactly once', async () => {
-    const token = await createToken({ group: 'Accounting', lifetime: '24h', requiresApproval: true })
+    const token = await createToken({ lifetime: '24h', maxDevices: 5 })
     expect(token.token).toMatch(/^bmx_[a-z0-9]+$/)
     expect(Date.parse(token.expiresAt)).toBeGreaterThan(Date.now())
+    expect(token.maxDevices).toBe(5)
   })
 
   it('revokes a token', async () => {
-    const token = await createToken({ group: 'Server', lifetime: '1h', requiresApproval: false })
+    const token = await createToken({ lifetime: '1h', maxDevices: 3 })
     await revokeToken(token.id)
     expect((await getTokens()).map((t) => t.id)).not.toContain(token.id)
   })
