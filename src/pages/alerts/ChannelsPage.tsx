@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
-import { App, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Radio, Select, Table, Tooltip, type TableProps } from 'antd'
+import { App, Button, Card, Form, Input, InputNumber, Modal, Popconfirm, Radio, Segmented, Select, Table, Tooltip, type TableProps } from 'antd'
 import { useState } from 'react'
 import ChannelIcon from '../../components/ChannelIcon'
 import { Icon, Th } from '../../components/Icon'
@@ -7,11 +7,11 @@ import PageHeader from '../../components/PageHeader'
 import { t } from '../../i18n'
 import { createChannel, deleteChannel, testChannel, updateChannel } from '../../services/alertService'
 import { alertChannelsQuery, alertsQuery } from '../../services/queries'
-import type { AlertChannel, ChannelInput, ChannelKind } from '../../types/alert'
-import { isChatId, isDiscordWebhook, isEmail, KIND_LABEL } from '../../utils/alerts'
+import type { AlertChannel, ChannelInput, ChannelKind, WebhookMethod } from '../../types/alert'
+import { DEFAULT_WEBHOOK_BODY, isBodyTemplate, isChatId, isDiscordWebhook, isEmail, isHeaderName, isWebhookUrl, KIND_LABEL, WEBHOOK_METHODS } from '../../utils/alerts'
 
-const KINDS: ChannelKind[] = ['telegram', 'discord', 'email']
-const EMPTY: ChannelInput = { kind: 'telegram', name: '', smtpHost: 'smtp.gmail.com', smtpPort: 587, to: [] }
+const KINDS: ChannelKind[] = ['telegram', 'discord', 'email', 'webhook']
+const EMPTY: ChannelInput = { kind: 'telegram', name: '', smtpHost: 'smtp.gmail.com', smtpPort: 587, to: [], method: 'POST', headers: [], body: DEFAULT_WEBHOOK_BODY }
 
 export default function ChannelsPage() {
   const [{ data: channels }, { data: alerts }] = useSuspenseQueries({ queries: [alertChannelsQuery, alertsQuery] })
@@ -101,7 +101,7 @@ export default function ChannelsPage() {
       <PageHeader
         title={t('Channels')}
         subtitle={t(
-          'Where alert messages go: a Telegram chat, a Discord channel or email. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.',
+          'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.',
         )}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEditing('new')}>
@@ -128,18 +128,23 @@ const SETUP = (): Record<ChannelKind, string> => ({
   telegram: t('Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.'),
   discord: t('In Discord: channel settings → Integrations → Webhooks → New webhook → Copy webhook URL.'),
   email: t('For Gmail: turn on 2-Step Verification, then create an app password for this account.'),
+  webhook: t('Any address that accepts an HTTP request. EdgePanel sends the message there as JSON.'),
 })
 
 function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | null; onClose: () => void }) {
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const [form] = Form.useForm<ChannelInput>()
-  const [smtpOpen, setSmtpOpen] = useState(false)
+  const [smtpOpen, setSmtpOpen] = useState(false)
+  const [replaceHeaders, setReplaceHeaders] = useState(false)
   const kind = Form.useWatch('kind', form) ?? 'telegram'
   const smtpHost = Form.useWatch('smtpHost', form)
   const smtpPort = Form.useWatch('smtpPort', form)
   const current = channel && channel !== 'new' ? channel : null
-  const keep = current ? t('Saved. Leave empty to keep it.') : undefined
+  const keep = current ? t('Saved. Leave empty to keep it.') : undefined
+  const savedHeaders = current?.headerNames ?? []
+  // Header values are write-only: saved ones stay hidden until the person chooses to replace the whole list.
+  const editHeaders = savedHeaders.length === 0 || replaceHeaders
 
   const save = useMutation({
     mutationFn: (values: ChannelInput) => (current ? updateChannel(current.id, values) : createChannel(values)),
@@ -156,6 +161,14 @@ function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | n
     const common = { kind: values.kind, name: values.name.trim() }
     const secret = (key: 'botToken' | 'webhookUrl' | 'password') => (values[key]?.trim() ? { [key]: values[key]!.trim() } : {})
     if (values.kind === 'telegram') return save.mutate({ ...common, chatId: values.chatId?.trim(), ...secret('botToken') })
+    if (values.kind === 'webhook')
+      return save.mutate({
+        ...common,
+        method: values.method,
+        body: values.body?.trim(),
+        ...secret('webhookUrl'),
+        ...(editHeaders ? { headers: (values.headers ?? []).map((h) => ({ name: h.name.trim(), value: h.value })) } : {}),
+      })
     if (values.kind === 'discord') return save.mutate({ ...common, ...secret('webhookUrl') })
     save.mutate({
       ...common,
@@ -237,7 +250,7 @@ function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | n
             </>
           ) : null}
 
-          {kind === 'discord' ? (
+          {kind === 'discord' || kind === 'webhook' ? (
             <Form.Item
               name="webhookUrl"
               label="Webhook URL"
@@ -246,12 +259,79 @@ function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | n
                 { required: !current, whitespace: true, message: t('Paste the webhook URL.') },
                 {
                   validator: (_, v: string) =>
-                    !v?.trim() || isDiscordWebhook(v) ? Promise.resolve() : Promise.reject(new Error(t('Not a Discord webhook URL.'))),
+                    !v?.trim() || (kind === 'discord' ? isDiscordWebhook(v) : isWebhookUrl(v)) ? Promise.resolve() : Promise.reject(new Error(kind === 'discord' ? t('Not a Discord webhook URL.') : t('Not a URL.'))),
                 },
               ]}
             >
-              <Input.Password className="mono" autoComplete="off" placeholder={current ? '••••••••' : 'https://discord.com/api/webhooks/…'} />
+              <Input.Password className="mono" autoComplete="off" placeholder={current ? '••••••••' : kind === 'discord' ? 'https://discord.com/api/webhooks/…' : 'https://…'} />
             </Form.Item>
+          ) : null}
+
+          {kind === 'webhook' ? (
+            <>
+              <Form.Item name="method" label={t('Method')}>
+                <Segmented<WebhookMethod> aria-label={t('Method')} options={[...WEBHOOK_METHODS]} />
+              </Form.Item>
+              <Form.Item label={t('Headers')} extra={t('Sent with every message, for example an Authorization token. Values are never shown again.')}>
+                {editHeaders ? (
+                  <Form.List name="headers">
+                    {(fields, { add, remove }) => (
+                      <>
+                        {fields.map((field) => (
+                          <div key={field.key} className="header-row">
+                            <Form.Item
+                              name={[field.name, 'name']}
+                              rules={[
+                                { required: true, whitespace: true, message: t('Enter the header name.') },
+                                { validator: (_, v: string) => (!v?.trim() || isHeaderName(v) ? Promise.resolve() : Promise.reject(new Error(t('Not a valid header name.')))) },
+                              ]}
+                            >
+                              <Input className="mono" autoComplete="off" placeholder="Authorization" aria-label={t('Header name')} />
+                            </Form.Item>
+                            <Form.Item name={[field.name, 'value']} rules={[{ required: true, message: t('Enter the header value.') }]}>
+                              <Input.Password className="mono" autoComplete="off" placeholder="Bearer …" aria-label={t('Header value')} />
+                            </Form.Item>
+                            <Tooltip title={t('Remove header')}>
+                              <button type="button" className="icon-btn" aria-label={t('Remove header')} onClick={() => remove(field.name)}>
+                                <Icon name="trash" size={14} />
+                              </button>
+                            </Tooltip>
+                          </div>
+                        ))}
+                        <Button type="dashed" size="small" icon={<Icon name="plus" size={12} />} onClick={() => add({ name: '', value: '' })}>
+                          {t('Add header')}
+                        </Button>
+                      </>
+                    )}
+                  </Form.List>
+                ) : (
+                  <div className="smtp-row">
+                    <span className="muted">{t('Saved headers: {names}', { names: savedHeaders.join(', ') })}</span>
+                    <Button type="link" size="small" onClick={() => setReplaceHeaders(true)}>
+                      {t('Replace headers')}
+                    </Button>
+                  </div>
+                )}
+              </Form.Item>
+              <Form.Item
+                name="body"
+                label={t('Body (JSON)')}
+                extra={t('EdgePanel puts the alert message where {message} is, already escaped for JSON.')}
+                rules={[
+                  { required: true, whitespace: true, message: t('Write the body.') },
+                  {
+                    validator: (_, v: string) =>
+                      !v?.trim() || isBodyTemplate(v) ? Promise.resolve() : Promise.reject(new Error(t('Must be valid JSON.'))),
+                  },
+                  {
+                    validator: (_, v: string) =>
+                      !v?.trim() || v.includes('{message}') ? Promise.resolve() : Promise.reject(new Error(t('Include {message} where the alert text goes.'))),
+                  },
+                ]}
+              >
+                <Input.TextArea rows={3} maxLength={1000} className="mono" aria-label={t('Body (JSON)')} />
+              </Form.Item>
+            </>
           ) : null}
 
           {kind === 'email' ? (

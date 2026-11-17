@@ -425,6 +425,7 @@ export const alertChannels: AlertChannel[] = [
   { id: 'ch-1', kind: 'telegram', name: 'IT on-call', chatId: '-1002233445566' },
   { id: 'ch-2', kind: 'email', name: 'IT mailbox', smtpHost: 'smtp.gmail.com', smtpPort: 587, username: 'alerts.company@gmail.com', to: ['it@company.com'] },
   { id: 'ch-3', kind: 'discord', name: '#server-alerts', webhookTail: 'k9Qz' },
+  { id: 'ch-4', kind: 'webhook', name: 'Ops hook', webhookTail: '7f2a', method: 'POST', headerNames: ['Authorization'], body: '{"text": "{message}"}' },
 ]
 
 export const alertRules: AlertRule[] = [

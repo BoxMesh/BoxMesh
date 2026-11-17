@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createChannel, deleteAlertRule, deleteChannel, getAlerts, getChannels } from './alertService'
+import { createChannel, deleteAlertRule, deleteChannel, getAlerts, getChannels, updateChannel } from './alertService'
 import { createToken, deleteUser, getTokens, getUsers, revokeToken } from './adminService'
 import { install } from './demo'
 import { createGroup, deleteGroup, getDeviceMetrics, getDevices, getDiskForecast, getGroups, getProcesses, setAlias, setDeviceGroups } from './deviceService'
@@ -109,6 +109,21 @@ describe('demo mode', () => {
     const [after] = await getAlerts()
     expect(after.channelIds).not.toContain(alert.channelIds[0])
     expect(after.ruleIds).not.toContain(alert.ruleIds[0])
+  })
+
+  it('keeps webhook header values secret but shows their names', async () => {
+    const channel = await createChannel({
+      kind: 'webhook',
+      name: 'Hook',
+      method: 'PUT',
+      body: '{"text": "{message}"}',
+      webhookUrl: 'https://hooks.company.local/alerts?key=1234',
+      headers: [{ name: 'Authorization', value: 'Bearer top-secret' }],
+    })
+    expect(channel).toMatchObject({ method: 'PUT', headerNames: ['Authorization'] })
+    expect(JSON.stringify(await getChannels())).not.toContain('top-secret')
+    // Leaving headers out of an update keeps the saved ones.
+    expect(await updateChannel(channel.id, { name: 'Hook 2' })).toMatchObject({ name: 'Hook 2', headerNames: ['Authorization'] })
   })
 
   it('turns an unknown route into a message for people', async () => {

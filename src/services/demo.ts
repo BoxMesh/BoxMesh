@@ -128,10 +128,11 @@ const param = (config: InternalAxiosRequestConfig, key: string) => String(config
 const id = () => Math.random().toString(36).slice(2, 10)
 
 // Like EdgePanel: secrets are kept server side and never sent back; a webhook keeps its last four characters.
-function stripSecrets<T extends Partial<ChannelInput>>({ botToken, webhookUrl, password, ...rest }: T): Partial<AlertChannel> {
+function stripSecrets<T extends Partial<ChannelInput>>({ botToken, webhookUrl, password, headers, ...rest }: T): Partial<AlertChannel> {
   void botToken
   void password
-  return webhookUrl ? { ...rest, webhookTail: webhookUrl.slice(-4) } : rest
+  // Header names stay visible; their values are secrets too.
+  return { ...rest, ...(webhookUrl ? { webhookTail: webhookUrl.slice(-4) } : {}), ...(headers ? { headerNames: headers.map((h) => h.name) } : {}) }
 }
 
 const routes: Route[] = [

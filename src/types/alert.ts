@@ -25,7 +25,14 @@ export interface Alert {
   message: string
 }
 
-export type ChannelKind = 'telegram' | 'discord' | 'email'
+export type ChannelKind = 'telegram' | 'discord' | 'email' | 'webhook'
+
+export type WebhookMethod = 'POST' | 'PUT'
+
+export interface WebhookHeader {
+  name: string
+  value: string
+}
 
 /** What EdgePanel sends back: never the bot token, the full webhook URL or the mail password. */
 export interface AlertChannel {
@@ -37,12 +44,20 @@ export interface AlertChannel {
   smtpHost?: string
   smtpPort?: number
   username?: string
-  to?: string[]
+  to?: string[]
+  /** Webhook only. */
+  method?: WebhookMethod
+  /** Webhook only: the JSON sent, with {message} where the alert text goes. */
+  body?: string
+  /** Webhook only: the names of the saved headers; their values are never sent back. */
+  headerNames?: string[]
 }
 
 /** Secrets are write-only: send one to set or replace it, leave it out to keep the saved one. */
-export type ChannelInput = Omit<AlertChannel, 'id' | 'webhookTail'> & {
+export type ChannelInput = Omit<AlertChannel, 'id' | 'webhookTail' | 'headerNames'> & {
   botToken?: string
   webhookUrl?: string
-  password?: string
+  password?: string
+  /** Webhook only. Sending any replaces all saved headers; leaving it out keeps them. */
+  headers?: WebhookHeader[]
 }

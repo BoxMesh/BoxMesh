@@ -106,8 +106,8 @@ const ja: Record<string, string> = {
   '{n} alert stop sending here.': '{n} 件のアラートがここへの送信を停止します。',
   '{n} alerts stop sending here.': '{n} 件のアラートがここへの送信を停止します。',
   'No alert sends here.': 'ここに送信しているアラートはありません。',
-  'Where alert messages go: a Telegram chat, a Discord channel or email. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.':
-    'アラートメッセージの送信先です（Telegram のチャット、Discord のチャンネル、またはメール）。ボットトークン、Webhook URL、パスワードは EdgePanel に保管され、再表示されることはありません。',
+  'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.':
+    'アラートメッセージの送信先: Telegram チャット、Discord チャンネル、メール、または任意の Webhook。Bot トークン、Webhook URL、パスワードは EdgePanel に保存され、再表示されません。',
   'Add channel': 'チャンネルを追加',
   'No channels yet. Add one, then send a test.': 'チャンネルはまだありません。追加してから、テスト送信してください。',
   'Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.':
@@ -116,6 +116,26 @@ const ja: Record<string, string> = {
     'Discord で: チャンネルの設定 → 連携サービス → ウェブフック → 新しいウェブフック → ウェブフック URL をコピー',
   'For Gmail: turn on 2-Step Verification, then create an app password for this account.':
     'Gmail の場合: 2 段階認証プロセスを有効にしてから、このアカウントのアプリパスワードを作成してください。',
+  'Any address that accepts an HTTP request. EdgePanel sends the message there as JSON.': 'HTTP リクエストを受け付ける任意のアドレス。EdgePanel はメッセージを JSON で送信します。',
+  Method: 'メソッド',
+  Headers: 'ヘッダー',
+  'Sent with every message, for example an Authorization token. Values are never shown again.':
+    'メッセージごとに付与されます (例: Authorization トークン)。値は再表示されません。',
+  'Enter the header name.': 'ヘッダー名を入力してください。',
+  'Not a valid header name.': 'ヘッダー名が正しくありません。',
+  'Header name': 'ヘッダー名',
+  'Header value': 'ヘッダーの値',
+  'Enter the header value.': 'ヘッダーの値を入力してください。',
+  'Remove header': 'ヘッダーを削除',
+  'Add header': 'ヘッダーを追加',
+  'Saved headers: {names}': '保存済みのヘッダー: {names}',
+  'Replace headers': 'ヘッダーを置き換え',
+  'Body (JSON)': '本文 (JSON)',
+  'EdgePanel puts the alert message where {message} is, already escaped for JSON.':
+    '{message} の位置に、JSON 用にエスケープしたアラートメッセージが入ります。',
+  'Write the body.': '本文を入力してください。',
+  'Must be valid JSON.': '有効な JSON にしてください。',
+  'Include {message} where the alert text goes.': 'アラート本文を入れる位置に {message} を含めてください。',
   'Saved. Leave empty to keep it.': '保存済みです。変更しない場合は空欄のままにしてください。',
   'Channel saved': 'チャンネルを保存しました',
   '"{name}" added. Send a test to check it.': '「{name}」を追加しました。テスト送信で確認してください。',
@@ -137,6 +157,7 @@ const ja: Record<string, string> = {
   'Not a chat ID.': 'チャット ID ではありません。',
   'Paste the webhook URL.': 'Webhook URL を貼り付けてください。',
   'Not a Discord webhook URL.': 'Discord の Webhook URL ではありません。',
+  'Not a URL.': 'URL ではありません。',
   'Type an address and press Enter. Add as many as you need.': 'アドレスを入力して Enter を押してください。必要なだけ追加できます。',
   'Add at least one address.': 'アドレスを 1 つ以上追加してください。',
   '"{address}" is not an email address.': '「{address}」はメールアドレスではありません。',

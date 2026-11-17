@@ -106,8 +106,8 @@ const vi: Record<string, string> = {
   '{n} alert stop sending here.': '{n} cảnh báo sẽ ngừng gửi tới đây.',
   '{n} alerts stop sending here.': '{n} cảnh báo sẽ ngừng gửi tới đây.',
   'No alert sends here.': 'Không có cảnh báo nào gửi tới đây.',
-  'Where alert messages go: a Telegram chat, a Discord channel or email. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.':
-    'Nơi nhận tin nhắn cảnh báo: chat Telegram, kênh Discord hoặc email. Bot token, URL webhook và mật khẩu được lưu trên EdgePanel và không hiển thị lại.',
+  'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.':
+    'Nơi nhận tin nhắn cảnh báo: chat Telegram, kênh Discord, email hoặc webhook bất kỳ. Bot token, URL webhook và mật khẩu được lưu trên EdgePanel và không hiển thị lại.',
   'Add channel': 'Thêm kênh',
   'No channels yet. Add one, then send a test.': 'Chưa có kênh nào. Hãy thêm một kênh rồi gửi thử.',
   'Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.':
@@ -116,6 +116,26 @@ const vi: Record<string, string> = {
     'Trong Discord: cài đặt kênh → Tích hợp → Webhook → Webhook mới → Sao chép URL webhook.',
   'For Gmail: turn on 2-Step Verification, then create an app password for this account.':
     'Với Gmail: bật Xác minh 2 bước, rồi tạo mật khẩu ứng dụng cho tài khoản này.',
+  'Any address that accepts an HTTP request. EdgePanel sends the message there as JSON.': 'Địa chỉ bất kỳ nhận yêu cầu HTTP. EdgePanel gửi tin nhắn tới đó dưới dạng JSON.',
+  Method: 'Phương thức',
+  Headers: 'Header',
+  'Sent with every message, for example an Authorization token. Values are never shown again.':
+    'Gửi kèm mỗi tin nhắn, ví dụ token Authorization. Giá trị không hiển thị lại.',
+  'Enter the header name.': 'Nhập tên header.',
+  'Not a valid header name.': 'Tên header không hợp lệ.',
+  'Header name': 'Tên header',
+  'Header value': 'Giá trị header',
+  'Enter the header value.': 'Nhập giá trị header.',
+  'Remove header': 'Xóa header',
+  'Add header': 'Thêm header',
+  'Saved headers: {names}': 'Header đã lưu: {names}',
+  'Replace headers': 'Thay header',
+  'Body (JSON)': 'Nội dung (JSON)',
+  'EdgePanel puts the alert message where {message} is, already escaped for JSON.':
+    'EdgePanel đặt tin nhắn cảnh báo vào chỗ {message}, đã được escape cho JSON.',
+  'Write the body.': 'Nhập nội dung.',
+  'Must be valid JSON.': 'Phải là JSON hợp lệ.',
+  'Include {message} where the alert text goes.': 'Thêm {message} vào chỗ đặt nội dung cảnh báo.',
   'Saved. Leave empty to keep it.': 'Đã lưu. Để trống để giữ nguyên.',
   'Channel saved': 'Đã lưu kênh',
   '"{name}" added. Send a test to check it.': 'Đã thêm "{name}". Hãy gửi thử để kiểm tra.',
@@ -137,6 +157,7 @@ const vi: Record<string, string> = {
   'Not a chat ID.': 'Không phải chat ID.',
   'Paste the webhook URL.': 'Dán URL webhook.',
   'Not a Discord webhook URL.': 'Không phải URL webhook Discord.',
+  'Not a URL.': 'Không phải URL.',
   'Type an address and press Enter. Add as many as you need.': 'Nhập địa chỉ rồi nhấn Enter. Thêm bao nhiêu tùy ý.',
   'Add at least one address.': 'Thêm ít nhất một địa chỉ.',
   '"{address}" is not an email address.': '"{address}" không phải địa chỉ email.',

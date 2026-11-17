@@ -108,7 +108,7 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, email, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
+| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
 | POST | `/api/log-out` → EdgePanel `/log-out` (clears the cookie) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
@@ -128,7 +128,7 @@ These are the endpoints the app calls today:
 | PATCH · DELETE | `/api/alerts/{id}` |
 | GET · POST | `/api/alert-rules` (`{ name, metric: cpu\|ram\|disk\|offline, threshold, minutes }`; delete drops the rule from every alert; placeholder name) |
 | PATCH · DELETE | `/api/alert-rules/{id}` |
-| GET · POST | `/api/alert-channels` (`{ kind: telegram\|discord\|email, name, enabled, chatId, botToken, webhookUrl, smtpHost, smtpPort, username, password, to }`; secrets are write-only, reads return `webhookTail` instead; placeholder name) |
+| GET · POST | `/api/alert-channels` (`{ kind: telegram|discord|email|webhook, name|kind: telegram|discord|email|webhook, name, enabled, chatId, botToken, webhookUrl, method: POST|PUT, headers: [{ name, value }], body,|email, name, enabled, chatId, botToken, webhookUrl, smtpHost, smtpPort, username, password, to }`; secrets are write-only, reads return `webhookTail` and `headerNames` instead, header values are never sent back and `headers` replaces them all; placeholder name) |
 | PATCH · DELETE | `/api/alert-channels/{id}` (an omitted secret keeps the saved one; delete drops the channel from every alert) |
 | POST | `/api/alert-channels/{id}/test` (sends a test message) |
 | GET · POST | `/api/command-rules` (`{ pattern, match: starts\|contains\|regex, shells, reason, groupIds, hosts }`, both lists empty = every device; placeholder name) |

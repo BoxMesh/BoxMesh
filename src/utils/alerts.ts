@@ -24,7 +24,7 @@ export function limitsFor(device: Pick<Device, 'id' | 'groups'>, alerts: Alert[]
 }
 
 export const METRIC_LABEL = (): Record<AlertMetric, string> => ({ cpu: 'CPU', ram: 'RAM', disk: t('Disk'), offline: t('Offline') })
-export const KIND_LABEL = (): Record<ChannelKind, string> => ({ telegram: 'Telegram', discord: 'Discord', email: t('Email') })
+export const KIND_LABEL = (): Record<ChannelKind, string> => ({ telegram: 'Telegram', discord: 'Discord', email: t('Email'), webhook: 'Webhook' })
 
 export function conditionOf({ metric, threshold, minutes }: Pick<AlertRule, 'metric' | 'threshold' | 'minutes'>) {
   if (metric === 'offline') return minutes > 0 ? t('Offline for {minutes} min', { minutes }) : t('Offline')
@@ -53,12 +53,39 @@ export const unknownPlaceholders = (template: string) =>
 
 export function destinationOf(channel: AlertChannel) {
   if (channel.kind === 'telegram') return t('Chat {id}', { id: channel.chatId ?? '—' })
-  if (channel.kind === 'discord') return channel.webhookTail ? `Webhook …${channel.webhookTail}` : 'Webhook'
+  if (channel.kind === 'discord' || channel.kind === 'webhook') return channel.webhookTail ? `Webhook …${channel.webhookTail}` : 'Webhook'
   return (channel.to ?? []).join(', ') || '—'
 }
 
 const WEBHOOK = /^https:\/\/(?:(?:ptb|canary)\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[\w-]+$/
 export const isDiscordWebhook = (url: string) => WEBHOOK.test(url.trim())
+
+/** Any http(s) address: the custom webhook type posts to whatever the person runs. */
+export function isWebhookUrl(url: string) {
+  try {
+    return ['http:', 'https:'].includes(new URL(url.trim()).protocol)
+  } catch {
+    return false
+  }
+}
+
+export const WEBHOOK_METHODS = ['POST', 'PUT'] as const
+
+/** The body a new webhook channel starts with; {message} is where EdgePanel puts the alert text. */
+export const DEFAULT_WEBHOOK_BODY = '{"text": "{message}"}'
+
+const HEADER_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/
+export const isHeaderName = (name: string) => HEADER_NAME.test(name.trim())
+
+/** Valid JSON once {message} is filled in. */
+export function isBodyTemplate(body: string) {
+  try {
+    JSON.parse(body.replaceAll('{message}', 'x'))
+    return true
+  } catch {
+    return false
+  }
+}
 
 export const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())
 

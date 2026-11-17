@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Alert, AlertRule } from '../types/alert'
-import { conditionOf, destinationOf, isChatId, isDiscordWebhook, isEmail, limitsFor, renderMessage, sentenceOf, unknownPlaceholders } from './alerts'
+import { conditionOf, destinationOf, isBodyTemplate, isChatId, isDiscordWebhook, isEmail, isHeaderName, isWebhookUrl, limitsFor, renderMessage, sentenceOf, unknownPlaceholders } from './alerts'
 
 describe('conditionOf', () => {
   it('reads a metric rule and an offline rule', () => {
@@ -21,6 +21,7 @@ describe('sentenceOf', () => {
 describe('destinationOf', () => {
   it('never shows a secret', () => {
     expect(destinationOf({ id: 'c', kind: 'discord', name: 'x', webhookTail: 'k9Qz' })).toBe('Webhook …k9Qz')
+    expect(destinationOf({ id: 'c', kind: 'webhook', name: 'x', webhookTail: '7f2a' })).toBe('Webhook …7f2a')
     expect(destinationOf({ id: 'c', kind: 'email', name: 'x', to: ['a@b.co', 'c@d.co'] })).toBe('a@b.co, c@d.co')
   })
 })
@@ -39,6 +40,21 @@ describe('validators', () => {
     expect(isDiscordWebhook('https://discordapp.com/api/webhooks/1/x')).toBe(true)
     expect(isDiscordWebhook('http://discord.com/api/webhooks/1/x')).toBe(false)
     expect(isDiscordWebhook('https://evil.example/api/webhooks/1/x')).toBe(false)
+  })
+  it('accepts any http(s) address for a custom webhook', () => {
+    expect(isWebhookUrl('https://hooks.company.local/alerts?key=1')).toBe(true)
+    expect(isWebhookUrl(' http://10.0.0.5:8080/hook ')).toBe(true)
+    expect(isWebhookUrl('hooks.company.local/alerts')).toBe(false)
+    expect(isWebhookUrl('ftp://hooks.company.local')).toBe(false)
+  })
+  it('checks header names and the JSON body of a webhook', () => {
+    expect(isHeaderName('X-Api-Key')).toBe(true)
+    expect(isHeaderName('Authorization')).toBe(true)
+    expect(isHeaderName('Bad Header')).toBe(false)
+    expect(isHeaderName('Bad:Header')).toBe(false)
+    expect(isBodyTemplate('{"text": "{message}"}')).toBe(true)
+    expect(isBodyTemplate('{"text": {message}}')).toBe(false)
+    expect(isBodyTemplate('{text: oops}')).toBe(false)
   })
   it('accepts Telegram chat ids and public channel names', () => {
     expect(isChatId('-1002233445566')).toBe(true)
