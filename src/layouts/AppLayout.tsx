@@ -31,12 +31,12 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const deviceMatch = useMatch('/devices/:id')
   const userMatch = useMatch('/users/:id')
-  // A user's crumb is their name and a device's its hostname (the URL holds IDs); each page loads the same data,
+  // A user's crumb is their name and a device's its alias, else its hostname (the URL holds IDs); each page loads the same data,
   // so this adds no request.
   const { data: accounts } = useQuery({ ...usersQuery, enabled: Boolean(userMatch) })
   const { data: device } = useQuery({ ...deviceQuery(deviceMatch?.params.id ?? ''), enabled: Boolean(deviceMatch) })
   const detail = deviceMatch
-    ? (device?.host ?? deviceMatch.params.id)
+    ? (device?.alias || device?.host || deviceMatch.params.id)
     : userMatch && (accounts?.find((a) => a.id === userMatch.params.id)?.name ?? userMatch.params.id)
   const { reset } = useQueryErrorResetBoundary()
   const active = navItems().find((i) => pathname === i.path || pathname.startsWith(`${i.path}/`))

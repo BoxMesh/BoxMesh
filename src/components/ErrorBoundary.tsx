@@ -1,9 +1,33 @@
-import { Button, Result } from 'antd'
+import { Button, Card, Result, Skeleton } from 'antd'
+import { isAxiosError } from 'axios'
 import { Component, type ReactNode } from 'react'
 import { t } from '../i18n'
 import { userMessage } from '../services/http'
 
 type Props = { children: ReactNode; onReset: () => void }
+
+const RETRY_MS = 5000
+
+// The backend is down or unreachable (no response, timeout, 5xx): the page is not broken, so show its outline and retry.
+const isOffline = (e: Error) => isAxiosError(e) && (!e.response || e.response.status >= 500)
+
+function PageSkeleton() {
+  return (
+    <div className="stack" role="status" aria-busy="true" aria-label={t('Reconnecting to the server…')}>
+      <Skeleton active title={{ width: 240 }} paragraph={{ rows: 1, width: 360 }} />
+      <div className="stat-grid">
+        {[0, 1, 2, 3].map((i) => (
+          <Card key={i}>
+            <Skeleton active title={false} paragraph={{ rows: 2 }} />
+          </Card>
+        ))}
+      </div>
+      <Card>
+        <Skeleton active paragraph={{ rows: 6 }} />
+      </Card>
+    </div>
+  )
+}
 
 // Catches failed requests thrown by suspense queries so one broken page doesn't blank the whole app.
 export default class ErrorBoundary extends Component<Props, { error: Error | null }> {
@@ -18,6 +42,18 @@ export default class ErrorBoundary extends Component<Props, { error: Error | nul
     console.error(error)
   }
 
+  timer?: number
+
+  componentDidUpdate() {
+    window.clearTimeout(this.timer)
+    const { error } = this.state
+    if (error && isOffline(error)) this.timer = window.setTimeout(this.retry, RETRY_MS)
+  }
+
+  componentWillUnmount() {
+    window.clearTimeout(this.timer)
+  }
+
   retry = () => {
     this.props.onReset()
     this.setState({ error: null })
@@ -26,6 +62,7 @@ export default class ErrorBoundary extends Component<Props, { error: Error | nul
   render() {
     const { error } = this.state
     if (!error) return this.props.children
+    if (isOffline(error)) return <PageSkeleton />
     return (
       <Result
         status="error"

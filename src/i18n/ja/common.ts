@@ -96,6 +96,7 @@ const ja: Record<string, string> = {
   // src/components/ErrorBoundary.tsx
   "This page couldn't load": 'このページを読み込めませんでした',
   'Try again': '再試行',
+  'Reconnecting to the server…': 'サーバーに再接続しています…',
 
   // src/components/LanguageSelect.tsx
   Language: '言語',

@@ -95,6 +95,7 @@ const vi: Record<string, string> = {
   // src/components/ErrorBoundary.tsx
   "This page couldn't load": 'Không tải được trang này',
   'Try again': 'Thử lại',
+  'Reconnecting to the server…': 'Đang kết nối lại với máy chủ…',
 
   // src/components/LanguageSelect.tsx
   Language: 'Ngôn ngữ',

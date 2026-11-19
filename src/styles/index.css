@@ -788,6 +788,7 @@ body .table-card .ant-table-pagination.ant-pagination {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
 }
 
 body .ant-table-wrapper .ant-table .ant-table-thead > tr > th {
@@ -1947,6 +1948,7 @@ a:has(> .ant-tag) {
   align-items: center;
   gap: 8px;
   min-width: 120px;
+  white-space: nowrap;
 }
 
 .meter-cell .ant-progress {
@@ -1954,7 +1956,7 @@ a:has(> .ant-tag) {
   margin: 0;
 }
 
-.meter-cell span:last-child {
+.meter-cell > span:last-child {
   width: 36px;
   text-align: right;
   font-variant-numeric: tabular-nums;

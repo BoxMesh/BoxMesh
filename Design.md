@@ -170,7 +170,7 @@ Gotchas:
 **App shell**
 - Sider 216 px, `bg-surface`, right `border`. Below 992 px it collapses to zero width; antd's trigger opens it,
   parked in the header's left corner.
-- The browser tab title follows the breadcrumb: `Zin - Page` (`Zin - Devices - SRV-DB-01` on a detail page,
+- The browser tab title follows the breadcrumb: `Zin - Page` (`Zin - Devices - SRV-DB-01` on a detail page, where the last crumb is the device alias when it has one, else its hostname;
   `Zin - Sign in` on the sign-in page), in the current language.
 - Header 56, `bg-surface`, bottom border: breadcrumb on the left (`Zin / Page`, current page in `text`); on the right a
   240 px search (hidden under 576 px), the language select (144 px: a 20 × 14 flag from `src/assets/flags` + English / Tiếng Việt / 日本語, only the flag under 576 px; switching redraws every screen in place, no reload),
