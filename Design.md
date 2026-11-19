@@ -1,4 +1,4 @@
-# BoxMesh — Design System
+# Zin — Design System
 
 Origin: the **BoxMesh – System Design (Ant Design)** canvas
 (https://claude.ai/artifact/5TYshytP6kBopBmewcPMv5), 15 artboards designed at 1440 px wide.
@@ -65,7 +65,7 @@ Every text colour above clears 4.5:1 on the surface it sits on, in both themes. 
 
 ### Theme switching
 - The default follows the OS (`prefers-color-scheme`). The sun/moon button in the header overrides it; the choice is
-  saved in `localStorage` as `boxmesh-theme`.
+  saved in `localStorage` as `zin-theme`.
 - An inline script in `index.html` sets `<html data-theme>` before the first paint, so a light visit never flashes black.
 - Switching animates: the new theme spreads as a circle from the toggle (View Transitions API, 550 ms,
   `cubic-bezier(0.2, 0, 0, 1)`). Browsers without the API, and reduced-motion users, switch instantly.
@@ -170,13 +170,13 @@ Gotchas:
 **App shell**
 - Sider 216 px, `bg-surface`, right `border`. Below 992 px it collapses to zero width; antd's trigger opens it,
   parked in the header's left corner.
-- The browser tab title follows the breadcrumb: `BoxMesh - Page` (`BoxMesh - Devices - SRV-DB-01` on a detail page,
-  `BoxMesh - Sign in` on the sign-in page), in the current language.
-- Header 56, `bg-surface`, bottom border: breadcrumb on the left (`BoxMesh / Page`, current page in `text`); on the right a
+- The browser tab title follows the breadcrumb: `Zin - Page` (`Zin - Devices - SRV-DB-01` on a detail page,
+  `Zin - Sign in` on the sign-in page), in the current language.
+- Header 56, `bg-surface`, bottom border: breadcrumb on the left (`Zin / Page`, current page in `text`); on the right a
   240 px search (hidden under 576 px), the language select (144 px: a 20 × 14 flag from `src/assets/flags` + English / Tiếng Việt / 日本語, only the flag under 576 px; switching redraws every screen in place, no reload),
   the theme toggle and the account button (28 px orange avatar + name; the menu holds
   the email and "Sign out").
-- The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "BoxMesh" root is dropped.
+- The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "Zin" root is dropped.
 - Page body: padding 20, vertical stack, gap 12.
 
 **Page header**: h1 + one-line subtitle on the left, actions on the right; wraps on narrow screens.
@@ -230,7 +230,7 @@ Height 32, radius 12, `border-control`; placeholder `text-secondary`. No leading
 Form labels sit above fields.
 
 ### Segmented control (time range, shell)
-Track `bg-track`, padding 2. Selected: `brand` fill, `on-brand`, 600.
+Track `bg-track`, padding 2, fully rounded (pill) track and selected item. Selected: `brand` fill, `on-brand`, 600.
 
 ### Card
 `bg-surface`, 1 px `border`, radius 16, card shadow. Header 44 with bottom border; title 14/600 prefixed by an
@@ -238,24 +238,22 @@ Track `bg-track`, padding 2. Selected: `brand` fill, `on-brand`, 600.
 A table that ends a card is clipped to the card's bottom corners.
 
 ### Dashboard (triage first)
-- **Health strip** (one card, four cells split by `border` rules; 2 + 2 below 1200 px, one column on phones):
-  Fleet health ("7 of 12 online", 28/34 600) with a stacked bar and a legend in words (healthy `positive`,
-  warning `warning-fill`, critical `error`, offline `text-disabled`); Needs attention now (critical count, red when
-  above 0, with how many are over the CPU or RAM threshold); Average latency (reconnects in 24 h); Agents (how many
-  run an outdated agent, with a bar and legend of the fleet by OS: Windows `--series-1`, Linux `--series-2`, macOS
-  `text-disabled`).
-- **Alert** queue (full width): one table grouped Critical → Warning → Offline by `triage()` in
-  `utils/devices.ts` (any red issue is critical: CPU or RAM over threshold; a full disk and an outdated agent are
-  warnings). Certificates are not tracked. Each group opens with a header row; each device has a 4 px severity stripe, all its issue tags
-  (they wrap), values, last seen and an Action column with Open, which goes to the device's page (as does its name).
-- **Health by group** (full width): one row per group from `groupHealth()` in `utils/devices.ts`, groups in trouble
-  first: Group (links to `/devices?group=`), Online ("3 of 4"), a 140 px health bar, issue tags (critical, warning,
-  offline, or Healthy), Worst device with its first issue, and View devices. Pages at 10.
-- **Top usage** and **Disk filling up** side by side (stacked below 992 px), one row per device: name, a bar, the
-  value. Top usage ranks the five online devices by CPU, RAM or Disk (a small Segmented); over the alert threshold
-  the bar and value turn `error` and gain a warning icon. Disk filling up shows `/disk-forecast` (used %, % a day,
-  "~N days" to full; 14 days or fewer is `error` with the icon) and has its own loading, error and empty states. On
-  phones the bar moves under the name.
+- **Heading**: "Welcome back, NAME" with the name in `accent` (the signed-in user's name; plain "Dashboard" when the
+  account has none), above the subtitle.
+- **Stat cards** (a grid of `minmax(220px, 1fr)` cards, so they wrap on narrow screens). Each card is an icon tile
+  (28 px, radius 8, `bg-raised`) with the label, the figure (28/34 600), and a footer strip (`bg-raised`,
+  12 px, top rule) for the context line. The figure is plain text, in `error` red when an average is at or over its alert threshold. The cards: Average CPU, RAM and Disk over the online devices ("Peak 94% on HOST" in the footer); Average Network I/O (in plus out in Mbps, "In x · Out y", the latest sample of
+  each online device from the last hour). There is no latency or reconnect card: BoxServer does not store either yet.
+- **Usage over time** (full width): CPU / RAM / Disk and 1h / 24h / 7d switches, one line for the average of every
+  device the user can see (`--series-1`), a column on the right with Now, Average, Peak (with the time it happened) and Lowest for the line shown, each with a bar on the 0-100 % scale (grey, red at the alert threshold) (under the chart as a row of four below 992 px), a legend with the value now, a y scale that fits the data (10, 20, 25, 40, 50, 60, 80 or 100 %), and a dashed
+  line at the default alert threshold when it is on the scale. BoxServer has no fleet-wide history, so the page reads `/devices/{id}/metrics` for each device and
+  averages them point by point (each device's points are snapped to the range's step first, since agents report on
+  their own clocks); "Loaded n of m devices" shows while they arrive.
+- **Device summary** (full width): every device, online ones first (busiest CPU first), as Device (links to its
+  page), Status (Online or Offline: a device has no other state), CPU, RAM and Disk as a bar plus value (red over the
+  default alert threshold; "—" while offline, since the numbers are stale), Network ("In x · Out y" Mbps, the latest
+  sample of the last hour; a dash when the device has none). Every column sorts;
+  pages at 8.
 - `--warning-fill` (`#facc15` dark, `#eab308` light) is the bright yellow for bars and stripes; `--warning` stays the
   text colour.
 
@@ -347,7 +345,7 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
   and reason, or a success tag "Allowed". It runs the same `blockedBy()` the demo uses.
 - The table only shows (command, match, shells, Applies to: "All devices" muted, or group tags in info colour, or device tags in neutral, then reason). Actions: Edit opens the 640 px rule dialog; Delete asks first. The dialog checks regexes compile and
   that the same command and match aren't already a rule.
-- The terminal prints a refused command's reason in red: EdgePanel answers 403 with `{ error }`, and the terminal shows
+- The terminal prints a refused command's reason in red: BoxServer answers 403 with `{ error }`, and the terminal shows
   that text instead of the generic permission message.
 
 ### Drawer
@@ -380,12 +378,12 @@ Code block: bg `#090b0c` dark / `#101416` light, Geist Mono, radius 12. Terminal
 Relative times ("4 min ago") for last seen and activity.
 
 ### Not-yet-available actions
-Actions EdgePanel has no endpoint for (edit tags, end a process, upload, download,
+Actions BoxServer has no endpoint for (edit tags, end a process, upload, download,
 rename or delete a file) stay visible and toast "<Doing something> isn't available yet." They never fake success.
 
 ### Sign-in page (`/login`)
 `/login` is public; every other route sends a signed-out visitor there and returns them to the page they asked for.
-- Full-window artwork (`src/assets/boxmesh.svg`, the canvas's sign-in art, inlined by `LoginBackground.tsx`): a mesh
+- Full-window artwork (`src/assets/zin.svg`, the canvas's sign-in art, inlined by `LoginBackground.tsx`): a mesh
   lattice, orange hubs (`--bm-lime`: `#fb923c` dark, `#ea580c` light), OS tiles with status dots, and packets travelling along routes to the panel (SMIL, hidden under
   reduced motion). It paints with `--bm-*` variables defined on `.login-bg`, mapped to theme tokens, so one file
   serves both themes.
@@ -429,7 +427,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Screen | Route | What is on it |
 |---|---|---|
 | Sign in | `/login` | Sign-in card, password reset, demo entry |
-| Dashboard | `/dashboard` | Health strip (fleet health bar, needs attention now, latency, agents by OS); Alert queue grouped Critical / Warning / Offline; Health by group; Top usage and Disk filling up |
+| Dashboard | `/dashboard` | Stat cards (average CPU, RAM, Disk and Network I/O); Usage over time (average of all devices); Device summary table |
 | Devices | `/devices` | Table with header filters (incl. Groups), an Alias column edited in place (`AliasEditor`, sortable), group tags with an edit picker, ping status, row remote actions; Manage groups (links to Groups); Enroll agent drawer |
 | Groups | `/groups` | Table: group, devices, members, Add devices (two-list dialog), rename / delete; New group |
 | Device detail | `/devices/:id` (the device's ID; hostnames can repeat) | Back, hostname, alias (`AliasEditor`: muted text with the small edit button `DeviceGroups` uses, or a dashed "Add alias" button; renamed in place like a group, Enter or blur saves, Esc cancels, empty clears), the same Online / Offline status button as the Devices table (click to ping, offline included); Terminal (primary), Files, Service. A "Device information" card (hostname, OS, IP, MAC, agent version shown as in the Devices table by `AgentVersion`, uptime, enrolled at, Groups with the edit picker). Below it one card with two tabs, like Task Manager (`?tab=performance` keeps the second): **Processes (N)** (default; search, Name, PID, Status, User, CPU sorted high first, Memory, End task not supported yet; polls every 5 s only while open; a note while offline) and **Performance** (1h / 24h / 7d switch; CPU, RAM and Disk over time, 0–100 %, a dashed alert line at the lowest threshold among the alert rules that cover the device (`limitsFor`; no line for a metric no alert watches), hardware beside each name; Network with Received `--series-1` filled and Sent `--series-2`, Mbps on its own scale; y labels in a 56 px gutter, time marks on round local times, crosshair tooltip) |
@@ -447,14 +445,14 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 
 ## 9. Backend contract
 
-EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
+BoxServer wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
 (all under `VITE_API_URL`, default `/api`): `/log-in` (its reply carries `role`, which decides who sees the Admin group), `/log-out`, `/forgot-password` (placeholder name), `/devices`
 and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/services`, `/enrollments`,
 `/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/disk-forecast`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
-`/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
+`/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). BoxServer serves only `/log-in` and `/log-out` so far; README has the full table.
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`); internal web apps go
-through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
+through BoxServer's reverse proxy at `/web/{agent}/{app}/*`.
 
 ---
 
@@ -463,7 +461,7 @@ through EdgePanel's reverse proxy at `/web/{agent}/{app}/*`.
 Vite + React 19 + TypeScript · Ant Design 6 · React Router · axios + TanStack Query · xterm.js · vite-plugin-pwa ·
 Vitest · oxlint.
 
-Data flow: page → `services/queries.ts` (query keys) → `services/*Service.ts` (axios) → EdgePanel.
+Data flow: page → `services/queries.ts` (query keys) → `services/*Service.ts` (axios) → BoxServer.
 Demo mode (`services/demo.ts`) swaps the axios adapter for one that answers every endpoint from `demoData.ts`, so
 no screen has a demo-only branch.
 
@@ -481,4 +479,4 @@ PWA: installable (manifest in `vite.config.ts`). Any number of tabs or windows m
 4. The canvas's selected menu item is a solid lime block; the app keeps a raised row with an accent icon.
 5. The canvas's Operations group (Command & Jobs, Audit), Security & Certificates and System Settings were removed
    in November 2026, along with their services, types and demo routes.
-6. Remote Desktop was removed in November 2026 until EdgePanel and BoxAgent can stream a screen.
+6. Remote Desktop was removed in November 2026 until BoxServer and BoxAgent can stream a screen.

@@ -1,7 +1,7 @@
 import type { Alert, AlertChannel, AlertRule, ChannelInput } from '../types/alert'
 import { http } from './http'
 
-// /alerts, /alert-rules and /alert-channels are placeholder names: EdgePanel evaluates the rules and sends the messages.
+// /alerts, /alert-rules and /alert-channels are placeholder names: BoxServer evaluates the rules and sends the messages.
 
 export type NewAlertRule = Omit<AlertRule, 'id'>
 

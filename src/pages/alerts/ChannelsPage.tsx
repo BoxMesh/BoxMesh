@@ -101,7 +101,7 @@ export default function ChannelsPage() {
       <PageHeader
         title={t('Channels')}
         subtitle={t(
-          'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.',
+          'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on BoxServer and never shown again.',
         )}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEditing('new')}>
@@ -128,20 +128,20 @@ const SETUP = (): Record<ChannelKind, string> => ({
   telegram: t('Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.'),
   discord: t('In Discord: channel settings → Integrations → Webhooks → New webhook → Copy webhook URL.'),
   email: t('For Gmail: turn on 2-Step Verification, then create an app password for this account.'),
-  webhook: t('Any address that accepts an HTTP request. EdgePanel sends the message there as JSON.'),
+  webhook: t('Any address that accepts an HTTP request. BoxServer sends the message there as JSON.'),
 })
 
 function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | null; onClose: () => void }) {
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const [form] = Form.useForm<ChannelInput>()
-  const [smtpOpen, setSmtpOpen] = useState(false)
+  const [smtpOpen, setSmtpOpen] = useState(false)
   const [replaceHeaders, setReplaceHeaders] = useState(false)
   const kind = Form.useWatch('kind', form) ?? 'telegram'
   const smtpHost = Form.useWatch('smtpHost', form)
   const smtpPort = Form.useWatch('smtpPort', form)
   const current = channel && channel !== 'new' ? channel : null
-  const keep = current ? t('Saved. Leave empty to keep it.') : undefined
+  const keep = current ? t('Saved. Leave empty to keep it.') : undefined
   const savedHeaders = current?.headerNames ?? []
   // Header values are write-only: saved ones stay hidden until the person chooses to replace the whole list.
   const editHeaders = savedHeaders.length === 0 || replaceHeaders
@@ -316,7 +316,7 @@ function ChannelDialog({ channel, onClose }: { channel: AlertChannel | 'new' | n
               <Form.Item
                 name="body"
                 label={t('Body (JSON)')}
-                extra={t('EdgePanel puts the alert message where {message} is, already escaped for JSON.')}
+                extra={t('BoxServer puts the alert message where {message} is, already escaped for JSON.')}
                 rules={[
                   { required: true, whitespace: true, message: t('Write the body.') },
                   {

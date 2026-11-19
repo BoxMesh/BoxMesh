@@ -12,7 +12,7 @@ export default function StatusButton({ device }: { device: Device }) {
   // The device list carries what a machine is; whether its agent is actually there is only known once
   // that agent reports in. So a row starts Offline and turns Online when its own check lands, and the
   // waits are spread out, the way a thousand agents report in rather than all at once.
-  // shortcut: EdgePanel has no /ws/events yet, so reporting in is a timer that resolves to what the
+  // shortcut: BoxServer has no /ws/events yet, so reporting in is a timer that resolves to what the
   // list already said. Swap the timeout for that subscription once the endpoint exists.
   const [online, setOnline] = useState<boolean | null>(null)
 
@@ -20,7 +20,7 @@ export default function StatusButton({ device }: { device: Device }) {
     const timer = setTimeout(() => setOnline(device.online), 500 + Math.random() * 2500)
     return () => clearTimeout(timer)
   }, [device.online])
-  // EdgePanel has no ping endpoint. The fleet list already says whether a device answers and how fast,
+  // BoxServer has no ping endpoint. The fleet list already says whether a device answers and how fast,
   // so a ping re-reads that list past the cache: the row's own dot and the message then agree.
   const ping = useMutation({
     mutationFn: async () => {

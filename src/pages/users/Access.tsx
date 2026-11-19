@@ -9,7 +9,7 @@ import { deviceLabel, reachable } from '../../utils/devices'
 const NONE: DeviceAccess = { groupIds: [], deviceIds: [] }
 const TAGS_SHOWN = 3
 
-/** A role as shown; the value itself stays English because it is compared and sent to EdgePanel. */
+/** A role as shown; the value itself stays English because it is compared and sent to BoxServer. */
 export function RoleName({ role }: { role: Role }) {
   return role === 'Admin' ? t('Admin') : t('Operator')
 }

@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-BoxMesh is the web console of EdgeTunnel: a company's IT team uses it to monitor and remotely operate its own
-machines. Each machine runs BoxAgent, which dials out over gRPC + TLS to the company's self-hosted EdgePanel.
-BoxMesh talks only to EdgePanel. See [README.md](README.md) for setup, configuration and the API table.
+Zin is the web console of BoxTunnel: a company's IT team uses it to monitor and remotely operate its own
+machines. Each machine runs BoxAgent, which dials out over gRPC + TLS to the company's self-hosted BoxServer.
+Zin talks only to BoxServer. See [README.md](README.md) for setup, configuration and the API table.
 
 ## Read before any UI or design work
 
@@ -26,7 +26,7 @@ Vitest · oxlint. Node 24.
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Dev server; proxies `/api` to EdgePanel on `localhost:8080` |
+| `npm run dev` | Dev server; proxies `/api` to BoxServer on `localhost:8080` |
 | `npm run build` | Type-check (`tsc -b`) and build |
 | `npm run lint` | oxlint |
 | `npm test` | Vitest |
@@ -55,9 +55,9 @@ src/
 - Icons come from `src/components/Icon.tsx` (24 viewBox, stroke 2). Don't mix in antd's icon set.
 - Every change must work in both dark and light themes, and at 375 px wide.
 - Text needs 4.5:1 contrast; status is never shown by colour alone; hit areas are at least 24 px.
-- Data goes page → `services/queries.ts` → `services/*Service.ts` → EdgePanel. No demo-only branches in screens:
+- Data goes page → `services/queries.ts` → `services/*Service.ts` → BoxServer. No demo-only branches in screens:
   demo mode swaps the axios adapter.
-- Actions EdgePanel can't do yet use `useNotSupported()` and never fake success.
+- Actions BoxServer can't do yet use `useNotSupported()` and never fake success.
 - UI copy is written in English and wrapped in `t()` from `src/i18n` (`t('{n} devices', { n })`); the English text
   is the key. Add the Vietnamese and the Japanese for every new key to the area's file in `src/i18n/vi/` and
   `src/i18n/ja/`. `src/i18n/i18n.test.ts` fails

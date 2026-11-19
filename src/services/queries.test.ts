@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { http } from './http'
 import { groupsQuery } from './queries'
 
-// Stands in for EdgePanel: replies with this status and body, through the real axios instance and its interceptor.
+// Stands in for BoxServer: replies with this status and body, through the real axios instance and its interceptor.
 const reply =
   (status: number, body: unknown): AxiosAdapter =>
   async (config) => {
@@ -21,7 +21,7 @@ describe('queries', () => {
     expect(await load()).toEqual([{ id: 'g1', name: 'Servers' }])
   })
 
-  it('shows a list EdgePanel does not serve yet as empty', async () => {
+  it('shows a list BoxServer does not serve yet as empty', async () => {
     http.defaults.adapter = reply(404, { error: 'Not Found' })
     expect(await load()).toEqual([])
   })

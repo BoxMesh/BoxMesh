@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { getSession, logIn, logOut } from "./authService";
 import { http } from "./http";
 
-// Stands in for EdgePanel's auth endpoints: records the request and replies with this status and body.
+// Stands in for BoxServer's auth endpoints: records the request and replies with this status and body.
 let sent: InternalAxiosRequestConfig | undefined;
 const reply =
   (status: number, body: unknown): AxiosAdapter =>
@@ -71,7 +71,7 @@ describe("authService", () => {
     await logOut();
   });
 
-  // EdgePanel owns the cookies, but an unreachable panel must not strand the person in a signed-in portal.
+  // BoxServer owns the cookies, but an unreachable panel must not strand the person in a signed-in portal.
   it("signs out locally even when the panel can't be reached", async () => {
     http.defaults.adapter = reply(200, {
       data: { id: "7b1f", email: "ops@example.com" },
@@ -92,7 +92,7 @@ describe("authService", () => {
   });
 
   it("reports a wrong email or password", async () => {
-    // EdgePanel answers a failed sign-in with a bare 401 and { data: "Unauthorized" }.
+    // BoxServer answers a failed sign-in with a bare 401 and { data: "Unauthorized" }.
     http.defaults.adapter = reply(401, { data: "Unauthorized" });
     await expect(logIn("ops@example.com", "wrong")).rejects.toThrow(
       "Wrong email or password.",

@@ -4,7 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
 export default defineConfig({
-  // EdgePanel's http profile (EdgePanel.API launchSettings.json). EdgePanel serves its routes from the root
+  // BoxServer's http profile (BoxServer.API launchSettings.json). BoxServer serves its routes from the root
   // (POST /sign-in), so the portal's /api prefix is stripped on the way through.
   server: { proxy: { '/api': { target: 'http://localhost:8080', rewrite: (path) => path.replace(/^\/api/, '') } } },
   plugins: [
@@ -12,9 +12,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'BoxMesh',
-        short_name: 'BoxMesh',
-        description: 'Manage and reach BoxAgent devices through EdgePanel.',
+        name: 'Zin',
+        short_name: 'Zin',
+        description: 'Manage and reach BoxAgent devices through BoxServer.',
         start_url: '/dashboard',
         scope: '/',
         display: 'standalone',
@@ -30,7 +30,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        // EdgePanel routes on the same origin must reach the server, not the SPA shell.
+        // BoxServer routes on the same origin must reach the server, not the SPA shell.
         navigateFallbackDenylist: [/^\/api\//, /^\/ws\//, /^\/web\//],
       },
     }),

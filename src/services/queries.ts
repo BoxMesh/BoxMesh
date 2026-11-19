@@ -10,7 +10,7 @@ import { getFiles, getServices, getTransfer } from './remoteService'
 // Shared query keys, so every screen reading the same data hits the same cache entry.
 
 /**
- * EdgePanel answers 404 for an endpoint it doesn't serve yet; the screen then shows `empty` instead of its error
+ * BoxServer answers 404 for an endpoint it doesn't serve yet; the screen then shows `empty` instead of its error
  * state. Every other failure (5xx, network, expired session) still reaches the error state.
  */
 export const emptyIfMissing =

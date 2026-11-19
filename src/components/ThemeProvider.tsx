@@ -8,7 +8,7 @@ import { buildTheme, THEME_COLOR, type ThemeMode } from '../config/theme'
 import { ThemeModeContext, type ThemeOrigin } from '../hooks/useThemeMode'
 import { useLang } from '../i18n'
 
-const STORAGE_KEY = 'boxmesh-theme'
+const STORAGE_KEY = 'zin-theme'
 
 // index.html sets data-theme before first paint (saved choice, else the OS preference); start from it.
 const initialMode = (): ThemeMode => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark')

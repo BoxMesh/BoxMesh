@@ -211,6 +211,10 @@ export function buildTheme(mode: ThemeMode): ThemeConfig {
         itemSelectedBg: p.brand,
         itemSelectedColor: p.onBrand,
         trackPadding: 2,
+        // Pill shape: the default inner radius (borderRadiusXS, 2) left the selected item square inside a round track.
+        borderRadius: 999,
+        borderRadiusSM: 999,
+        borderRadiusXS: 999,
       },
       Statistic: { contentFontSize: 26 },
       Alert: { defaultPadding: '8px 12px', withDescriptionPadding: '12px 16px' },

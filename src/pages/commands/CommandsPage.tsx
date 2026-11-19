@@ -135,7 +135,7 @@ export default function CommandsPage() {
       <PageHeader
         title={t('Command rules')}
         subtitle={t(
-          'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. EdgePanel refuses a matching command before it reaches the device, and the terminal shows the reason.',
+          'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. BoxServer refuses a matching command before it reaches the device, and the terminal shows the reason.',
         )}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEditing('new')}>

@@ -71,7 +71,7 @@ export function isWebhookUrl(url: string) {
 
 export const WEBHOOK_METHODS = ['POST', 'PUT'] as const
 
-/** The body a new webhook channel starts with; {message} is where EdgePanel puts the alert text. */
+/** The body a new webhook channel starts with; {message} is where BoxServer puts the alert text. */
 export const DEFAULT_WEBHOOK_BODY = '{"text": "{message}"}'
 
 const HEADER_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/

@@ -35,7 +35,7 @@ export interface Account {
 
 export type CommandMatch = 'starts' | 'contains' | 'regex'
 
-/** A command nobody may run in Remote Terminal. EdgePanel checks every command against these before relaying it. */
+/** A command nobody may run in Remote Terminal. BoxServer checks every command against these before relaying it. */
 export interface CommandRule {
   id: string
   pattern: string

@@ -137,7 +137,7 @@ export default function AlertsPage() {
       <PageHeader
         title={t('Alerts')}
         subtitle={t(
-          'An alert applies rules to groups or devices and sends a message to your channels when one fires. EdgePanel checks every heartbeat, so alerts go out even when nobody has BoxMesh open.',
+          'An alert applies rules to groups or devices and sends a message to your channels when one fires. BoxServer checks every heartbeat, so alerts go out even when nobody has Zin open.',
         )}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setEditing('new')} disabled={missing.length > 0}>

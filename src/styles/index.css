@@ -21,6 +21,7 @@
   --warning-fill: #facc15;
   --series-1: #e0702a;
   --series-2: #3987e5;
+  --series-3: #a78bfa;
   --error: #ff6b81;
   --code-bg: #090b0c;
   --code-text: #f1efe7;
@@ -54,6 +55,7 @@
   --warning-fill: #eab308;
   --series-1: #c2410c;
   --series-2: #2a78d6;
+  --series-3: #7c5cd6;
   --error: #be123c;
   --code-bg: #101416;
   --code-text: #f1efe7;
@@ -190,7 +192,7 @@ body .app-header .ant-breadcrumb li:last-child {
   text-overflow: ellipsis;
 }
 
-/* Narrow headers drop the "BoxMesh" root crumb; the logo already says it. */
+/* Narrow headers drop the "Zin" root crumb; the logo already says it. */
 @media (max-width: 700px) {
   body .app-header .ant-breadcrumb li:nth-child(-n + 2) {
     display: none;
@@ -375,24 +377,6 @@ body .ant-card-head-title::before {
 }
 
 /* ---------- Dashboard ---------- */
-/* Health strip: fleet health (with a stacked bar) and three cells, side by side; 2 + 2 below 1200px, a column on phones. */
-.health-strip {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr)) minmax(0, 1.2fr);
-}
-
-.health-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-  min-width: 0;
-}
-
-.health-cell + .health-cell {
-  border-left: 1px solid var(--border);
-}
-
 .health-big {
   font-size: 28px;
   line-height: 34px;
@@ -404,77 +388,6 @@ body .ant-card-head-title::before {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
-}
-
-.health-bar {
-  display: flex;
-  height: 10px;
-  margin-top: 6px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--bg-raised);
-}
-
-.health-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.health-legend span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.health-legend i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.health-bar .healthy,
-.health-legend .healthy {
-  background: var(--positive);
-}
-
-.health-bar .warning,
-.health-legend .warning {
-  background: var(--warning-fill);
-}
-
-.health-bar .critical,
-.health-legend .critical {
-  background: var(--error);
-}
-
-.health-bar .offline,
-.health-legend .offline {
-  background: var(--text-disabled);
-}
-
-/* Agents cell: the fleet by OS. */
-.health-bar .os-1,
-.health-legend .os-1 {
-  background: var(--series-1);
-}
-
-.health-bar .os-2,
-.health-legend .os-2 {
-  background: var(--series-2);
-}
-
-.health-bar .os-3,
-.health-legend .os-3 {
-  background: var(--text-disabled);
-}
-
-.group-health .health-bar {
-  width: 140px;
-  margin-top: 0;
 }
 
 /* Top usage and Disk filling up: one row per device, name · bar · value. */
@@ -542,20 +455,6 @@ body .ant-card-head-title::before {
   white-space: nowrap;
 }
 
-@media (max-width: 1199px) {
-  .health-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .health-cell:nth-child(3) {
-    border-left: 0;
-  }
-
-  .health-cell:nth-child(n + 3) {
-    border-top: 1px solid var(--border);
-  }
-}
-
 @media (max-width: 991px) {
   .grid-2 {
     grid-template-columns: minmax(0, 1fr);
@@ -572,17 +471,6 @@ body .ant-card-head-title::before {
   .rank-row .ant-progress {
     grid-column: 1 / -1;
     order: 1;
-  }
-}
-
-@media (max-width: 575px) {
-  .health-strip {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .health-cell + .health-cell {
-    border-left: 0;
-    border-top: 1px solid var(--border);
   }
 }
 
@@ -767,6 +655,15 @@ body .device-tabs > .ant-tabs-nav {
 .usage-dot.s2,
 .usage-swatch.s2 {
   background: var(--series-2);
+}
+
+.usage-line.s3 {
+  stroke: var(--series-3);
+}
+
+.usage-dot.s3,
+.usage-swatch.s3 {
+  background: var(--series-3);
 }
 
 .usage-swatch {
@@ -1248,7 +1145,7 @@ body .icon-btn[aria-disabled='true'] {
   justify-content: center;
 }
 
-/* Lockup: mark plus wordmark, "Mesh" in the accent (design's Logo.html). */
+/* Lockup: mark plus wordmark, "pus" in the accent (design's Logo.html). */
 .logo {
   display: inline-flex;
   align-items: center;
@@ -1493,7 +1390,7 @@ body .icon-btn[aria-disabled='true'] {
   }
 }
 
-/* Background: boxmesh.svg, the canvas's sign-in artwork, inlined by LoginBackground.tsx. It paints with --bm-*
+/* Background: zin.svg, the canvas's sign-in artwork, inlined by LoginBackground.tsx. It paints with --bm-*
    variables; the ones the app already has point at its tokens, the rest are the canvas's own values. */
 .login-bg {
   position: absolute;
@@ -1978,5 +1875,140 @@ a:has(> .ant-tag) {
 @media (max-width: 575px) {
   .dialog-form .kv {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Dashboard ---------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  overflow: hidden;
+}
+
+.stat-card .ant-card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  padding: 0;
+}
+
+.stat-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.stat-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+}
+
+/* The context line sits on its own strip, so the figure above stays the only large thing on the card. */
+.stat-foot {
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-raised);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.card-tools {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chart-legend {
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+
+
+.meter-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+.meter-cell .ant-progress {
+  flex: 1;
+  margin: 0;
+}
+
+.meter-cell span:last-child {
+  width: 36px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Usage over time: the chart, and its own numbers in a column on the right (a row of four below 992px). */
+.chart-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  gap: 16px 24px;
+}
+
+.chart-main {
+  min-width: 0;
+}
+
+.chart-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0;
+  padding-left: 24px;
+  border-left: 1px solid var(--border);
+}
+
+.chart-stats dt {
+  font-size: 12px;
+}
+
+.chart-stats .ant-progress {
+  display: block;
+  margin: 0;
+  line-height: 1;
+}
+
+.chart-stats dd {
+  margin: 0;
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 991px) {
+  .chart-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chart-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    padding: 12px 0 0;
+    border-top: 1px solid var(--border);
+    border-left: 0;
   }
 }

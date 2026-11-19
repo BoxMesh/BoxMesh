@@ -6,7 +6,7 @@ import { createGroup, deleteGroup, getDeviceMetrics, getDevices, getDiskForecast
 import { runCommand } from './remoteService'
 
 // The demo answers through the real axios instance and its interceptor, so these also prove the
-// screens get EdgePanel's { data } envelope and its error shape, not a demo-only path.
+// screens get BoxServer's { data } envelope and its error shape, not a demo-only path.
 install()
 
 describe('demo mode', () => {

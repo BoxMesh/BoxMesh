@@ -8,7 +8,7 @@ import { MINUTE, fromNow } from '../utils/time'
 import * as seed from './demoData'
 import { http } from './http'
 
-const FLAG = 'boxmesh-demo'
+const FLAG = 'zin-demo'
 
 /** Demo mode is read before React renders, so the adapter is in place for the first request. */
 export function isDemo() {
@@ -108,7 +108,7 @@ function readDemoTransfer(transferId: string): FileTransfer | null {
   }
 }
 
-/** Returned by a route to answer with an error status, the way EdgePanel refuses a request. */
+/** Returned by a route to answer with an error status, the way BoxServer refuses a request. */
 class Refused {
   readonly status: number
   readonly error: string
@@ -127,7 +127,7 @@ const body = <T>(config: InternalAxiosRequestConfig): T =>
 const param = (config: InternalAxiosRequestConfig, key: string) => String(config.params?.[key] ?? '')
 const id = () => Math.random().toString(36).slice(2, 10)
 
-// Like EdgePanel: secrets are kept server side and never sent back; a webhook keeps its last four characters.
+// Like BoxServer: secrets are kept server side and never sent back; a webhook keeps its last four characters.
 function stripSecrets<T extends Partial<ChannelInput>>({ botToken, webhookUrl, password, headers, ...rest }: T): Partial<AlertChannel> {
   void botToken
   void password
@@ -438,7 +438,7 @@ const routes: Route[] = [
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-// Answers in EdgePanel's shape — { data } on success, { error } with a real status on failure — so every
+// Answers in BoxServer's shape — { data } on success, { error } with a real status on failure — so every
 // screen runs its normal loading, empty and error paths instead of a demo-only branch.
 const adapter: AxiosAdapter = async (config) => {
   const path = (config.url ?? '').split('?')[0]

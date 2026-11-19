@@ -10,7 +10,7 @@ export const LANGS: { value: Lang; label: string }[] = [
   { value: 'ja', label: '日本語' },
 ]
 
-const STORAGE_KEY = 'boxmesh-lang'
+const STORAGE_KEY = 'zin-lang'
 
 // English is the key, so it has no dictionary.
 const DICTIONARY: Record<Exclude<Lang, 'en'>, Record<string, string>> = { vi, ja }

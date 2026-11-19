@@ -61,15 +61,15 @@ export default function AppLayout() {
   }
 
   const crumbs = [
-    { title: 'BoxMesh' },
+    { title: 'Zin' },
     ...(active ? [{ title: detail ? <Link to={active.path}>{active.label}</Link> : active.label }] : []),
     ...(detail ? [{ title: detail }] : []),
   ]
 
   return (
     <Layout className="app">
-      {/* The tab reads like the breadcrumb: "BoxMesh - Devices - SRV-DB-01". React 19 lifts this into <head>. */}
-      <title>{['BoxMesh', active?.label, detail].filter(Boolean).join(' - ')}</title>
+      {/* The tab reads like the breadcrumb: "Zin - Devices - SRV-DB-01". React 19 lifts this into <head>. */}
+      <title>{['Zin', active?.label, detail].filter(Boolean).join(' - ')}</title>
       <Layout.Sider className="app-sider" width={216} breakpoint="lg" collapsedWidth={0}>
         <Link to="/dashboard" className="brand">
           <Logo size={24} />

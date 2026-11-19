@@ -4,7 +4,7 @@ import { t } from "../i18n";
 import { stopDemo } from "./demo";
 import { http, userMessage } from "./http";
 
-const STORAGE_KEY = "boxmesh-session";
+const STORAGE_KEY = "zin-session";
 
 let session = load();
 

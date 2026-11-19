@@ -24,7 +24,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
   const { message } = App.useApp()
   const queryClient = useQueryClient()
   const [os, setOs] = useState<OsFamily>('Windows')
-  // Held only while the drawer is open: EdgePanel shows a token in full exactly once.
+  // Held only while the drawer is open: BoxServer shows a token in full exactly once.
   const [issued, setIssued] = useState<EnrollmentToken | null>(null)
   const pending = useQuery({ ...pendingEnrollmentsQuery, enabled: open })
 
@@ -116,7 +116,7 @@ export default function EnrollDrawer({ open, onClose, groups }: { open: boolean;
           </h3>
           <p className="muted" style={{ margin: 0 }}>
             {t(
-              'The agent connects to EdgePanel over TLS with the token. Once approved, its tunnel opens.',
+              'The agent connects to BoxServer over TLS with the token. Once approved, its tunnel opens.',
             )}
           </p>
           {pending.isPending ? <Spin /> : null}

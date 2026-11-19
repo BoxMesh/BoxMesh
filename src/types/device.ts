@@ -85,7 +85,7 @@ export interface DeviceProcess {
   memoryMb: number
 }
 
-/** A disk that is filling up, as EdgePanel projects it from the last 7 days of usage. */
+/** A disk that is filling up, as BoxServer projects it from the last 7 days of usage. */
 export interface DiskForecast {
   /** The device's ID; host is for display. */
   id: string

@@ -50,7 +50,7 @@ export default function LoginPage() {
 
   return (
     <div className="login">
-      <title>{`BoxMesh - ${resetting ? t('Reset password') : t('Sign in')}`}</title>
+      <title>{`Zin - ${resetting ? t('Reset password') : t('Sign in')}`}</title>
       <LoginBackground />
       <div className="login-toggle">
         <LanguageSelect />
@@ -132,7 +132,7 @@ export default function LoginPage() {
             </div>
           </Form>
 
-          {/* The canvas's secondary slot (company SSO there); BoxMesh has no SSO, so the demo takes it. */}
+          {/* The canvas's secondary slot (company SSO there); Zin has no SSO, so the demo takes it. */}
           <div className={`login-fold${resetting ? ' is-folded' : ''}`} inert={resetting}>
             <div className="login-alt">
               <Divider plain>{t('or')}</Divider>

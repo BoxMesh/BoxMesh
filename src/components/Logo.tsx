@@ -35,13 +35,13 @@ export function LogoMark({ size = 40 }: { size?: number }) {
   )
 }
 
-/** Mark and wordmark together. The parent sets the font size; "Mesh" carries the accent. */
+/** Mark and wordmark together. The parent sets the font size; "pus" carries the accent. */
 export default function Logo({ size = 40 }: { size?: number }) {
   return (
     <span className="logo">
       <LogoMark size={size} />
       <span className="logo-word">
-        Box<span>Mesh</span>
+        Octo<span>pus</span>
       </span>
     </span>
   )

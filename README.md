@@ -1,22 +1,22 @@
-# BoxMesh
+# Zin
 
 [![CI/CD](https://github.com/EdgeDock/EdgePortal/actions/workflows/ci.yml/badge.svg)](https://github.com/EdgeDock/EdgePortal/actions/workflows/ci.yml)
 
-**BoxMesh** is the web console of EdgeTunnel, used by a company's IT team to monitor and remotely operate its Windows and Linux machines.
+**Zin** is the web console of BoxTunnel, used by a company's IT team to monitor and remotely operate its Windows and Linux machines.
 
-Each machine runs **BoxAgent**, which dials out to the company's self-hosted **EdgePanel** over gRPC + TLS, so machines need no public IP, inbound ports or VPN. BoxMesh talks only to EdgePanel.
+Each machine runs **BoxAgent**, which dials out to the company's self-hosted **BoxServer** over gRPC + TLS, so machines need no public IP, inbound ports or VPN. Zin talks only to BoxServer.
 
 ```text
-Browser ── BoxMesh ──HTTPS / WebSocket──► EdgePanel (company server) ◄──gRPC + TLS── BoxAgent (each machine)
+Browser ── Zin ──HTTPS / WebSocket──► BoxServer (company server) ◄──gRPC + TLS── BoxAgent (each machine)
 ```
 
 ## Status
 
-Every screen is built, and every screen calls the real EdgePanel API. EdgePanel serves only
+Every screen is built, and every screen calls the real BoxServer API. BoxServer serves only
 `POST /log-in` and `POST /log-out` so far, so the rest show an error until it has their endpoints (see
 [API contract](#api-contract)) — or run the [demo](#demo-mode), which answers all of them.
 
-| Module | Built | EdgePanel endpoint |
+| Module | Built | BoxServer endpoint |
 |---|---|---|
 | Sign in and out (`/login`) | yes | `POST /log-in`, `POST /log-out` — live |
 | Dashboard | yes | missing |
@@ -34,8 +34,8 @@ Every screen is built, and every screen calls the real EdgePanel API. EdgePanel 
 machines, with no backend and no password.
 
 It works by swapping the shared axios adapter ([`src/services/demo.ts`](src/services/demo.ts)) for
-one that answers every endpoint in EdgePanel's `{ data }` envelope. No screen, service or query knows
-about it, so what you click is the same code that will talk to EdgePanel — there is no demo-only
+one that answers every endpoint in BoxServer's `{ data }` envelope. No screen, service or query knows
+about it, so what you click is the same code that will talk to BoxServer — there is no demo-only
 branch to drift out of step.
 
 - Changes you make — groups, tokens, approvals, rules, alerts — are held in memory and gone on reload.
@@ -60,9 +60,9 @@ npm install
 npm run dev          # http://localhost:5173
 ```
 
-Start EdgePanel first (its `http` profile, on port 8080); the portal has no offline mode.
+Start BoxServer first (its `http` profile, on port 8080); the portal has no offline mode.
 
-`npm run dev` proxies `/api` to EdgePanel on `http://localhost:8080`, its default `http` launch profile, and strips the `/api` prefix because EdgePanel serves its routes from the root.
+`npm run dev` proxies `/api` to BoxServer on `http://localhost:8080`, its default `http` launch profile, and strips the `/api` prefix because BoxServer serves its routes from the root.
 
 | Script | What it does |
 |---|---|
@@ -78,7 +78,7 @@ Vite bakes this into the bundle **at build time**. Copy `.env.example` to `.env.
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `VITE_API_URL` | `/api` | Base URL of the EdgePanel REST API: `/api` behind a shared reverse proxy, or EdgePanel's own origin such as `https://panel.company.com` (no `/api`; EdgePanel serves its routes from the root). See [Deployment](#deployment). |
+| `VITE_API_URL` | `/api` | Base URL of the BoxServer REST API: `/api` behind a shared reverse proxy, or BoxServer's own origin such as `https://panel.company.com` (no `/api`; BoxServer serves its routes from the root). See [Deployment](#deployment). |
 
 ## Project structure
 
@@ -102,14 +102,14 @@ Further reading:
 
 ## API contract
 
-Every request goes through `src/services`. EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure.
+Every request goes through `src/services`. BoxServer wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure.
 
 These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
-| POST | `/api/log-out` → EdgePanel `/log-out` (clears the cookie) |
+| POST | `/api/log-in` → BoxServer `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
+| POST | `/api/log-out` → BoxServer `/log-out` (clears the cookie) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
 | PUT | `/api/devices/{host}/groups` (`{ groupIds }`, replaces the device's groups) |
@@ -141,8 +141,8 @@ These are the endpoints the app calls today:
 The image is a static build served by unprivileged nginx on port **8080**.
 
 ```bash
-docker build -t boxmesh .
-docker run --rm -p 8080:8080 boxmesh
+docker build -t zin .
+docker run --rm -p 8080:8080 zin
 ```
 
 Pass `--build-arg VITE_API_URL=...` to point at another API base.
@@ -154,12 +154,12 @@ What nginx does:
 
 ### Deployment
 
-Pick one way to reach EdgePanel:
+Pick one way to reach BoxServer:
 
-- **Same origin (default).** Keep `VITE_API_URL=/api` and put BoxMesh behind the same reverse proxy as EdgePanel. Route `/api` (stripping the `/api` prefix), `/ws` and `/web` to EdgePanel and everything else to this container. No CORS needed.
-- **EdgePanel on its own domain.** Build with `VITE_API_URL=https://panel.company.com`. The portal sends requests with credentials so EdgePanel's HttpOnly JWT cookies cross origins, which needs on EdgePanel's side:
+- **Same origin (default).** Keep `VITE_API_URL=/api` and put Zin behind the same reverse proxy as BoxServer. Route `/api` (stripping the `/api` prefix), `/ws` and `/web` to BoxServer and everything else to this container. No CORS needed.
+- **BoxServer on its own domain.** Build with `VITE_API_URL=https://panel.company.com`. The portal sends requests with credentials so BoxServer's HttpOnly JWT cookies cross origins, which needs on BoxServer's side:
   - a CORS policy that allows the portal's exact origin **with credentials** (`AllowCredentials`; a `*` origin is refused by browsers);
-  - the portal and EdgePanel on the **same site** (same registrable domain, e.g. `portal.company.com` and `panel.company.com`), because the cookies are `SameSite=Strict`. Different domains need `SameSite=None` on EdgePanel.
+  - the portal and BoxServer on the **same site** (same registrable domain, e.g. `portal.company.com` and `panel.company.com`), because the cookies are `SameSite=Strict`. Different domains need `SameSite=None` on BoxServer.
 - **HTTPS is required.** Without it the app can't be installed as a PWA.
 
 ## CI/CD
@@ -214,8 +214,8 @@ Until those secrets exist, the `vercel` job fails with a message naming them; th
 The build-time variable `VITE_API_URL` comes from the Vercel project's **Environment Variables**; without it the deploy calls `/api` on its own domain.
 
 To use the real API from Vercel:
-- Set `VITE_API_URL` to EdgePanel's public URL, for example `https://panel.company.com`.
-- Meet the "EdgePanel on its own domain" requirements in [Deployment](#deployment). A `*.vercel.app` address is a different site from EdgePanel's domain, so give the portal a custom domain on the same site (or switch EdgePanel's cookies to `SameSite=None`).
+- Set `VITE_API_URL` to BoxServer's public URL, for example `https://panel.company.com`.
+- Meet the "BoxServer on its own domain" requirements in [Deployment](#deployment). A `*.vercel.app` address is a different site from BoxServer's domain, so give the portal a custom domain on the same site (or switch BoxServer's cookies to `SameSite=None`).
 
 ## License
 

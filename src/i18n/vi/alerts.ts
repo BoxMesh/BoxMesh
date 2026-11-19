@@ -69,8 +69,8 @@ const vi: Record<string, string> = {
   'a channel': 'một kênh',
   'Before an alert, add {items}.': 'Trước khi tạo cảnh báo, hãy thêm {items}.',
   ' and ': ' và ',
-  'An alert applies rules to groups or devices and sends a message to your channels when one fires. EdgePanel checks every heartbeat, so alerts go out even when nobody has BoxMesh open.':
-    'Cảnh báo áp dụng quy tắc cho nhóm hoặc thiết bị và gửi tin nhắn tới các kênh khi một quy tắc được kích hoạt. EdgePanel kiểm tra mỗi heartbeat, nên cảnh báo vẫn được gửi kể cả khi không ai mở BoxMesh.',
+  'An alert applies rules to groups or devices and sends a message to your channels when one fires. BoxServer checks every heartbeat, so alerts go out even when nobody has Zin open.':
+    'Cảnh báo áp dụng quy tắc cho nhóm hoặc thiết bị và gửi tin nhắn tới các kênh khi một quy tắc được kích hoạt. BoxServer kiểm tra mỗi heartbeat, nên cảnh báo vẫn được gửi kể cả khi không ai mở Zin.',
   'Add alert': 'Thêm cảnh báo',
   'No alerts yet. Add one to hear about a device running hot or going offline.':
     'Chưa có cảnh báo nào. Thêm cảnh báo để được báo khi thiết bị quá tải hoặc ngoại tuyến.',
@@ -106,8 +106,8 @@ const vi: Record<string, string> = {
   '{n} alert stop sending here.': '{n} cảnh báo sẽ ngừng gửi tới đây.',
   '{n} alerts stop sending here.': '{n} cảnh báo sẽ ngừng gửi tới đây.',
   'No alert sends here.': 'Không có cảnh báo nào gửi tới đây.',
-  'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.':
-    'Nơi nhận tin nhắn cảnh báo: chat Telegram, kênh Discord, email hoặc webhook bất kỳ. Bot token, URL webhook và mật khẩu được lưu trên EdgePanel và không hiển thị lại.',
+  'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on BoxServer and never shown again.':
+    'Nơi nhận tin nhắn cảnh báo: chat Telegram, kênh Discord, email hoặc webhook bất kỳ. Bot token, URL webhook và mật khẩu được lưu trên BoxServer và không hiển thị lại.',
   'Add channel': 'Thêm kênh',
   'No channels yet. Add one, then send a test.': 'Chưa có kênh nào. Hãy thêm một kênh rồi gửi thử.',
   'Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.':
@@ -116,7 +116,7 @@ const vi: Record<string, string> = {
     'Trong Discord: cài đặt kênh → Tích hợp → Webhook → Webhook mới → Sao chép URL webhook.',
   'For Gmail: turn on 2-Step Verification, then create an app password for this account.':
     'Với Gmail: bật Xác minh 2 bước, rồi tạo mật khẩu ứng dụng cho tài khoản này.',
-  'Any address that accepts an HTTP request. EdgePanel sends the message there as JSON.': 'Địa chỉ bất kỳ nhận yêu cầu HTTP. EdgePanel gửi tin nhắn tới đó dưới dạng JSON.',
+  'Any address that accepts an HTTP request. BoxServer sends the message there as JSON.': 'Địa chỉ bất kỳ nhận yêu cầu HTTP. BoxServer gửi tin nhắn tới đó dưới dạng JSON.',
   Method: 'Phương thức',
   Headers: 'Header',
   'Sent with every message, for example an Authorization token. Values are never shown again.':
@@ -131,8 +131,8 @@ const vi: Record<string, string> = {
   'Saved headers: {names}': 'Header đã lưu: {names}',
   'Replace headers': 'Thay header',
   'Body (JSON)': 'Nội dung (JSON)',
-  'EdgePanel puts the alert message where {message} is, already escaped for JSON.':
-    'EdgePanel đặt tin nhắn cảnh báo vào chỗ {message}, đã được escape cho JSON.',
+  'BoxServer puts the alert message where {message} is, already escaped for JSON.':
+    'BoxServer đặt tin nhắn cảnh báo vào chỗ {message}, đã được escape cho JSON.',
   'Write the body.': 'Nhập nội dung.',
   'Must be valid JSON.': 'Phải là JSON hợp lệ.',
   'Include {message} where the alert text goes.': 'Thêm {message} vào chỗ đặt nội dung cảnh báo.',
@@ -197,8 +197,8 @@ const vi: Record<string, string> = {
   'Stop blocking "{pattern}"?': 'Bỏ chặn "{pattern}"?',
   'The rule is deleted and anyone can run this command again.': 'Quy tắc sẽ bị xóa và ai cũng có thể chạy lại lệnh này.',
   'Command rules': 'Quy tắc lệnh',
-  'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. EdgePanel refuses a matching command before it reaches the device, and the terminal shows the reason.':
-    'Các lệnh không ai được chạy trong Terminal, kể cả Quản trị viên: trên mọi thiết bị, hoặc chỉ trên một số nhóm hay thiết bị. EdgePanel từ chối lệnh khớp trước khi nó tới thiết bị, và Terminal hiển thị lý do.',
+  'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. BoxServer refuses a matching command before it reaches the device, and the terminal shows the reason.':
+    'Các lệnh không ai được chạy trong Terminal, kể cả Quản trị viên: trên mọi thiết bị, hoặc chỉ trên một số nhóm hay thiết bị. BoxServer từ chối lệnh khớp trước khi nó tới thiết bị, và Terminal hiển thị lý do.',
   'Test a command': 'Thử một lệnh',
   'Shell to test in': 'Shell để thử',
   'e.g. shutdown /r /t 0': 'VD: shutdown /r /t 0',

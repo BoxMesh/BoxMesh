@@ -21,7 +21,7 @@ export interface Alert {
   /** Device IDs. */
   deviceIds: string[]
   channelIds: string[]
-  /** Placeholders such as {device} are filled in by EdgePanel when it sends. */
+  /** Placeholders such as {device} are filled in by BoxServer when it sends. */
   message: string
 }
 
@@ -34,7 +34,7 @@ export interface WebhookHeader {
   value: string
 }
 
-/** What EdgePanel sends back: never the bot token, the full webhook URL or the mail password. */
+/** What BoxServer sends back: never the bot token, the full webhook URL or the mail password. */
 export interface AlertChannel {
   id: string
   kind: ChannelKind
@@ -44,7 +44,7 @@ export interface AlertChannel {
   smtpHost?: string
   smtpPort?: number
   username?: string
-  to?: string[]
+  to?: string[]
   /** Webhook only. */
   method?: WebhookMethod
   /** Webhook only: the JSON sent, with {message} where the alert text goes. */
@@ -57,7 +57,7 @@ export interface AlertChannel {
 export type ChannelInput = Omit<AlertChannel, 'id' | 'webhookTail' | 'headerNames'> & {
   botToken?: string
   webhookUrl?: string
-  password?: string
+  password?: string
   /** Webhook only. Sending any replaces all saved headers; leaving it out keeps them. */
   headers?: WebhookHeader[]
 }

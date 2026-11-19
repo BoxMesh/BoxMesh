@@ -69,8 +69,8 @@ const ja: Record<string, string> = {
   'a channel': 'チャンネル',
   'Before an alert, add {items}.': 'アラートを作成する前に、{items}を追加してください。',
   ' and ': 'と',
-  'An alert applies rules to groups or devices and sends a message to your channels when one fires. EdgePanel checks every heartbeat, so alerts go out even when nobody has BoxMesh open.':
-    'アラートはルールをグループやデバイスに適用し、ルールが発火するとチャンネルにメッセージを送信します。EdgePanel がハートビートごとにチェックするため、誰も BoxMesh を開いていなくてもアラートは送信されます。',
+  'An alert applies rules to groups or devices and sends a message to your channels when one fires. BoxServer checks every heartbeat, so alerts go out even when nobody has Zin open.':
+    'アラートはルールをグループやデバイスに適用し、ルールが発火するとチャンネルにメッセージを送信します。BoxServer がハートビートごとにチェックするため、誰も Zin を開いていなくてもアラートは送信されます。',
   'Add alert': 'アラートを追加',
   'No alerts yet. Add one to hear about a device running hot or going offline.':
     'アラートはまだありません。デバイスの高負荷やオフラインを知るには、アラートを追加してください。',
@@ -106,8 +106,8 @@ const ja: Record<string, string> = {
   '{n} alert stop sending here.': '{n} 件のアラートがここへの送信を停止します。',
   '{n} alerts stop sending here.': '{n} 件のアラートがここへの送信を停止します。',
   'No alert sends here.': 'ここに送信しているアラートはありません。',
-  'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on EdgePanel and never shown again.':
-    'アラートメッセージの送信先: Telegram チャット、Discord チャンネル、メール、または任意の Webhook。Bot トークン、Webhook URL、パスワードは EdgePanel に保存され、再表示されません。',
+  'Where alert messages go: a Telegram chat, a Discord channel, email or any webhook. Bot tokens, webhook URLs and passwords are kept on BoxServer and never shown again.':
+    'アラートメッセージの送信先: Telegram チャット、Discord チャンネル、メール、または任意の Webhook。Bot トークン、Webhook URL、パスワードは BoxServer に保存され、再表示されません。',
   'Add channel': 'チャンネルを追加',
   'No channels yet. Add one, then send a test.': 'チャンネルはまだありません。追加してから、テスト送信してください。',
   'Create a bot with @BotFather, add it to the chat, then paste its token and the chat ID.':
@@ -116,7 +116,7 @@ const ja: Record<string, string> = {
     'Discord で: チャンネルの設定 → 連携サービス → ウェブフック → 新しいウェブフック → ウェブフック URL をコピー',
   'For Gmail: turn on 2-Step Verification, then create an app password for this account.':
     'Gmail の場合: 2 段階認証プロセスを有効にしてから、このアカウントのアプリパスワードを作成してください。',
-  'Any address that accepts an HTTP request. EdgePanel sends the message there as JSON.': 'HTTP リクエストを受け付ける任意のアドレス。EdgePanel はメッセージを JSON で送信します。',
+  'Any address that accepts an HTTP request. BoxServer sends the message there as JSON.': 'HTTP リクエストを受け付ける任意のアドレス。BoxServer はメッセージを JSON で送信します。',
   Method: 'メソッド',
   Headers: 'ヘッダー',
   'Sent with every message, for example an Authorization token. Values are never shown again.':
@@ -131,7 +131,7 @@ const ja: Record<string, string> = {
   'Saved headers: {names}': '保存済みのヘッダー: {names}',
   'Replace headers': 'ヘッダーを置き換え',
   'Body (JSON)': '本文 (JSON)',
-  'EdgePanel puts the alert message where {message} is, already escaped for JSON.':
+  'BoxServer puts the alert message where {message} is, already escaped for JSON.':
     '{message} の位置に、JSON 用にエスケープしたアラートメッセージが入ります。',
   'Write the body.': '本文を入力してください。',
   'Must be valid JSON.': '有効な JSON にしてください。',
@@ -197,8 +197,8 @@ const ja: Record<string, string> = {
   'Stop blocking "{pattern}"?': '「{pattern}」のブロックを解除しますか？',
   'The rule is deleted and anyone can run this command again.': 'ルールが削除され、誰でもこのコマンドを再び実行できるようになります。',
   'Command rules': 'コマンドルール',
-  'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. EdgePanel refuses a matching command before it reaches the device, and the terminal shows the reason.':
-    'リモートターミナルで誰も（管理者も含めて）実行できないコマンドです。すべてのデバイス、または一部のグループやデバイスにだけ適用できます。EdgePanel は一致したコマンドがデバイスに届く前に拒否し、ターミナルに理由を表示します。',
+  'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. BoxServer refuses a matching command before it reaches the device, and the terminal shows the reason.':
+    'リモートターミナルで誰も（管理者も含めて）実行できないコマンドです。すべてのデバイス、または一部のグループやデバイスにだけ適用できます。BoxServer は一致したコマンドがデバイスに届く前に拒否し、ターミナルに理由を表示します。',
   'Test a command': 'コマンドをテスト',
   'Shell to test in': 'テストするシェル',
   'e.g. shutdown /r /t 0': '例: shutdown /r /t 0',

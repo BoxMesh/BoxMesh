@@ -346,7 +346,7 @@ const REPLIES: { match: RegExp; output: (host: string) => string }[] = [
   { match: /^(pwd|cd)$/i, output: (h) => rootFor(h) },
   {
     match: /^(get-service|systemctl status|service --status-all)/i,
-    output: () => 'Status   Name               DisplayName\n------   ----               -----------\nRunning  BoxAgent           BoxMesh Agent\nRunning  Spooler            Print Spooler\nStopped  WSearch            Windows Search',
+    output: () => 'Status   Name               DisplayName\n------   ----               -----------\nRunning  BoxAgent           Zin Agent\nRunning  Spooler            Print Spooler\nStopped  WSearch            Windows Search',
   },
   {
     match: /^(df|get-psdrive|get-volume)/i,

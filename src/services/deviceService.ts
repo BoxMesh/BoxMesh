@@ -3,7 +3,7 @@ import type { TimeRange } from '../types/dashboard'
 import type { Device, DeviceGroup, DeviceProcess, MetricPoint, PendingEnrollment, DiskForecast } from '../types/device'
 import { http } from './http'
 
-// Endpoints follow the canvas's proposed EdgePanel API; /metrics, /processes and /enrollments are not in it yet.
+// Endpoints follow the canvas's proposed BoxServer API; /metrics, /processes and /enrollments are not in it yet.
 
 export async function getDevices() {
   const { data } = await http.get<Device[]>('/devices')
@@ -12,7 +12,7 @@ export async function getDevices() {
 
 // Devices are addressed by ID: hostnames can repeat.
 
-/** Resolves null when EdgePanel has no device with that ID. */
+/** Resolves null when BoxServer has no device with that ID. */
 export async function getDevice(id: string) {
   try {
     const { data } = await http.get<Device>(`/devices/${encodeURIComponent(id)}`)
@@ -39,7 +39,7 @@ export async function getProcesses(id: string) {
   return data
 }
 
-// /disk-forecast is a proposal for EdgePanel: the disks filling up fastest, soonest full first.
+// /disk-forecast is a proposal for BoxServer: the disks filling up fastest, soonest full first.
 export async function getDiskForecast() {
   const { data } = await http.get<DiskForecast[]>('/disk-forecast')
   return data

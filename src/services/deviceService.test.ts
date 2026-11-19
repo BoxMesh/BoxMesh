@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { getDevice, getDevices } from './deviceService'
 import { http } from './http'
 
-// Stands in for EdgePanel: replies with this status and body, through the real axios instance and its interceptor.
+// Stands in for BoxServer: replies with this status and body, through the real axios instance and its interceptor.
 const reply =
   (status: number, body: unknown): AxiosAdapter =>
   async (config) => {
@@ -13,7 +13,7 @@ const reply =
   }
 
 describe('deviceService', () => {
-  it('unwraps the EdgePanel { data } envelope', async () => {
+  it('unwraps the BoxServer { data } envelope', async () => {
     http.defaults.adapter = reply(200, { data: [{ host: 'PC-001' }] })
     expect(await getDevices()).toEqual([{ host: 'PC-001' }])
   })
@@ -23,7 +23,7 @@ describe('deviceService', () => {
     expect(await getDevice('NO-SUCH-HOST')).toBeNull()
   })
 
-  // Nothing a developer wrote — not axios's "Request failed with status code 502", not EdgePanel's
+  // Nothing a developer wrote — not axios's "Request failed with status code 502", not BoxServer's
   // { error } body — may reach the screen.
   it.each([
     [502, 'Try again in a moment.'],
@@ -35,7 +35,7 @@ describe('deviceService', () => {
     await expect(getDevices()).rejects.toThrow(expected)
   })
 
-  it('explains an unreachable EdgePanel', async () => {
+  it('explains an unreachable BoxServer', async () => {
     http.defaults.adapter = async (config) => {
       throw new AxiosError('Network Error', AxiosError.ERR_NETWORK, config)
     }
