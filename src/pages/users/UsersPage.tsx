@@ -13,8 +13,8 @@ import { MAX_EMAIL, MAX_NAME, MIN_PASSWORD } from '../../utils/account'
 import { ago } from '../../utils/time'
 import { AccessTags, RoleName } from './Access'
 
-// The table only shows; every change happens on the person's own page (/users/:id). There is exactly one Admin, so roles are not
-// edited: every account created is an Operator, and the Admin can't be turned off or deleted, or the console
+// The table only shows; every change happens on the person's own page (/users/:id). There is exactly one System account, so roles are not
+// edited: every account created is a User, and the System account can't be turned off or deleted, or the console
 // would be left with nobody to manage it.
 export default function UsersPage() {
   const [{ data: accounts }, { data: groups }, { data: devices }] = useSuspenseQueries({
@@ -59,7 +59,7 @@ export default function UsersPage() {
     {
       title: <Th icon="security" label={t('Role')} />,
       key: 'role',
-      render: (_, a) => <Tag color={a.role === 'Admin' ? 'processing' : 'default'}><RoleName role={a.role} /></Tag>,
+      render: (_, a) => <Tag color={a.role === 'System' ? 'processing' : 'default'}><RoleName role={a.role} /></Tag>,
     },
     ...(['groups', 'devices'] as const).map((part) => ({
       title: part === 'groups' ? <Th icon="tag" label={t('Groups')} /> : <Th icon="devices" label={t('Devices')} />,
@@ -93,7 +93,7 @@ export default function UsersPage() {
     <div className="stack">
       <PageHeader
         title={t('Users & Access')}
-        subtitle={t('Who can sign in, what they may do, and which devices each Operator can reach.')}
+        subtitle={t('Who can sign in, what they may do, and which devices each User can reach.')}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setOpen(true)}>
             {t('Create user')}
@@ -118,11 +118,11 @@ export default function UsersPage() {
           className="dialog-form"
           layout="vertical"
           requiredMark={false}
-          onFinish={(values) => create.mutate({ name: values.name.trim(), email: values.email, password: values.password, role: 'Operator' })}
+          onFinish={(values) => create.mutate({ name: values.name.trim(), email: values.email, password: values.password, role: 'User' })}
         >
           <section className="form-section">
             <h3>{t('Account')}</h3>
-            <p className="section-hint">{t('They join as an Operator with no devices. Grant access on their page afterwards.')}</p>
+            <p className="section-hint">{t('They join as a User with no devices. Grant access on their page afterwards.')}</p>
             <Form.Item
               name="name"
               label={t('Name')}

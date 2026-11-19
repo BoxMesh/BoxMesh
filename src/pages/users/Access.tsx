@@ -11,7 +11,7 @@ const TAGS_SHOWN = 3
 
 /** A role as shown; the value itself stays English because it is compared and sent to BoxServer. */
 export function RoleName({ role }: { role: Role }) {
-  return role === 'Admin' ? t('Admin') : t('Operator')
+  return role === 'System' ? t('System') : t('User')
 }
 
 // value and onChange are optional so Form.Item can supply them.
@@ -46,7 +46,7 @@ interface Item {
 }
 
 /**
- * What an Admin fills in for an Operator: whole groups, and single devices outside them. Each is a two-list
+ * What a System account fills in for a User: whole groups, and single devices outside them. Each is a two-list
  * picker (Available, Chosen) moved with arrow buttons, like Django's filter_horizontal: on a phone a tap and an
  * arrow are easier than dragging, which fights the page scroll. The lists stack on narrow screens.
  */
@@ -105,7 +105,7 @@ export function AccessFields({ value = NONE, onChange = () => {}, groups, device
   )
 }
 
-/** One half of what an account can reach, read-only, for a users-table column. The Admin reaches everything. */
+/** One half of what an account can reach, read-only, for a users-table column. The System account reaches everything. */
 export function AccessTags({
   account,
   part,
@@ -117,7 +117,7 @@ export function AccessTags({
   groups: DeviceGroup[]
   devices: Device[]
 }) {
-  if (account.role === 'Admin') return <span className="muted">{part === 'groups' ? t('All groups') : t('All devices')}</span>
+  if (account.role === 'System') return <span className="muted">{part === 'groups' ? t('All groups') : t('All devices')}</span>
   const access = account.access ?? NONE
   const names = new Map(groups.map((g) => [g.id, g.name]))
   const deviceNames = new Map(devices.map((d) => [d.id, deviceLabel(d)]))

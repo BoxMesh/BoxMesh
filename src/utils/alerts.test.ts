@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Alert, AlertRule } from '../types/alert'
-import { conditionOf, destinationOf, isBodyTemplate, isChatId, isDiscordWebhook, isEmail, isHeaderName, isWebhookUrl, limitsFor, renderMessage, sentenceOf, unknownPlaceholders } from './alerts'
+import { appliesTo, conditionOf, destinationOf, isBodyTemplate, isChatId, isDiscordWebhook, isEmail, isHeaderName, isWebhookUrl, limitsFor, renderMessage, sentenceOf, unknownPlaceholders } from './alerts'
 
 describe('conditionOf', () => {
   it('reads a metric rule and an offline rule', () => {
@@ -93,5 +93,18 @@ describe('limitsFor', () => {
   it('ignores alerts scoped to other devices or groups', () => {
     const alerts = [alert({ ruleIds: ['cpu-70'], groupIds: ['g-office'] }), alert({ ruleIds: ['disk-85'], deviceIds: ['d-2'] })]
     expect(limitsFor(device, alerts, rules)).toEqual({})
+  })
+})
+
+describe('appliesTo', () => {
+  const pc = { id: 'd-1', groups: ['g-acc'] }
+  it('no groups and no devices means every device', () => {
+    expect(appliesTo({ groupIds: [], deviceIds: [] }, pc)).toBe(true)
+  })
+  it('a group covers only devices in it, a device only itself', () => {
+    expect(appliesTo({ groupIds: ['g-acc'], deviceIds: [] }, pc)).toBe(true)
+    expect(appliesTo({ groupIds: ['g-srv'], deviceIds: [] }, pc)).toBe(false)
+    expect(appliesTo({ groupIds: [], deviceIds: ['d-1'] }, pc)).toBe(true)
+    expect(appliesTo({ groupIds: [], deviceIds: ['d-2'] }, pc)).toBe(false)
   })
 })

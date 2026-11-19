@@ -1,21 +1,18 @@
-import type { Shell } from './remote'
 
 export interface EnrollmentToken {
   id: string
   /** Shown once on creation; later only the last characters are kept. */
   token: string
-  group: string
   expiresAt: string
-  requiresApproval: boolean
-  /** Devices enrolled with this token. */
-  usedBy: { id: string; host: string }[]
+  /** How many devices may enroll with it; null is no limit. */
+  maxDevices: number | null
 }
 
-export type Role = 'Admin' | 'Operator'
+export type Role = 'System' | 'User'
 
 /**
  * The devices an Operator may act on: every device in these groups (including ones added to a group later), plus
- * these single devices. An Admin reaches every device, so an Admin's access is ignored.
+ * these single devices. A System account reaches every device, so a System account's access is ignored.
  */
 export interface DeviceAccess {
   groupIds: string[]
@@ -33,6 +30,7 @@ export interface Account {
   access: DeviceAccess
 }
 
+<<<<<<< HEAD
 export type CommandMatch = 'starts' | 'contains' | 'regex'
 
 /** A command nobody may run in Remote Terminal. BoxServer checks every command against these before relaying it. */
@@ -50,3 +48,5 @@ export interface CommandRule {
   /** Device IDs. */
   deviceIds: string[]
 }
+=======
+>>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25

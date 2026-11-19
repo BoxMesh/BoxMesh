@@ -157,7 +157,7 @@ export default function DevicesPage() {
         />
       </Card>
 
-      <EnrollDrawer open={enrollOpen} onClose={() => setEnrollOpen(false)} groups={groups.map((g) => g.name)} />
+      <EnrollDrawer open={enrollOpen} onClose={() => setEnrollOpen(false)} />
     </div>
   )
 }

@@ -159,7 +159,7 @@ export default function GroupsPage() {
     <div className="stack">
       <PageHeader
         title={t('Groups')}
-        subtitle={t('Put devices in groups to scope access, command rules and alerts at once. A device can be in several groups.')}
+        subtitle={t('Put devices in groups to scope access and alerts at once. A device can be in several groups.')}
         actions={
           <Button type="primary" icon={<Icon name="plus" size={14} />} onClick={() => setCreating(true)}>
             {t('New group')}

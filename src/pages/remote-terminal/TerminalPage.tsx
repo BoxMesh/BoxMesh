@@ -137,7 +137,7 @@ function Session({ device }: { device: Device }) {
         const result = await runCommand(device.id, shellRef.current, command)
         if (result.output) terminal.writeln(result.exitCode === 0 ? result.output : `\x1b[31m${result.output}\x1b[0m`)
       } catch (error) {
-        // A blocked command comes back as 403 with the rule's reason; show that, not a generic permission error.
+        // A 403 may carry its own reason; show that, not a generic permission error.
         const refused = isAxiosError<{ error?: string }>(error) && error.response?.status === 403 && error.response.data?.error
         terminal.writeln(`\x1b[31m${refused || userMessage(error)}\x1b[0m`)
       } finally {

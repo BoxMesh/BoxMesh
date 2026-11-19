@@ -1,6 +1,6 @@
 // Japanese for the alerts area. Keys are the English copy exactly as passed to t().
 const ja: Record<string, string> = {
-  // Shared by the alert, channel and command-rule pages
+  // Shared by the alert and channel pages
   '"{name}" deleted': '「{name}」を削除しました',
   '"{name}" added': '「{name}」を追加しました',
   'Edit "{name}"': '「{name}」を編集',
@@ -173,6 +173,7 @@ const ja: Record<string, string> = {
   'Enter the SMTP server.': 'SMTP サーバーを入力してください。',
   Port: 'ポート',
   'Enter the port.': 'ポートを入力してください。',
+<<<<<<< HEAD
 
   // src/pages/commands/CommandsPage.tsx
   'Starts with': '前方一致',
@@ -232,6 +233,8 @@ const ja: Record<string, string> = {
     'このコマンドを拒否するデバイスとシェルです。シェルを 1 つも選択しなければ、すべてのシェルでブロックします。',
   'Shown in the terminal to whoever runs it, so they know what to do instead.': '実行しようとした人のターミナルに表示され、代わりにどうすればよいかを伝えます。',
   'e.g. Restarts the machine. Ask IT to schedule it.': '例: マシンが再起動します。IT 部門に日程の調整を依頼してください。',
+=======
+>>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
 }
 
 export default ja

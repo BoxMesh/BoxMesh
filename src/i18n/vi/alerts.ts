@@ -1,6 +1,6 @@
-// Vietnamese for alerts, rules, channels and command rules. Keys are the English copy exactly as passed to t().
+// Vietnamese for alerts, rules and channels. Keys are the English copy exactly as passed to t().
 const vi: Record<string, string> = {
-  // Shared by the alert, channel and command-rule pages
+  // Shared by the alert and channel pages
   '"{name}" deleted': 'Đã xóa "{name}"',
   '"{name}" added': 'Đã thêm "{name}"',
   'Edit "{name}"': 'Sửa "{name}"',
@@ -173,6 +173,7 @@ const vi: Record<string, string> = {
   'Enter the SMTP server.': 'Nhập máy chủ SMTP.',
   Port: 'Cổng',
   'Enter the port.': 'Nhập cổng.',
+<<<<<<< HEAD
 
   // src/pages/commands/CommandsPage.tsx
   'Starts with': 'Bắt đầu bằng',
@@ -232,6 +233,8 @@ const vi: Record<string, string> = {
     'Thiết bị và shell sẽ từ chối lệnh này. Không chọn shell nào để chặn trong mọi shell.',
   'Shown in the terminal to whoever runs it, so they know what to do instead.': 'Hiển thị trong Terminal cho người chạy lệnh, để họ biết nên làm gì thay thế.',
   'e.g. Restarts the machine. Ask IT to schedule it.': 'VD: Lệnh này khởi động lại máy. Hãy nhờ IT lên lịch.',
+=======
+>>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
 }
 
 export default vi

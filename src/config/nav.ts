@@ -32,18 +32,17 @@ const groups = (): NavGroup[] => [
     ],
   },
   {
-    title: t('Admin'),
+    title: t('System'),
     admin: true,
     items: [
       { icon: 'users', label: t('Users & Access'), path: '/users' },
-      { icon: 'lock', label: t('Command rules'), path: '/commands' },
       { icon: 'security', label: t('Enrollment tokens'), path: '/enrollment-tokens' },
     ],
   },
 ]
 
-// An Operator never sees the Admin group; App.tsx keeps its routes out of reach too.
-export const navGroups = () => groups().filter((g) => !g.admin || getSession()?.role === 'Admin')
+// A User never sees the System group; App.tsx keeps its routes out of reach too.
+export const navGroups = () => groups().filter((g) => !g.admin || getSession()?.role === 'System')
 
 export const navItems = () => navGroups().flatMap((g) => g.items)
 

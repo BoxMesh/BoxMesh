@@ -13,7 +13,7 @@ interface Values {
   confirm?: string
 }
 
-/** The signed-in person edits their own name and password; the Admin is not involved. */
+/** The signed-in person edits their own name and password; the System account is not involved. */
 export default function AccountModal({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved: () => void }) {
   const { message } = App.useApp()
   const [form] = Form.useForm<Values>()
@@ -53,7 +53,7 @@ export default function AccountModal({ open, onClose, onSaved }: { open: boolean
       <Form form={form} className="dialog-form" layout="vertical" requiredMark={false} initialValues={{ name: session?.name }} onFinish={submit}>
         <section className="form-section">
           <h3>{t('Profile')}</h3>
-          <p className="section-hint">{t('Your email and role are set by the Admin.')}</p>
+          <p className="section-hint">{t('Your email and role are set by the System account.')}</p>
           <div className="kv">
             <Form.Item label={t('Email')}>
               <Input value={session?.email} disabled />

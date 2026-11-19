@@ -1,9 +1,7 @@
 import { AxiosError, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios'
-import type { CommandRule } from '../types/admin'
 import type { Alert, AlertChannel, AlertRule, ChannelInput } from '../types/alert'
 import type { TimeRange } from '../types/dashboard'
 import type { FileEntry, FileTransfer, NewFileTransfer, Shell } from '../types/remote'
-import { blockedBy } from '../utils/commands'
 import { MINUTE, fromNow } from '../utils/time'
 import * as seed from './demoData'
 import { http } from './http'
@@ -43,7 +41,6 @@ const state = {
   accounts: structuredClone(seed.accounts),
   pending: structuredClone(seed.pendingEnrollments),
   groups: structuredClone(seed.groups),
-  commandRules: structuredClone(seed.commandRules),
   alertRules: structuredClone(seed.alertRules),
   alerts: structuredClone(seed.alerts),
   alertChannels: structuredClone(seed.alertChannels),
@@ -215,9 +212,6 @@ const routes: Route[] = [
     (m, c) => {
       const { shell, command } = body<{ shell: Shell; command: string }>(c)
       const id = decodeURIComponent(m[1])
-      const device = seed.devices.find((d) => d.id === id) ?? { id, groups: [] }
-      const rule = blockedBy(state.commandRules, device, shell, command)
-      if (rule) return new Refused(403, `Blocked: this command matches "${rule.pattern}". ${rule.reason}`.trim())
       return seed.runShell(hostOf(id), shell, command)
     },
   ],
@@ -257,16 +251,14 @@ const routes: Route[] = [
     'post',
     /^\/enrollment-tokens$/,
     (_m, c) => {
-      const input = body<{ group: string; lifetime: string; requiresApproval: boolean }>(c)
+      const input = body<{ lifetime: string; maxDevices?: number }>(c)
       const hours = { '1h': 1, '24h': 24, '7d': 168 }[input.lifetime] ?? 24
       // Shown in full exactly once, the way a real panel would hand it over.
       const token = {
         id: `tok-${state.tokens.length + 8}`,
         token: `bmx_${id()}${id()}`,
-        group: input.group,
         expiresAt: fromNow(hours * 60 * MINUTE),
-        requiresApproval: input.requiresApproval,
-        usedBy: [],
+        maxDevices: input.maxDevices ?? null,
       }
       state.tokens = [token, ...state.tokens]
       return token
@@ -313,33 +305,6 @@ const routes: Route[] = [
     /^\/users\/([^/]+)$/,
     (m) => {
       state.accounts = state.accounts.filter((a) => a.id !== decodeURIComponent(m[1]))
-      return null
-    },
-  ],
-  ['get', /^\/command-rules$/, () => state.commandRules],
-  [
-    'post',
-    /^\/command-rules$/,
-    (_m, c) => {
-      const rule = { ...body<Omit<CommandRule, 'id'>>(c), id: `cr-${id()}` }
-      state.commandRules = [...state.commandRules, rule]
-      return rule
-    },
-  ],
-  [
-    'patch',
-    /^\/command-rules\/([^/]+)$/,
-    (m, c) => {
-      const rule = state.commandRules.find((r) => r.id === decodeURIComponent(m[1]))
-      if (rule) Object.assign(rule, body<Partial<CommandRule>>(c))
-      return rule ?? null
-    },
-  ],
-  [
-    'delete',
-    /^\/command-rules\/([^/]+)$/,
-    (m) => {
-      state.commandRules = state.commandRules.filter((r) => r.id !== decodeURIComponent(m[1]))
       return null
     },
   ],

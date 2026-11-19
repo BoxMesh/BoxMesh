@@ -56,7 +56,7 @@ buttons get an `#ea580c` edge (3.6:1 on white), since the bright fill alone is 2
 |---|---|---|---|
 | Success | `#12261a` / `#2e5a3a` / `#7fd88f` | `#e6f4ea` / `#a8d5b5` / `#1f7a3a` | Online, exit 0, running process, Active token (`tone.positive`) |
 | Warning | `#2a2410` / `#5c5020` / `#facc15` | `#fefce8` / `#fde68a` / `#854d0e` | Disk almost full, outdated agent |
-| Error | `#2a1418` / `#5c2430` / `#ff6b81` | `#fff1f2` / `#fecdd3` / `#be123c` | High CPU/RAM, exit 1, a blocked command |
+| Error | `#2a1418` / `#5c2430` / `#ff6b81` | `#fff1f2` / `#fecdd3` / `#be123c` | High CPU/RAM, exit 1, a failed command |
 | Info | `#142028` / `#2c4250` / `#7ea2b8` | `#e8f2f8` / `#b3d3e6` / `#2f5f7a` | Group tag, running job |
 | Neutral | `bg-raised` / `border-control` / `text-secondary` | same roles | Offline status and offline notices, free-form tag, "Heartbeat lost" |
 
@@ -318,24 +318,25 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
 
 ### Users table and user page (`pages/users/UsersPage.tsx`, `UserPage.tsx`, `Access.tsx`)
 - The table only shows; nothing is edited on a row. Groups (info tags) and Devices (neutral tags) show at most
-  three then "+N" (the rest in a tooltip), "—" when empty; the Admin reads "All groups" / "All devices". Status is a
+  three then "+N" (the rest in a tooltip), "—" when empty; the System account reads "All groups" / "All devices". Status is a
   tag: Active (success) or Disabled (neutral).
 - The name links to the person's page, `/users/:id`; Actions holds one 28 px Edit button that opens the same page.
   The breadcrumb reads Users & Access / <name>.
 - The user page, like device detail: back button, name, role tag and status tag in the title row, Delete user (danger,
   with a confirm) on the right. Then an Account card laid out like Device information (label over value): email, last sign-in (relative, the exact
-  time in a tooltip) and Can sign in (a switch, or for the Admin the reason it can't be turned off), a "What they can reach" card with the access picker, and Discard changes / Save changes under them.
+  time in a tooltip) and Can sign in (a switch, or for the System account the reason it can't be turned off), a "What they can reach" card with the access picker, and Discard changes / Save changes under them.
   Nothing saves until Save changes. Last, a "Devices they reach (N)" table from what is saved: device (links to its
   page), status, groups, and whether it is reached through a group or as a single device.
-- The Admin's page and your own can't be turned off or deleted: the reason takes the switch's place and the header explains why
-  instead of offering Delete. The Admin's page has no Save row: they reach every device.
-- Creating a user is a 560 px sectioned dialog (see Dialogs with sections): an Account section (name, email, a hint that they join as an Operator with no devices) and a Password section, then Cancel and Create user. Access is granted afterwards on the user's page.
+- The System account's page and your own can't be turned off or deleted: the reason takes the switch's place and the header explains why
+  instead of offering Delete. The System account's page has no Save row: they reach every device.
+- Creating a user is a 560 px sectioned dialog (see Dialogs with sections): an Account section (name, email, a hint that they join as a User with no devices) and a Password section, then Cancel and Create user. Access is granted afterwards on the user's page.
 - My account (account menu) is the same kind of dialog: a Profile section (email and role read-only, editable name) and a Password section (current, new, confirm; all empty keeps the password).
 - The access picker is a Segmented switch, Groups (n) | Single devices (n), over an antd `Transfer`: Available and
   Chosen lists 420 px tall, each with search and a select-all checkbox, moved with two 32 px arrow buttons (like
   Django's two-list picker). No drag and drop: on a phone it fights the scroll. Below 576 px the lists stack, 320 px
   each, and the arrows turn to point down and up.
 
+<<<<<<< HEAD
 ### Command rules (`pages/commands/CommandsPage.tsx`, `utils/commands.ts`)
 - Rules for commands nobody can run in Remote Terminal, the Admin included. A rule has a command, a match (Starts
   with: whole words, so "format" doesn't catch "Format-Table"; Contains: anywhere, catching chained commands; Regex:
@@ -348,6 +349,8 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
 - The terminal prints a refused command's reason in red: BoxServer answers 403 with `{ error }`, and the terminal shows
   that text instead of the generic permission message.
 
+=======
+>>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
 ### Drawer
 Forms open in a drawer from the right (Enroll agent, New job, Create token, Create user). An issued secret stays on
 screen in the drawer with a "Copy" button until the drawer closes.
@@ -357,7 +360,7 @@ Telegram, Discord and Email marks in their own colours, 16 px (12 px inside a ta
 where only the channel name is written (Alerts' Send to tags) the icon carries the type as its alt text. Replace the
 three SVG files to change the marks; no code changes.
 
-### Dialogs with sections (Alerts, Rules, Channels, Command rules)
+### Dialogs with sections (Alerts, Rules, Channels)
 - 680 px modal, no antd footer: the form ends in its own row with Cancel / the primary on the right. Enter submits.
 - A name field on top, then bordered sections (radius 16, padding 16, `border`): a 14/600 heading, a 13 px
   `text-secondary` hint under it, then the fields. The rule's Condition hint is a live sentence ("Sends a message when
@@ -415,14 +418,14 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 
 ## 8. Navigation and screens
 
-**Roles**: Admin (exactly one) · Operator (everyone else). The Admin group of the menu (Users & Access, Command rules, Enrollment tokens) is shown to the Admin only; an Operator who types one of its addresses lands on the dashboard.
+**Roles**: System (exactly one) · User (everyone else). The System group of the menu (Users & Access, Enrollment tokens) is shown to the System only; a User who types one of its addresses lands on the dashboard.
 
 **Sider groups**
 - Overview: Dashboard
 - Device: Devices, Groups
 - Remote: Remote Terminal, Remote Files, Remote Service
 - Alert: Alerts, Rules, Channels
-- Admin: Users & Access, Command rules, Enrollment tokens
+- System: Users & Access, Enrollment tokens
 
 | Screen | Route | What is on it |
 |---|---|---|
@@ -437,19 +440,26 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Alerts | `/alerts` | Table (alert, rules, applies to, send to with channel icons) with Edit and Delete; dialog sections: Rules (ticked cards), Devices (`ScopeFields`: all, groups or devices), Send to (channel cards), Message (template with insertable {device} {alias} {rule} {condition} {value} {groups} {time} and a live preview from a real device in scope). Add alert waits until a rule and a channel exist |
 | Rules | `/alert-rules` | Table (rule, condition, used by which alerts) with Edit and Delete; dialog: name and a Condition section (CPU / RAM / Disk / Offline cards, limit %, for at least N min, live sentence) |
 | Channels | `/alert-channels` | Table (channel, type with its brand icon, used by N alerts, Test with a Send test button, Actions with Edit and Delete); dialog: type (cards with the brand icon and name only, Telegram / Discord / Email / Webhook, fixed once saved), name, then per type: bot token + chat ID; webhook URL (a Discord one, or any address for Webhook, which also takes a method POST or PUT, custom headers whose values are write-only like secrets, and a JSON body with {message}); recipients, Gmail sender + app password, SMTP server and port (smtp.gmail.com:587). Secrets are write-only: on edit, an empty field keeps the saved one |
-| Enrollment tokens | `/enrollment-tokens` | Create token (opens the Enroll new agent drawer); table: last four characters, Active / Expired, default group, expires, approval, used by (device links), Revoke with a confirm |
-| Command rules | `/commands` | Test a command (shell + command, live Blocked / Allowed answer); read-only rules table (command, match, shells, applies to, reason) with Edit and Delete; Add rule / edit dialog |
-| Users & Access | `/users` | A read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Create user dialog (name, email, password; joins as Operator with no devices, access is granted on their page) |
+| Enrollment tokens | `/enrollment-tokens` | Create token (opens a Create token drawer, the form below plus, once created, the token with Copy token; the Devices page's Add a new agent drawer wraps the same form in three steps: two bordered sections, Valid for and Devices allowed, each a row of choice cards: 1 hour / 24 hours / 7 days, and 3 / Unlimited / Custom (a number field with a "devices" suffix); a live sentence under the Devices heading); table: the token shortened (first 8 and last 4 characters) with a Copy button, Active / Expired, Devices ("up to N" or Unlimited), expires, Copy and Revoke (with a confirm) |
+| Users & Access | `/users` | A read-only people table (name, email, role, Groups, Devices, Status, last sign-in) with one action, Edit, which opens the user page (`/users/:id`: account, sign-in switch, access picker, devices they reach, delete); Create user dialog (name, email, password; joins as User with no devices, access is granted on their page) |
 
 ---
 
 ## 9. Backend contract
 
+<<<<<<< HEAD
 BoxServer wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
 (all under `VITE_API_URL`, default `/api`): `/log-in` (its reply carries `role`, which decides who sees the Admin group), `/log-out`, `/forgot-password` (placeholder name), `/devices`
 and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/services`, `/enrollments`,
 `/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/disk-forecast`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
 `/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). BoxServer serves only `/log-in` and `/log-out` so far; README has the full table.
+=======
+EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
+(all under `VITE_API_URL`, default `/api`): `/log-in` (its reply carries `role`, which decides who sees the System group), `/log-out`, `/forgot-password` (placeholder name), `/devices`
+and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/services`, `/enrollments`,
+`/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/disk-forecast`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
+`/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
+>>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`); internal web apps go
 through BoxServer's reverse proxy at `/web/{agent}/{app}/*`.

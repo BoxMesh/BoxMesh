@@ -1,7 +1,7 @@
 import { keepPreviousData, queryOptions } from '@tanstack/react-query'
 import { isAxiosError } from 'axios'
 import type { TimeRange } from '../types/dashboard'
-import { getCommandRules, getTokens, getUsers } from './adminService'
+import { getTokens, getUsers } from './adminService'
 import { getAlertRules, getAlerts, getChannels } from './alertService'
 import { getRemoteSessions } from './dashboardService'
 import { getDevice, getDeviceMetrics, getDevices, getDiskForecast, getProcesses, getGroups, getPendingEnrollments } from './deviceService'
@@ -68,7 +68,6 @@ export const servicesQuery = (id: string) =>
 // ---- Admin ----
 
 export const usersQuery = queryOptions({ queryKey: ['users'], queryFn: emptyIfMissing(getUsers, []) })
-export const commandRulesQuery = queryOptions({ queryKey: ['command-rules'], queryFn: emptyIfMissing(getCommandRules, []) })
 
 // Polled once a second while any file is still copying, then left alone.
 export const transferQuery = (id: string) =>

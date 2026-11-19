@@ -39,7 +39,7 @@ export default function UserPage() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ['users'] })
   const save = useMutation({
     mutationFn: (values: Fields) =>
-      updateUser(id, { disabled: !values.active, ...(account?.role === 'Operator' ? { access: values.access } : {}) }),
+      updateUser(id, { disabled: !values.active, ...(account?.role === 'User' ? { access: values.access } : {}) }),
     onSuccess: () => {
       refresh()
       message.success(t('Changes saved'))
@@ -67,9 +67,9 @@ export default function UserPage() {
     )
   }
 
-  const isAdmin = account.role === 'Admin'
-  // Your own account would lock you out mid-session; the Admin's would leave nobody to manage users.
-  const locked = isAdmin ? t('the Admin account') : account.email === getSession()?.email ? t('your own account') : null
+  const isAdmin = account.role === 'System'
+  // Your own account would lock you out mid-session; the System account's would leave nobody to manage users.
+  const locked = isAdmin ? t('the System account') : account.email === getSession()?.email ? t('your own account') : null
   // From what is saved, not from unsaved picks in the form.
   const reach = isAdmin ? devices : reachable(account.access, devices)
   const names = new Map(groups.map((g) => [g.id, g.name]))
@@ -109,7 +109,7 @@ export default function UserPage() {
     {
       title: <Th icon="lock" label={t('Reached through')} />,
       key: 'via',
-      render: (_, d) => (isAdmin ? t('Admin role') : account.access.deviceIds.includes(d.id) ? t('Single device') : t('Group')),
+      render: (_, d) => (isAdmin ? t('System role') : account.access.deviceIds.includes(d.id) ? t('Single device') : t('Group')),
     },
   ]
 
@@ -188,7 +188,7 @@ export default function UserPage() {
 
           <Card title={t('What they can reach')}>
             {isAdmin ? (
-              <span className="muted">{t('The Admin reaches every device.')}</span>
+              <span className="muted">{t('A System account reaches every device.')}</span>
             ) : (
               <Form.Item name="access" style={{ marginBottom: 0 }}>
                 <AccessFields groups={groups} devices={devices} />
@@ -196,7 +196,7 @@ export default function UserPage() {
             )}
           </Card>
 
-          {/* The Admin has nothing to change here: the switch is locked and they reach everything. */}
+          {/* The System account has nothing to change here: the switch is locked and they reach everything. */}
           {isAdmin ? null : (
             <div className="drawer-footer">
               <span className="screen-spacer" />

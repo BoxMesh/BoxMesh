@@ -5,7 +5,6 @@ import AppLayout from './layouts/AppLayout'
 import AlertRulesPage from './pages/alerts/AlertRulesPage'
 import AlertsPage from './pages/alerts/AlertsPage'
 import ChannelsPage from './pages/alerts/ChannelsPage'
-import CommandsPage from './pages/commands/CommandsPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import DeviceDetailPage from './pages/device-detail/DeviceDetailPage'
 import DevicesPage from './pages/devices/DevicesPage'
@@ -28,9 +27,9 @@ function RequireAuth() {
   return getSession() ? <AppLayout /> : <Navigate to="/login" state={{ from: location }} replace />
 }
 
-// The Admin group is the Admin's alone: the menu hides it, and a typed address lands on the dashboard.
-function RequireAdmin() {
-  return getSession()?.role === 'Admin' ? <Outlet /> : <Navigate to="/dashboard" replace />
+// The System group is the System account's alone: the menu hides it, and a typed address lands on the dashboard.
+function RequireSystem() {
+  return getSession()?.role === 'System' ? <Outlet /> : <Navigate to="/dashboard" replace />
 }
 
 export default function App() {
@@ -51,10 +50,9 @@ export default function App() {
         <Route path="alerts" element={<AlertsPage />} />
         <Route path="alert-rules" element={<AlertRulesPage />} />
         <Route path="alert-channels" element={<ChannelsPage />} />
-        <Route element={<RequireAdmin />}>
+        <Route element={<RequireSystem />}>
           <Route path="users" element={<UsersPage />} />
           <Route path="users/:id" element={<UserPage />} />
-          <Route path="commands" element={<CommandsPage />} />
           <Route path="enrollment-tokens" element={<TokensPage />} />
         </Route>
         <Route

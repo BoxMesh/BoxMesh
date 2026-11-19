@@ -11,7 +11,7 @@ export interface Device {
   /** The agent's ID. It identifies the device everywhere (routes, API paths, scopes): hostnames can repeat. */
   id: string
   host: string
-  /** Set by an Admin in the console to tell devices apart; empty when unset. */
+  /** Set by a System account in the console to tell devices apart; empty when unset. */
   alias: string
   /** Product name only, e.g. Ubuntu or Windows 11 Pro. */
   os: string
