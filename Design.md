@@ -191,18 +191,14 @@ Gotchas:
 ## 6. Components
 
 ### Logo (`src/components/Logo.tsx`)
-- `LogoMark`: a hexagonal cage drawn in strokes, 6 node rings at the corners, an orange core (`brand`). Node fills use
-  `--logo-ground` (default `bg-surface`; the sign-in page sets it to `bg-page`), so the rings read as holes on any ground.
-- `Logo`: mark + "Box**Mesh**" (Mesh in `accent`). Sider uses 24 px, sign-in 40 px.
+- `LogoMark`: Zin's octopus knocked out of an orange hexagon (a network node). The hexagon is `brand`; the octopus is
+  fixed cream `#fff7ed` with `brand` eyes, so it reads on any ground in both themes.
+- `Logo`: mark + "Zin" (the "in" in `accent`). Sider uses 24 px, sign-in 40 px.
 
 ### Favicon and app icons
-- `public/favicon.svg`: transparent, drawn for 16 px (solid nodes and heavier strokes than the logo). Its colours follow
-  the **browser's** colour scheme through a `prefers-color-scheme` rule inside the SVG, not the app's theme toggle:
-  dark mark `#101416` with core `#ea580c` on light tab bars, cream `#f1efe7` with core `#fb923c` on dark ones.
-- `public/pwa-192.png`, `pwa-512.png` (purpose "any"): a rounded tile (22 % radius, transparent corners) with a dark
-  `#1c2327`→`#0c0f11` gradient, a `#2a3135` hairline edge, a faint orange glow behind the mark (core `#fb923c`), and the mark at 62 %.
-- `public/pwa-maskable-512.png`: the same art full-bleed, for Android's launcher masks and iOS (`apple-touch-icon`), which
-  round the corners themselves and would fill transparent ones. The mark's outer nodes stay inside the 80 % safe circle.
+- `public/favicon.svg`: the same hexagon mark, transparent, on a 48 viewBox. It is the same colours on light and dark tab bars.
+- `pwa-192.png`, `pwa-512.png`: the mark at 72 % on a `#101416` tile with rounded corners (transparent outside).
+  `pwa-maskable-512.png`: the mark at 56 % on a full-bleed `#101416` ground, inside the 80 % safe zone Android crops to.
   Manifest `background_color` is `#101416`.
 
 ### Sider menu
