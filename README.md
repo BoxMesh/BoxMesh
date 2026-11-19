@@ -107,13 +107,8 @@ These are the endpoints the app calls today:
 
 | Method | Endpoint |
 |---|---|
-<<<<<<< HEAD
-| POST | `/api/log-in` → BoxServer `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `Admin` or `Operator`, and anything else counts as Operator, who never sees the Admin section) |
-| POST | `/api/log-out` → BoxServer `/log-out` (clears the cookie) |
-=======
-| POST | `/api/log-in` → EdgePanel `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `System` or `User`, and anything else counts as User, who never sees the System account section) |
-| POST | `/api/log-out` → EdgePanel `/log-out` (clears the cookie) |
->>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
+| POST | `/api/log-in` → Zin Server `/log-in` (`{ email, password }` → `{ id, kind: telegram|discord|email|webhook, name?, role }`, an 8-hour JWT set as the HttpOnly, SameSite=Strict `session` cookie; without `name` the header shows the part of the email before the @; `role` is `System` or `User`, and anything else counts as User, who never sees the System account section) |
+| POST | `/api/log-out` → Zin Server `/log-out` (clears the cookie) |
 | GET | `/api/devices` |
 | GET | `/api/devices/{host}` |
 | PUT | `/api/devices/{host}/groups` (`{ groupIds }`, replaces the device's groups) |

@@ -1,6 +1,6 @@
 # Zin — Design System
 
-Origin: the **BoxMesh – System Design (Ant Design)** canvas
+Origin: the **Zin – System Design (Ant Design)** canvas
 (https://claude.ai/artifact/5TYshytP6kBopBmewcPMv5), 15 artboards designed at 1440 px wide.
 The app has since moved away from the canvas in places: a light theme, a more compact spacing scale, a new
 sign-in page and logo. **This file records what the app does now.** Where the canvas and this file disagree,
@@ -336,21 +336,6 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
   Django's two-list picker). No drag and drop: on a phone it fights the scroll. Below 576 px the lists stack, 320 px
   each, and the arrows turn to point down and up.
 
-<<<<<<< HEAD
-### Command rules (`pages/commands/CommandsPage.tsx`, `utils/commands.ts`)
-- Rules for commands nobody can run in Remote Terminal, the Admin included. A rule has a command, a match (Starts
-  with: whole words, so "format" doesn't catch "Format-Table"; Contains: anywhere, catching chained commands; Regex:
-  not case-sensitive), shells (none picked = all shells), where it applies (a Segmented: All devices, Groups or Devices, then a multi-select for the last two; one at a time, and the other list is dropped on save), and a reason. There is no on/off: every listed rule blocks, and deleting it allows the command again. Case and runs of spaces are
-  ignored.
-- "Test a command" card on top: a device picker (`DevicePicker`), a shell Segmented and a monospace input; below it an error tag "Blocked" with the rule
-  and reason, or a success tag "Allowed". It runs the same `blockedBy()` the demo uses.
-- The table only shows (command, match, shells, Applies to: "All devices" muted, or group tags in info colour, or device tags in neutral, then reason). Actions: Edit opens the 640 px rule dialog; Delete asks first. The dialog checks regexes compile and
-  that the same command and match aren't already a rule.
-- The terminal prints a refused command's reason in red: BoxServer answers 403 with `{ error }`, and the terminal shows
-  that text instead of the generic permission message.
-
-=======
->>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
 ### Drawer
 Forms open in a drawer from the right (Enroll agent, New job, Create token, Create user). An issued secret stays on
 screen in the drawer with a "Copy" button until the drawer closes.
@@ -447,19 +432,11 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 
 ## 9. Backend contract
 
-<<<<<<< HEAD
-BoxServer wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
-(all under `VITE_API_URL`, default `/api`): `/log-in` (its reply carries `role`, which decides who sees the Admin group), `/log-out`, `/forgot-password` (placeholder name), `/devices`
-and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/services`, `/enrollments`,
-`/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/disk-forecast`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
-`/command-rules` (GET, POST, PATCH and DELETE `/command-rules/{id}`; placeholder name), `/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). BoxServer serves only `/log-in` and `/log-out` so far; README has the full table.
-=======
-EdgePanel wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
+Zin Server wraps responses as `{ "data": ... }` on success and `{ "error": ... }` on failure. The app calls these today
 (all under `VITE_API_URL`, default `/api`): `/log-in` (its reply carries `role`, which decides who sees the System group), `/log-out`, `/forgot-password` (placeholder name), `/devices`
 and `/devices/{host}` with `/revoke`, `/shell`, `/files`, `/services`, `/enrollments`,
 `/enrollment-tokens`, `/groups` (GET, POST, PATCH and DELETE `/groups/{id}`), `PUT /devices/{host}/groups`, `/devices/{host}/metrics?range=`, `/devices/{host}/processes`, `/sessions/summary`, `/disk-forecast`, `/users`, `/alerts`, `/alert-rules`, `/alert-channels`,
-`/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). EdgePanel serves only `/log-in` and `/log-out` so far; README has the full table.
->>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
+`/file-transfers` (placeholder name; POST to start, GET to poll, DELETE to cancel). Zin Server serves only `/log-in` and `/log-out` so far; README has the full table.
 
 Realtime is planned over WebSocket (`/ws/events`, `/ws/terminal/{id}`); internal web apps go
 through BoxServer's reverse proxy at `/web/{agent}/{app}/*`.

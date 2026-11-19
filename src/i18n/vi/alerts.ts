@@ -173,68 +173,6 @@ const vi: Record<string, string> = {
   'Enter the SMTP server.': 'Nhập máy chủ SMTP.',
   Port: 'Cổng',
   'Enter the port.': 'Nhập cổng.',
-<<<<<<< HEAD
-
-  // src/pages/commands/CommandsPage.tsx
-  'Starts with': 'Bắt đầu bằng',
-  'Begins with these words': 'Bắt đầu bằng các từ này',
-  'The command begins with these words. "format" blocks "format C:", not "Format-Table".':
-    'Lệnh bắt đầu bằng các từ này. "format" chặn "format C:", không chặn "Format-Table".',
-  Contains: 'Chứa',
-  'Anywhere in the line': 'Ở bất kỳ đâu trong dòng',
-  'These words appear anywhere, so it also catches "echo hi && shutdown".':
-    'Các từ này xuất hiện ở bất kỳ đâu, nên cũng chặn được "echo hi && shutdown".',
-  Regex: 'Regex',
-  'A regular expression': 'Biểu thức chính quy',
-  'A regular expression, not case-sensitive.': 'Biểu thức chính quy, không phân biệt hoa thường.',
-  '"{pattern}" is no longer blocked': 'Đã bỏ chặn "{pattern}"',
-  '"{pattern}" is blocked': 'Đã chặn "{pattern}"',
-  'by {pattern} ({match}).': 'theo quy tắc {pattern} ({match}).',
-  Command: 'Lệnh',
-  Match: 'Kiểu khớp',
-  Shells: 'Shell',
-  'All shells': 'Mọi shell',
-  Reason: 'Lý do',
-  'Stop blocking "{pattern}"?': 'Bỏ chặn "{pattern}"?',
-  'The rule is deleted and anyone can run this command again.': 'Quy tắc sẽ bị xóa và ai cũng có thể chạy lại lệnh này.',
-  'Command rules': 'Quy tắc lệnh',
-  'Commands nobody can run in Remote Terminal, the Admin included: on every device, or only on some groups or devices. BoxServer refuses a matching command before it reaches the device, and the terminal shows the reason.':
-    'Các lệnh không ai được chạy trong Terminal, kể cả Quản trị viên: trên mọi thiết bị, hoặc chỉ trên một số nhóm hay thiết bị. BoxServer từ chối lệnh khớp trước khi nó tới thiết bị, và Terminal hiển thị lý do.',
-  'Test a command': 'Thử một lệnh',
-  'Shell to test in': 'Shell để thử',
-  'e.g. shutdown /r /t 0': 'VD: shutdown /r /t 0',
-  'Command to test': 'Lệnh cần thử',
-  'Type a command to see whether a rule blocks it.': 'Nhập một lệnh để xem có quy tắc nào chặn nó không.',
-  Blocked: 'Bị chặn',
-  Allowed: 'Được phép',
-  'No rule matches it in {shell} on {host}.': 'Không có quy tắc nào khớp trong {shell} trên {host}.',
-  'Nothing is blocked. Add the first rule.': 'Chưa chặn lệnh nào. Hãy thêm quy tắc đầu tiên.',
-  'starts with': 'bắt đầu bằng',
-  contains: 'chứa',
-  matches: 'khớp với',
-  'on {n} group': 'trên {n} nhóm',
-  'on {n} groups': 'trên {n} nhóm',
-  'on the groups you pick': 'trên các nhóm được chọn',
-  'on {n} device': 'trên {n} thiết bị',
-  'on {n} devices': 'trên {n} thiết bị',
-  'on the devices you pick': 'trên các thiết bị được chọn',
-  'on every device': 'trên mọi thiết bị',
-  'every shell': 'mọi shell',
-  'Blocks any command that {verb} "{pattern}", in {shells}, {where}.': 'Chặn mọi lệnh {verb} "{pattern}", trong {shells}, {where}.',
-  'Add a command rule': 'Thêm quy tắc lệnh',
-  Pattern: 'Mẫu',
-  'Enter a command.': 'Nhập một lệnh.',
-  'Not a valid regex: {error}': 'Regex không hợp lệ: {error}',
-  'There is already a rule for this.': 'Đã có quy tắc cho lệnh này.',
-  'e.g. {example}': 'VD: {example}',
-  'e.g. shutdown': 'VD: shutdown',
-  Where: 'Phạm vi',
-  'Which devices and shells refuse it. Leave every shell unticked to block it in all of them.':
-    'Thiết bị và shell sẽ từ chối lệnh này. Không chọn shell nào để chặn trong mọi shell.',
-  'Shown in the terminal to whoever runs it, so they know what to do instead.': 'Hiển thị trong Terminal cho người chạy lệnh, để họ biết nên làm gì thay thế.',
-  'e.g. Restarts the machine. Ask IT to schedule it.': 'VD: Lệnh này khởi động lại máy. Hãy nhờ IT lên lịch.',
-=======
->>>>>>> e9f4e9f338c312f48d3e67318d3d9691c7e6cf25
 }
 
 export default vi

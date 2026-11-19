@@ -1,22 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-  <!-- Zin's octopus. Follows the browser's colour scheme, not the app's theme toggle: the tab bar is drawn by the
-       browser, and prefers-color-scheme inside the SVG is the closest a page gets to its colour. Transparent, so
-       the mark sits straight on the tab bar. Drawn for 16px: a solid head and four heavy arms, no fine detail. -->
-  <style>
-    .mark { fill: #101416; stroke: #101416; }
-    .eye { fill: #ea580c; }
-    @media (prefers-color-scheme: dark) {
-      .mark { fill: #f1efe7; stroke: #f1efe7; }
-      .eye { fill: #fb923c; }
-    }
-  </style>
-  <circle class="mark" stroke="none" cx="24" cy="20" r="14"/>
-  <g class="mark" fill="none" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M13 27C12 36 7 37 6 43"/>
-    <path d="M19.5 31C19.5 38 16 40 17 44"/>
-    <path d="M28.5 31C28.5 38 32 40 31 44"/>
-    <path d="M35 27C36 36 41 37 42 43"/>
+  <!-- Zin's octopus: an orange body with cream eyes, so one file reads on a light or a dark tab bar. Drawn for
+       16px: one solid head, four heavy arms, no fine detail. -->
+  <g fill="none" stroke="#f97316" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M13 27C11 34 6 34 5.5 39.5C5.2 42.5 8.5 43.5 10 41.5"/>
+    <path d="M19.5 29C18.5 36 15 38 16.5 43"/>
+    <path d="M28.5 29C29.5 36 33 38 31.5 43"/>
+    <path d="M35 27C37 34 42 34 42.5 39.5C42.8 42.5 39.5 43.5 38 41.5"/>
   </g>
-  <circle class="eye" cx="18.5" cy="20" r="3"/>
-  <circle class="eye" cx="29.5" cy="20" r="3"/>
+  <path fill="#f97316" d="M9 26C6.5 12 14.5 2.5 24 2.5S41.5 12 39 26C37 30 11 30 9 26Z"/>
+  <ellipse cx="17" cy="9.5" rx="4" ry="2.3" transform="rotate(-28 17 9.5)" fill="#fdba74"/>
+  <circle cx="18" cy="21" r="4.2" fill="#fff7ed"/>
+  <circle cx="30" cy="21" r="4.2" fill="#fff7ed"/>
+  <circle cx="18.8" cy="21.6" r="2" fill="#101416"/>
+  <circle cx="30.8" cy="21.6" r="2" fill="#101416"/>
 </svg>
