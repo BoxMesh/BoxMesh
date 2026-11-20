@@ -1,8 +1,7 @@
 import { useQueries } from '@tanstack/react-query'
-import { Card, Progress, Table, Tag, type TableProps } from 'antd'
+import { Card, Table, Tag, type TableProps } from 'antd'
 import { Link } from 'react-router'
 import { Th } from '../../components/Icon'
-import { tone } from '../../config/theme'
 import { t } from '../../i18n'
 import { deviceMetricsQuery } from '../../services/queries'
 import type { Device, MetricPoint } from '../../types/device'
@@ -12,22 +11,23 @@ type Metric = 'cpu' | 'ram' | 'disk'
 
 const mbps = (v: number) => `${v < 10 ? v.toFixed(1) : Math.round(v)} Mbps`
 
-// The figure comes first, under its column's heading, and the bar follows: a figure placed after the bar sat right
-// against the next column's bar and was read as that column's.
-// An offline agent's numbers are stale, so they are left blank rather than shown as current.
+// The bar fills the cell behind its figure, so the two are one object: a figure beside a bar was read as the
+// neighbouring column's. An offline agent's numbers are stale, so they are left blank rather than shown as current.
 function Meter({ device, metric }: { device: Device; metric: Metric }) {
   if (!device.online) return <span className="muted">—</span>
   const value = device[metric]
   return (
-    <span className="meter-cell">
-      <span>{value}%</span>
-      <Progress
-        percent={value}
-        showInfo={false}
-        size="small"
-        strokeColor={value >= THRESHOLDS[metric] ? tone.error : tone.disabled}
-        aria-label={`${device.host} ${metric}`}
-      />
+    <span
+      className={`meter-cell${value >= THRESHOLDS[metric] ? ' is-over' : ''}`}
+      role="meter"
+      aria-label={`${device.host} ${metric}`}
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuetext={`${value}%`}
+    >
+      <span className="meter-fill" style={{ width: `${Math.min(value, 100)}%` }} />
+      <span className="meter-value">{value}%</span>
     </span>
   )
 }

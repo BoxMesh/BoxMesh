@@ -2044,22 +2044,35 @@ a:has(> .ant-tag) {
 }
 
 
+/* A usage figure with its bar filling the cell behind it. The fill is a tint, so the figure on top stays readable
+   (about 9:1 in both themes) whatever the percentage; it turns red-tinted over the alert threshold. */
 .meter-cell {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 120px;
+  height: 24px;
+  min-width: 112px;
+  padding: 0 8px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.meter-cell .ant-progress {
-  flex: 1;
-  margin: 0;
+.meter-fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  background: color-mix(in srgb, var(--text-secondary) 28%, transparent);
 }
 
-.meter-cell > span:first-child {
-  width: 36px;
-  font-variant-numeric: tabular-nums;
+.meter-cell.is-over .meter-fill {
+  background: color-mix(in srgb, var(--error) 30%, transparent);
+}
+
+.meter-value {
+  position: relative;
   font-weight: 600;
 }
 
