@@ -7,6 +7,7 @@ import { t } from '../../i18n'
 import { userMessage } from '../../services/http'
 import { processesQuery } from '../../services/queries'
 import type { Device, DeviceProcess, ProcessStatus } from '../../types/device'
+import { groupProcesses, type ProcessRow } from '../../utils/processes'
 
 const STATUS = (): Record<ProcessStatus, { label: string; color: string }> => ({
   running: { label: t('Running'), color: 'success' },
@@ -22,9 +23,9 @@ export default function ProcessesPanel({ device }: { device: Device }) {
   const [q, setQ] = useState('')
   const list = useQuery({ ...processesQuery(device.id), enabled: device.online, refetchInterval: 5000 })
   const query = q.trim().toLowerCase()
-  const rows = (list.data ?? []).filter(
-    (p) => !query || p.name.toLowerCase().includes(query) || p.user.toLowerCase().includes(query) || String(p.pid).includes(query),
-  )
+  const matches = (p: DeviceProcess) => p.name.toLowerCase().includes(query) || p.user.toLowerCase().includes(query) || String(p.pid).includes(query)
+  // An app stays whole when any of its processes matches, so the search finds it by a child's PID too.
+  const rows = groupProcesses(list.data ?? []).filter((g) => !query || matches(g) || g.children?.some(matches))
 
   if (!device.online) {
     return (
@@ -34,12 +35,17 @@ export default function ProcessesPanel({ device }: { device: Device }) {
     )
   }
 
-  const columns: TableProps<DeviceProcess>['columns'] = [
+  const columns: TableProps<ProcessRow>['columns'] = [
     {
       title: <Th icon="box" label={t('Name')} />,
       dataIndex: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
-      render: (name: string) => <span className="strong">{name}</span>,
+      render: (name: string, p) => (
+        <>
+          <span className="strong">{name}</span>
+          {p.count > 1 ? <span className="muted"> ({p.count})</span> : null}
+        </>
+      ),
     },
     { title: <Th icon="hash" label="PID" />, dataIndex: 'pid', align: 'right', sorter: (a, b) => a.pid - b.pid },
     {
@@ -83,11 +89,12 @@ export default function ProcessesPanel({ device }: { device: Device }) {
         />
         <span className="sub">{t('Updates every 5 s')}</span>
       </div>
-      <Table<DeviceProcess>
+      <Table<ProcessRow>
         columns={columns}
         dataSource={rows}
         loading={list.isPending}
         rowKey="pid"
+        expandable={{ indentSize: 20 }}
         scroll={{ x: 'max-content' }}
         pagination={{ pageSize: 10, hideOnSinglePage: true, showTotal: (total, [from, to]) => `${from}–${to} / ${total}` }}
         locale={{

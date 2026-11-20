@@ -83,6 +83,8 @@ export interface DeviceProcess {
   /** Percent of the whole machine */
   cpu: number
   memoryMb: number
+  /** The parent process's PID; 0 when it has none or the agent could not read it. */
+  ppid: number
 }
 
 /** A disk that is filling up, as BoxServer projects it from the last 7 days of usage. */

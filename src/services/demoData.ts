@@ -190,7 +190,8 @@ export function diskForecast(): DiskForecast[] {
     .slice(0, 5)
 }
 
-type ProcessSeed = [name: string, user: string, cpu: number, memoryMb: number, status?: ProcessStatus]
+/** parent is the index of the parent's seed in the same list; none means no known parent. */
+type ProcessSeed = [name: string, user: string, cpu: number, memoryMb: number, status?: ProcessStatus, parent?: number]
 
 const PROCESSES: Record<OsFamily, ProcessSeed[]> = {
   Windows: [
@@ -206,11 +207,16 @@ const PROCESSES: Record<OsFamily, ProcessSeed[]> = {
     ['MsMpEng.exe', 'SYSTEM', 2.4, 210],
     ['SearchIndexer.exe', 'SYSTEM', 0.5, 48],
     ['chrome.exe', 'operator', 6.5, 420],
-    ['chrome.exe', 'operator', 2.1, 180],
+    ['chrome.exe', 'operator', 2.1, 180, 'running', 11],
     ['OUTLOOK.EXE', 'operator', 1.5, 260],
     ['EXCEL.EXE', 'operator', 0.9, 140, 'not-responding'],
     ['Teams.exe', 'operator', 3.2, 350],
     ['PhoneExperienceHost.exe', 'operator', 0, 24, 'suspended'],
+    ['chrome.exe', 'operator', 1.4, 130, 'running', 11],
+    ['chrome.exe', 'operator', 0.8, 95, 'running', 11],
+    ['chrome.exe', 'operator', 0.3, 60, 'running', 11],
+    ['Teams.exe', 'operator', 1.1, 150, 'running', 15],
+    ['Teams.exe', 'operator', 0.4, 80, 'running', 15],
   ],
   Linux: [
     ['systemd', 'root', 0.1, 12],
@@ -222,11 +228,12 @@ const PROCESSES: Record<OsFamily, ProcessSeed[]> = {
     ['dockerd', 'root', 0.7, 96],
     ['containerd', 'root', 0.4, 48],
     ['postgres', 'postgres', 8.2, 820],
-    ['postgres', 'postgres', 3.1, 240],
-    ['postgres', 'postgres', 1.4, 120],
+    ['postgres', 'postgres', 3.1, 240, 'running', 8],
+    ['postgres', 'postgres', 1.4, 120, 'running', 8],
     ['nginx', 'www-data', 1.2, 28],
-    ['nginx', 'www-data', 0.9, 26],
+    ['nginx', 'www-data', 0.9, 26, 'running', 11],
     ['node', 'app', 4.6, 310],
+    ['nginx', 'www-data', 0.7, 24, 'running', 11],
   ],
   macOS: [
     ['kernel_task', 'root', 3, 1200],
@@ -247,8 +254,10 @@ export function processes(host: string): DeviceProcess[] {
   const device = devices.find((d) => d.host === host)
   if (!device?.online) return []
   const load = device.cpu / 40
-  return PROCESSES[device.osFamily].map(([name, user, cpu, memoryMb, status = 'running'], i) => ({
-    pid: i === 0 ? (device.osFamily === 'Windows' ? 4 : 1) : 400 + i * 389,
+  const pidOf = (i: number) => (i === 0 ? (device.osFamily === 'Windows' ? 4 : 1) : 400 + i * 389)
+  return PROCESSES[device.osFamily].map(([name, user, cpu, memoryMb, status = 'running', parent], i) => ({
+    pid: pidOf(i),
+    ppid: parent === undefined ? 0 : pidOf(parent),
     name,
     user,
     status,
