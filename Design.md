@@ -173,7 +173,7 @@ Gotchas:
 - The browser tab title follows the breadcrumb: `Zin - Page` (`Zin - Devices - SRV-DB-01` on a detail page, where the last crumb is the device alias when it has one, else its hostname;
   `Zin - Sign in` on the sign-in page), in the current language.
 - Header 56, `bg-surface`, bottom border: breadcrumb on the left (`Zin / Page`, current page in `text`); on the right a
-  240 px search (hidden under 576 px), the language select (144 px: a 20 × 14 flag from `src/assets/flags` + English / Tiếng Việt / 日本語, only the flag under 576 px; switching redraws every screen in place, no reload),
+  240 px search (hidden under 576 px), the language select (144 px: a 20 × 14 flag from `src/assets/flags` + English / Tiếng Việt / 日本語; below 992 px a 64 px box with only the flag, the name kept in the page for screen readers and the open list still naming each language, since the other tools had squeezed the breadcrumb to nothing and the page overflowed near 576 px; switching redraws every screen in place, no reload),
   the theme toggle and the account button (28 px orange avatar + name; the menu holds
   the email and "Sign out").
 - The breadcrumb never wraps: the last crumb is cut with an ellipsis, and under 700 px the "Zin" root is dropped.

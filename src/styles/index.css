@@ -206,18 +206,25 @@ body .app-header .ant-breadcrumb li:last-child {
   gap: 12px;
 }
 
+/* Flag and name where there is room. Below 992px, where the header's other tools squeeze the breadcrumb to nothing
+   (the page even overflowed near 576px), the closed select shows only the flag. The name stays in the page for screen
+   readers, and the open list always names each language. */
 .lang-select {
   width: 144px;
 }
 
-/* Phones: the closed select shows only the flag, so the breadcrumb keeps its room. The open list still names each language. */
-@media (max-width: 575px) {
+@media (max-width: 991px) {
   .lang-select {
-    width: 72px;
+    width: 64px;
   }
 
   .lang-select .lang-name {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 
