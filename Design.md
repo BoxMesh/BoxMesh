@@ -304,12 +304,17 @@ Radius 16, padding `8px 12px`, warning or error set, 16 px icon, message with li
   and the Device detail page (Groups row).
 - Groups page (`/groups`, also "Manage groups" on Devices): a table like Devices, with search (group or device name),
   Group (links to Devices filtered by it; renamed in place, Enter saves, Esc cancels), Devices (count), Members (up
-  to three device tags, then "+N" with the rest in a tooltip), Add (an "Add devices" button) and Actions (rename,
+  to three device tags, then "+N" with the rest in a tooltip, then a 24 px edit button; a group with no device shows a
+  dashed "+ Add devices" button instead, like a device with no group) and Actions (rename,
   delete with a confirm that says how many devices leave; devices are never deleted with it).
-- "Add devices" opens an 880 px dialog with the two-list picker (Other devices / In <group>), "N to add · M to remove"
-  and Save changes. Saving PUTs `/devices/{host}/groups` for each device that joins or leaves; a failed device is
-  named and the rest still save. New group (name required, at most 40 characters, unique ignoring case) opens the
-  same dialog right after.
+- The edit button opens a 520 px drawer, "Devices in <group>", with one list instead of two: a search, a Segmented
+  filter Not added (n) | Added (n) | All (n) (it follows who is in the group now, so a row doesn't jump away when
+  ticked; it starts on Not added, or All when everyone is already in), a "Select all N shown" checkbox, and one
+  48 px row per device: checkbox, host, a 12 px sub-line (alias · IP · its other groups), and the status as a dot plus
+  the word. Ticked means in the group. A row that will change carries an "Adding" (success) or "Removing" (neutral)
+  tag, and the footer reads "N to add · M to remove" with Cancel and Save changes. Saving PUTs
+  `/devices/{host}/groups` for each device that joins or leaves; a failed device is named and the rest still save.
+  New group (name required, at most 40 characters, unique ignoring case) opens the same drawer right after.
 - The Groups column header filters the table by one group (`?group=` in the URL).
 
 ### Users table and user page (`pages/users/UsersPage.tsx`, `UserPage.tsx`, `Access.tsx`)
@@ -413,7 +418,7 @@ Add new ones there in the same style; don't mix in antd's icon set. No emoji.
 | Sign in | `/login` | Sign-in card, password reset, demo entry |
 | Dashboard | `/dashboard` | Stat cards (average CPU, RAM, Disk and Network I/O); Usage over time (average of all devices); Device summary table |
 | Devices | `/devices` | Table with header filters (incl. Groups), an Alias column edited in place (`AliasEditor`, sortable), group tags with an edit picker, ping status, row remote actions; Manage groups (links to Groups); Enroll agent drawer |
-| Groups | `/groups` | Table: group, devices, members, Add devices (two-list dialog), rename / delete; New group |
+| Groups | `/groups` | Table: group, devices, members (with an edit button that opens the Devices drawer), rename / delete; New group |
 | Device detail | `/devices/:id` (the device's ID; hostnames can repeat) | Back, hostname, alias (`AliasEditor`: muted text with the small edit button `DeviceGroups` uses, or a dashed "Add alias" button; renamed in place like a group, Enter or blur saves, Esc cancels, empty clears), the same Online / Offline status button as the Devices table (click to ping, offline included); Terminal (primary), Files, Service. A "Device information" card (hostname, OS, IP, MAC, agent version shown as in the Devices table by `AgentVersion`, uptime, enrolled at, Groups with the edit picker). Below it one card with two tabs, like Task Manager (`?tab=performance` keeps the second): **Processes (N)** (default; search, Name, PID, Status, User, CPU sorted high first, Memory, End task not supported yet; polls every 5 s only while open; a note while offline) and **Performance** (1h / 24h / 7d switch; CPU, RAM and Disk over time, 0–100 %, a dashed alert line at the lowest threshold among the alert rules that cover the device (`limitsFor`; no line for a metric no alert watches), hardware beside each name; Network with Received `--series-1` filled and Sent `--series-2`, Mbps on its own scale; y labels in a 56 px gutter, time marks on round local times, crosshair tooltip) |
 | Remote Terminal | `/remote-terminal?host=` | Device picker, shell, xterm.js |
 | Remote Files | `/remote-files?host=` (`&with=` for a second device) | One device: picker, file table, upload (not available yet). Two devices: two panes, copy and sync between them, Transfers |

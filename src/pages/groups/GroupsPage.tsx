@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient, useSuspenseQueries } from '@tanstack/react-query'
-import { App, Button, Card, Form, Input, Modal, Popconfirm, Table, Tag, Tooltip, Transfer, type TableProps } from 'antd'
+import { App, Button, Card, Checkbox, Drawer, Form, Input, Modal, Popconfirm, Segmented, Table, Tag, Tooltip, type TableProps } from 'antd'
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { Icon, Th } from '../../components/Icon'
 import PageHeader from '../../components/PageHeader'
+import { tone } from '../../config/theme'
 import { t } from '../../i18n'
 import { createGroup, deleteGroup, renameGroup, setDeviceGroups } from '../../services/deviceService'
 import { devicesQuery, groupsQuery } from '../../services/queries'
@@ -93,32 +94,33 @@ export default function GroupsPage() {
       title: <Th icon="devices" label={t('Members')} />,
       key: 'members',
       render: (_, g) => {
-        const members = membersOf(g.id)
-        if (!members.length) return <span className="muted">{t('No devices yet')}</span>
+        const list = membersOf(g.id)
         return (
           <span className="device-groups">
-            {members.slice(0, TAGS_SHOWN).map((d) => (
+            {list.slice(0, TAGS_SHOWN).map((d) => (
               <Link key={d.id} to={`/devices/${encodeURIComponent(d.id)}`}>
                 <Tag>{deviceLabel(d)}</Tag>
               </Link>
             ))}
-            {members.length > TAGS_SHOWN ? (
-              <Tooltip title={members.slice(TAGS_SHOWN).map(deviceLabel).join(', ')}>
-                <Tag>+{members.length - TAGS_SHOWN}</Tag>
+            {list.length > TAGS_SHOWN ? (
+              <Tooltip title={list.slice(TAGS_SHOWN).map(deviceLabel).join(', ')}>
+                <Tag>+{list.length - TAGS_SHOWN}</Tag>
               </Tooltip>
             ) : null}
+            {list.length ? (
+              <Tooltip title={t('Edit devices')}>
+                <button type="button" className="icon-btn device-groups-edit" aria-label={t('Edit devices in {name}', { name: g.name })} onClick={() => setMembers(g)}>
+                  <Icon name="edit" size={14} />
+                </button>
+              </Tooltip>
+            ) : (
+              <Button size="small" type="dashed" icon={<Icon name="plus" size={12} />} aria-label={t('Add devices to {name}', { name: g.name })} onClick={() => setMembers(g)}>
+                {t('Add devices')}
+              </Button>
+            )}
           </span>
         )
       },
-    },
-    {
-      title: <Th icon="plus" label={t('Add')} />,
-      key: 'add',
-      render: (_, g) => (
-        <Button size="small" icon={<Icon name="plus" size={12} />} aria-label={t('Add devices to {name}', { name: g.name })} onClick={() => setMembers(g)}>
-          {t('Add devices')}
-        </Button>
-      ),
     },
     {
       title: <Th icon="more" label={t('Actions')} />,
@@ -188,7 +190,7 @@ export default function GroupsPage() {
           }}
         />
       </Card>
-      <MembersDialog group={members} devices={devices} onClose={() => setMembers(null)} onSaved={refresh} />
+      <MembersDialog group={members} groups={groups} devices={devices} onClose={() => setMembers(null)} onSaved={refresh} />
       <NewGroupDialog
         open={creating}
         groups={groups}
@@ -202,25 +204,50 @@ export default function GroupsPage() {
   )
 }
 
-interface Item {
-  key: string
-  title: string
-  description: string
-}
+type View = 'out' | 'in' | 'all'
 
-function MembersDialog({ group, devices, onClose, onSaved }: { group: DeviceGroup | null; devices: Device[]; onClose: () => void; onSaved: () => void }) {
+function MembersDialog({ group, groups, devices, onClose, onSaved }: { group: DeviceGroup | null; groups: DeviceGroup[]; devices: Device[]; onClose: () => void; onSaved: () => void }) {
   return (
-    <Modal title={group ? t('Devices in {name}', { name: group.name }) : ''} open={Boolean(group)} onCancel={onClose} width={880} destroyOnHidden footer={null}>
-      {group ? <MembersPicker group={group} devices={devices} onClose={onClose} onSaved={onSaved} /> : null}
-    </Modal>
+    <Drawer
+      title={group ? t('Devices in {name}', { name: group.name }) : ''}
+      open={Boolean(group)}
+      onClose={onClose}
+      size={520}
+      destroyOnHidden
+      styles={{ body: { display: 'flex', flexDirection: 'column', minHeight: 0, padding: 0 } }}
+    >
+      {group ? <MembersPicker group={group} groups={groups} devices={devices} onClose={onClose} onSaved={onSaved} /> : null}
+    </Drawer>
   )
 }
 
-function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGroup; devices: Device[]; onClose: () => void; onSaved: () => void }) {
+// One list: a tick means "in this group". The filter works on who is in the group now, so a row doesn't jump
+// away when ticked; rows that will change say so in words.
+function MembersPicker({ group, groups, devices, onClose, onSaved }: { group: DeviceGroup; groups: DeviceGroup[]; devices: Device[]; onClose: () => void; onSaved: () => void }) {
   const { message } = App.useApp()
-  const [chosen, setChosen] = useState(() => devices.filter((d) => d.groups.includes(group.id)).map((d) => d.id))
+  const inGroup = (d: Device) => d.groups.includes(group.id)
+  const [chosen, setChosen] = useState(() => devices.filter(inGroup).map((d) => d.id))
+  const outside = devices.filter((d) => !inGroup(d)).length
+  const [view, setView] = useState<View>(outside ? 'out' : 'all')
+  const [q, setQ] = useState('')
   const changes = membershipChanges(devices, group.id, chosen)
   const adding = changes.filter((c) => c.groupIds.includes(group.id)).length
+
+  const picked = new Set(chosen)
+  const query = q.trim().toLowerCase()
+  const shown = devices.filter(
+    (d) => (view === 'all' || inGroup(d) === (view === 'in')) && (!query || `${d.host} ${d.alias} ${d.ip}`.toLowerCase().includes(query)),
+  )
+  const shownPicked = shown.filter((d) => picked.has(d.id)).length
+  const names = new Map(groups.map((g) => [g.id, g.name]))
+
+  const toggle = (id: string, on: boolean) => setChosen((c) => (on ? [...c, id] : c.filter((x) => x !== id)))
+  const toggleShown = (on: boolean) =>
+    setChosen((c) => {
+      const shownIds = new Set(shown.map((d) => d.id))
+      const rest = c.filter((id) => !shownIds.has(id))
+      return on ? [...rest, ...shownIds] : rest
+    })
 
   // Membership lives on each device, so saving updates every device that joins or leaves; one failure doesn't stop the rest.
   const save = useMutation({
@@ -240,38 +267,65 @@ function MembersPicker({ group, devices, onClose, onSaved }: { group: DeviceGrou
     },
   })
 
-  const items: Item[] = devices.map((d) => {
-    const status = d.online ? t('Online') : t('Offline')
-    return { key: d.id, title: d.host, description: d.alias ? `${d.alias} · ${status}` : status }
-  })
+  const empty = query ? t('No device matches this search.') : view === 'out' ? t('Every device is already in this group.') : t('No device is in this group.')
 
   return (
-    <div className="dialog-form">
-      <Transfer<Item>
-        className="access-transfer"
-        dataSource={items}
-        targetKeys={chosen}
-        onChange={(keys) => setChosen(keys.map(String))}
-        titles={[t('Other devices'), t('In {name}', { name: group.name })]}
-        showSearch={{ placeholder: t('Search devices') }}
-        filterOption={(value, item) => `${item.title} ${item.description}`.toLowerCase().includes(value.trim().toLowerCase())}
-        render={(item) => (
-          <span className="access-item">
-            <span className="strong">{item.title}</span>
-            <span className="muted">{item.description}</span>
-          </span>
+    <div className="member-picker">
+      <div className="member-tools">
+        <Input allowClear autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('Search devices')} aria-label={t('Search devices')} />
+        <Segmented<View>
+          block
+          value={view}
+          onChange={setView}
+          options={[
+            { value: 'out', label: t('Not added ({n})', { n: outside }) },
+            { value: 'in', label: t('Added ({n})', { n: devices.length - outside }) },
+            { value: 'all', label: t('All ({n})', { n: devices.length }) },
+          ]}
+        />
+      </div>
+      <div className="member-list">
+        <div className="member-head">
+          <Checkbox
+            checked={shown.length > 0 && shownPicked === shown.length}
+            indeterminate={shownPicked > 0 && shownPicked < shown.length}
+            disabled={!shown.length}
+            onChange={(e) => toggleShown(e.target.checked)}
+          >
+            {t('Select all {n} shown', { n: shown.length })}
+          </Checkbox>
+        </div>
+        {shown.length ? (
+          shown.map((d) => {
+            const on = picked.has(d.id)
+            const was = inGroup(d)
+            const others = d.groups.filter((id) => id !== group.id && names.has(id)).map((id) => names.get(id))
+            const sub = [d.alias, d.ip, ...others].filter(Boolean).join(' · ')
+            return (
+              <label key={d.id} className={`member-row${d.online ? '' : ' is-offline'}${on ? ' is-on' : ''}`}>
+                <Checkbox checked={on} onChange={(e) => toggle(d.id, e.target.checked)} />
+                <span className="member-main">
+                  <span className="member-name">
+                    <span className="strong">{d.host}</span>
+                    {on && !was ? <Tag color="success">{t('Adding')}</Tag> : null}
+                    {!on && was ? <Tag>{t('Removing')}</Tag> : null}
+                  </span>
+                  <span className="muted member-sub">{sub}</span>
+                </span>
+                <span className="member-status">
+                  <span className="status-dot" style={{ background: d.online ? tone.positive : tone.disabled }} />
+                  {d.online ? t('Online') : t('Offline')}
+                </span>
+              </label>
+            )
+          })
+        ) : (
+          <div className="member-empty muted">{empty}</div>
         )}
-        actions={[
-          <Button key="add" aria-label={t('Add the checked devices to {name}', { name: group.name })} icon={<Icon name="arrow" size={14} />} />,
-          <Button key="remove" aria-label={t('Remove the checked devices from {name}', { name: group.name })} icon={<Icon name="arrow-left" size={14} />} />,
-        ]}
-        locale={{ itemUnit: t('device'), itemsUnit: t('devices'), notFoundContent: <span className="muted">{t('None')}</span> }}
-      />
-      <div className="dialog-footer">
+      </div>
+      <div className="member-footer">
         <span className="muted" aria-live="polite">
-          {changes.length
-            ? t('{add} to add · {remove} to remove', { add: adding, remove: changes.length - adding })
-            : t('No changes yet')}
+          {changes.length ? t('{add} to add · {remove} to remove', { add: adding, remove: changes.length - adding }) : t('No changes yet')}
         </span>
         <span className="dialog-buttons">
           <Button onClick={onClose}>{t('Cancel')}</Button>
