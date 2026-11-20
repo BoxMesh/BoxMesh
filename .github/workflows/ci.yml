@@ -5,7 +5,6 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  packages: write
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -22,6 +21,11 @@ jobs:
   docker:
     needs: check
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    env:
+      VERSION: 0.1.${{ github.run_number }}
     steps:
       - uses: actions/checkout@v5
       - uses: docker/setup-buildx-action@v3
@@ -34,7 +38,10 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
-          tags: lastest
+          tags: |
+            type=raw,value=latest
+            type=raw,value=${{ env.VERSION }}
+            type=sha
 
       - uses: docker/build-push-action@v6
         with:
@@ -46,6 +53,12 @@ jobs:
             VITE_API_URL=${{ vars.VITE_API_URL || '/api' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "Frontend v$VERSION" --generate-notes \
+            --notes "Image: \`ghcr.io/${GITHUB_REPOSITORY,,}:$VERSION\`"
 
   vercel:
     needs: check
