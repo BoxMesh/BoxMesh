@@ -6,18 +6,21 @@ import { tone } from '../../config/theme'
 import { t } from '../../i18n'
 import { deviceMetricsQuery } from '../../services/queries'
 import type { Device, MetricPoint } from '../../types/device'
-import { THRESHOLDS } from '../../utils/devices'
+import { THRESHOLDS, USAGE_ICON } from '../../utils/devices'
 
 type Metric = 'cpu' | 'ram' | 'disk'
 
 const mbps = (v: number) => `${v < 10 ? v.toFixed(1) : Math.round(v)} Mbps`
 
+// The figure comes first, under its column's heading, and the bar follows: a figure placed after the bar sat right
+// against the next column's bar and was read as that column's.
 // An offline agent's numbers are stale, so they are left blank rather than shown as current.
 function Meter({ device, metric }: { device: Device; metric: Metric }) {
   if (!device.online) return <span className="muted">—</span>
   const value = device[metric]
   return (
     <span className="meter-cell">
+      <span>{value}%</span>
       <Progress
         percent={value}
         showInfo={false}
@@ -25,7 +28,6 @@ function Meter({ device, metric }: { device: Device; metric: Metric }) {
         strokeColor={value >= THRESHOLDS[metric] ? tone.error : tone.disabled}
         aria-label={`${device.host} ${metric}`}
       />
-      <span>{value}%</span>
     </span>
   )
 }
@@ -51,7 +53,7 @@ const columns = (network: Map<string, MetricPoint>): TableProps<Device>['columns
     render: (_, r) => <Tag color={r.online ? 'success' : 'default'}>{r.online ? t('Online') : t('Offline')}</Tag>,
   },
   ...(['cpu', 'ram', 'disk'] as const).map((metric) => ({
-    title: <Th icon="chip" label={metric === 'disk' ? t('Disk') : metric.toUpperCase()} />,
+    title: <Th icon={USAGE_ICON[metric]} label={metric === 'disk' ? t('Disk') : metric.toUpperCase()} />,
     key: metric,
     sorter: (a: Device, b: Device) => a[metric] - b[metric],
     render: (_: unknown, r: Device) => <Meter device={r} metric={metric} />,

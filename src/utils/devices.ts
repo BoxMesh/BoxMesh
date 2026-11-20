@@ -1,3 +1,4 @@
+import type { IconName } from '../components/Icon'
 import type { DeviceAccess } from '../types/admin'
 import type { Device, DeviceFilter, DeviceGroup, Issue, OsFamily } from '../types/device'
 import { MINUTE } from './time'
@@ -5,6 +6,9 @@ import { t } from '../i18n'
 
 // Default per-device alert thresholds (percent), as drawn on the device detail screen.
 export const THRESHOLDS = { cpu: 90, ram: 90, disk: 85 }
+
+/** One icon per usage metric, shared by the dashboard's stat cards and the Device summary headings, so a column is told by its icon as well as its word. */
+export const USAGE_ICON: Record<keyof typeof THRESHOLDS, IconName> = { cpu: 'chip', ram: 'pulse', disk: 'box' }
 
 export function issuesOf(d: Device): Issue[] {
   // Metrics of an offline agent are stale, so only the lost heartbeat counts.

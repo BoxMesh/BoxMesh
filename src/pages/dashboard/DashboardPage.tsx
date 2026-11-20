@@ -8,7 +8,7 @@ import { t } from '../../i18n'
 import { getSession } from '../../services/authService'
 import { deviceMetricsQuery, devicesQuery } from '../../services/queries'
 import type { Device } from '../../types/device'
-import { THRESHOLDS } from '../../utils/devices'
+import { THRESHOLDS, USAGE_ICON } from '../../utils/devices'
 import DeviceSummaryCard from './DeviceSummaryCard'
 import FleetChartCard from './FleetChartCard'
 
@@ -66,8 +66,6 @@ function Network({ devices }: { devices: Device[] }) {
 }
 
 /** An average over the online devices, as a stat card with a bar and the busiest device beneath. */
-const USAGE_ICON: Record<'cpu' | 'ram' | 'disk', IconName> = { cpu: 'chip', ram: 'pulse', disk: 'box' }
-
 function Usage({ label, metric, devices }: { label: string; metric: 'cpu' | 'ram' | 'disk'; devices: Device[] }) {
   const online = devices.filter((d) => d.online)
   const mean = average(online.map((d) => d[metric]))

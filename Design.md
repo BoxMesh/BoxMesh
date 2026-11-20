@@ -246,7 +246,7 @@ A table that ends a card is clipped to the card's bottom corners.
   averages them point by point (each device's points are snapped to the range's step first, since agents report on
   their own clocks); "Loaded n of m devices" shows while they arrive.
 - **Device summary** (full width): every device, online ones first (busiest CPU first), as Device (links to its
-  page), Status (Online or Offline: a device has no other state), CPU, RAM and Disk as a bar plus value (red over the
+  page), Status (Online or Offline: a device has no other state), CPU, RAM and Disk as a value then a bar (the value comes first, bold, directly under its heading: after the bar it sat against the next column's bar and was read as that column's; each heading has its own icon, the same ones as the stat cards above; red over the
   default alert threshold; "—" while offline, since the numbers are stale), Network ("In x · Out y" Mbps, the latest
   sample of the last hour; a dash when the device has none). Every column sorts;
   pages at 8.

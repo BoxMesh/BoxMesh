@@ -2057,10 +2057,10 @@ a:has(> .ant-tag) {
   margin: 0;
 }
 
-.meter-cell > span:last-child {
+.meter-cell > span:first-child {
   width: 36px;
-  text-align: right;
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 
 /* Usage over time: the chart, and its own numbers in a column on the right (a row of four below 992px). */
